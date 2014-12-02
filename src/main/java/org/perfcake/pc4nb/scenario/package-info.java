@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-@TemplateRegistration(folder = "PerfCake", content = "PCScenarioTemplate.xml")
+@TemplateRegistration(folder = "PerfCake", content = "PCScenario.xml")
 package org.perfcake.pc4nb.scenario;
 
 import org.netbeans.api.templates.TemplateRegistration;
