@@ -5,12 +5,21 @@
  */
 package org.perfcake.pc4nb.scenario;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
@@ -38,6 +47,53 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
         obj = lkp.lookup(PCScenarioDataObject.class);
         assert obj != null;
         initComponents();
+        
+        GridLayout layout = new GridLayout(3, 2, 50, 50);
+        this.setLayout(layout);
+        this.setBackground(Color.gray);
+        this.setBorder(new EmptyBorder(50, 50, 50, 50));
+//        this.setMinimumSize(new Dimension(640, 480));
+//        this.setPreferredSize(new Dimension(640, 480));
+        
+        JPanel panel1 = new JPanel();
+        Border border1 = new TitledBorder("Generator");
+        panel1.setBackground(Color.white);
+        panel1.setBorder(border1);
+        
+        JPanel panel2 = new JPanel();
+        Border border2 = new TitledBorder("Sender");
+        panel2.setBackground(Color.white);
+        panel2.setBorder(border2);
+        
+        JPanel panel3 = new JPanel();
+        Border border3 = new TitledBorder("Messages");
+        panel3.setBackground(Color.white);
+        panel3.setBorder(border3);
+        
+        JPanel panel4 = new JPanel();
+        Border border4 = new TitledBorder("Reporting");
+        panel4.setBackground(Color.white);
+        panel4.setBorder(border4);
+        
+        JPanel panel5 = new JPanel();
+        Border border5 = new TitledBorder("Validation");
+        panel5.setBackground(Color.white);
+        panel5.setBorder(border5);
+        
+        JPanel panel6 = new JPanel();
+        Border border6 = new TitledBorder("Properties");
+        panel6.setBackground(Color.white);
+        panel6.setBorder(border6);
+        
+        this.add(panel1);
+        this.add(panel2);
+        this.add(panel3);
+        this.add(panel4);
+        this.add(panel5);
+        this.add(panel6);
+        
+        JScrollPane panelPane = new JScrollPane(this);
+        
     }
 
     @Override
@@ -53,15 +109,17 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        setMaximumSize(new java.awt.Dimension(20, 20));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 977, Short.MAX_VALUE)
+            .addGap(0, 144, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 565, Short.MAX_VALUE)
+            .addGap(0, 114, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -128,10 +186,10 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
     
     @Override
     public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Font font = new Font("Verdana", Font.BOLD, 15);
-        g.setFont(font);
-        g.drawString(obj.getName(), 30, 30);
+//        super.paintComponent(g);
+//        Font font = new Font("Verdana", Font.BOLD, 15);
+//        g.setFont(font);
+//        g.drawString(obj.getName(), 30, 30);
     }
 
 }
