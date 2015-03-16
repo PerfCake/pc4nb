@@ -6,20 +6,13 @@
 package org.perfcake.pc4nb.scenario;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
@@ -27,6 +20,7 @@ import org.openide.awt.UndoRedo;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
+import org.perfcake.pc4nb.ui.Pc4nbContentPanel;
 
 @MultiViewElement.Registration(
         displayName = "#LBL_PCScenario_VISUAL",
@@ -48,42 +42,16 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
         assert obj != null;
         initComponents();
         
-        GridLayout layout = new GridLayout(3, 2, 50, 50);
-        this.setLayout(layout);
+        this.setLayout(new GridLayout(3, 2, 50, 50));
         this.setBackground(Color.gray);
-        this.setBorder(new EmptyBorder(50, 50, 50, 50));
-//        this.setMinimumSize(new Dimension(640, 480));
-//        this.setPreferredSize(new Dimension(640, 480));
+        this.setBorder(new EmptyBorder(30, 30, 30, 30));
         
-        JPanel panel1 = new JPanel();
-        Border border1 = new TitledBorder("Generator");
-        panel1.setBackground(Color.white);
-        panel1.setBorder(border1);
-        
-        JPanel panel2 = new JPanel();
-        Border border2 = new TitledBorder("Sender");
-        panel2.setBackground(Color.white);
-        panel2.setBorder(border2);
-        
-        JPanel panel3 = new JPanel();
-        Border border3 = new TitledBorder("Messages");
-        panel3.setBackground(Color.white);
-        panel3.setBorder(border3);
-        
-        JPanel panel4 = new JPanel();
-        Border border4 = new TitledBorder("Reporting");
-        panel4.setBackground(Color.white);
-        panel4.setBorder(border4);
-        
-        JPanel panel5 = new JPanel();
-        Border border5 = new TitledBorder("Validation");
-        panel5.setBackground(Color.white);
-        panel5.setBorder(border5);
-        
-        JPanel panel6 = new JPanel();
-        Border border6 = new TitledBorder("Properties");
-        panel6.setBackground(Color.white);
-        panel6.setBorder(border6);
+        Pc4nbContentPanel panel1 = new Pc4nbContentPanel("Generator");
+        Pc4nbContentPanel panel2 = new Pc4nbContentPanel("Sender");
+        Pc4nbContentPanel panel3 = new Pc4nbContentPanel("Messages");
+        Pc4nbContentPanel panel4 = new Pc4nbContentPanel("Reporting");
+        Pc4nbContentPanel panel5 = new Pc4nbContentPanel("Validation");
+        Pc4nbContentPanel panel6 = new Pc4nbContentPanel("Properties");
         
         this.add(panel1);
         this.add(panel2);
@@ -91,9 +59,7 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
         this.add(panel4);
         this.add(panel5);
         this.add(panel6);
-        
-        JScrollPane panelPane = new JScrollPane(this);
-        
+       
     }
 
     @Override
@@ -109,17 +75,18 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setMaximumSize(new java.awt.Dimension(20, 20));
+        setMaximumSize(new java.awt.Dimension(32500, 3250));
+        setName(""); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 144, Short.MAX_VALUE)
+            .addGap(0, 884, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 114, Short.MAX_VALUE)
+            .addGap(0, 466, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
