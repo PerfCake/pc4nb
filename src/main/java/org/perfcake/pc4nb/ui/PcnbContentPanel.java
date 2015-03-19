@@ -16,10 +16,10 @@
 package org.perfcake.pc4nb.ui;
 
 import java.awt.Color;
-import java.awt.GridLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -30,30 +30,26 @@ import javax.swing.border.TitledBorder;
  *
  * @author Andrej Halaj
  */
-public class Pc4nbContentPanel extends JPanel implements ActionListener {
-    
+public class PcnbContentPanel extends JPanel implements ActionListener {
+
     private JMenuItem addComponent = new JMenuItem("Add new component");
     private JPopupMenu menu = new JPopupMenu();
-    
-    public Pc4nbContentPanel(String title) {
+
+    public PcnbContentPanel(String title) {
         addComponent.addActionListener(this);
         menu.add(addComponent);
         this.setComponentPopupMenu(menu);
+        
         Border border = new TitledBorder(title);
         this.setBackground(Color.white);
         this.setBorder(border);
-        this.setLayout(new GridLayout(0, 2, 5, 5));
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        this.setPreferredSize(new Dimension(390, 300));
+        this.setMinimumSize(new Dimension(390, 300));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-//        SwingUtilities.invokeLater(new Runnable() {
-//            public void run() {
-//                Pc4nbContentPanel.this.add(new JButton("Hello"));
-//            }
-//        });
-        this.add(new JButton("Hello"));
-        this.revalidate();
-        this.repaint();
-    }  
+
+    }
 }

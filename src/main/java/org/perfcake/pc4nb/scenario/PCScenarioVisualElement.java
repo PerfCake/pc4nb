@@ -6,13 +6,15 @@
 package org.perfcake.pc4nb.scenario;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
-import javax.swing.border.EmptyBorder;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
@@ -20,7 +22,9 @@ import org.openide.awt.UndoRedo;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import org.perfcake.pc4nb.ui.Pc4nbContentPanel;
+import org.perfcake.pc4nb.ui.PcnbContentPanel;
+import org.perfcake.pc4nb.ui.PcnbReportingPanel;
+import org.perfcake.pc4nb.ui.PcnbValidationPanel;
 
 @MultiViewElement.Registration(
         displayName = "#LBL_PCScenario_VISUAL",
@@ -42,23 +46,42 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
         assert obj != null;
         initComponents();
         
-        this.setLayout(new GridLayout(3, 2, 50, 50));
+        GridBagConstraints layoutConstraints = new GridBagConstraints();
         this.setBackground(Color.gray);
-        this.setBorder(new EmptyBorder(30, 30, 30, 30));
+
+        PcnbContentPanel generatorPanel = new PcnbContentPanel("Generator");
+        PcnbContentPanel senderPanel = new PcnbContentPanel("Sender");
+        PcnbContentPanel messagesPanel = new PcnbContentPanel("Messages");
+        PcnbReportingPanel reportingPanel = new PcnbReportingPanel();
+        PcnbValidationPanel validationPanel = new PcnbValidationPanel();
+        PcnbContentPanel propertiesPanel = new PcnbContentPanel("Properties");
         
-        Pc4nbContentPanel panel1 = new Pc4nbContentPanel("Generator");
-        Pc4nbContentPanel panel2 = new Pc4nbContentPanel("Sender");
-        Pc4nbContentPanel panel3 = new Pc4nbContentPanel("Messages");
-        Pc4nbContentPanel panel4 = new Pc4nbContentPanel("Reporting");
-        Pc4nbContentPanel panel5 = new Pc4nbContentPanel("Validation");
-        Pc4nbContentPanel panel6 = new Pc4nbContentPanel("Properties");
+        layoutConstraints.gridx = 0;
+        layoutConstraints.gridy = 0;
+        layoutConstraints.weightx = 0.5;
+        layoutConstraints.weighty = 0.5;
+        layoutConstraints.insets = new Insets(20, 20, 20, 20);
+        this.add(generatorPanel, layoutConstraints);
         
-        this.add(panel1);
-        this.add(panel2);
-        this.add(panel3);
-        this.add(panel4);
-        this.add(panel5);
-        this.add(panel6);
+        layoutConstraints.gridx = 1;
+        layoutConstraints.gridy = 0;
+        this.add(senderPanel, layoutConstraints);
+        
+        layoutConstraints.gridx = 0;
+        layoutConstraints.gridy = 1;
+        this.add(messagesPanel, layoutConstraints);
+        
+        layoutConstraints.gridx = 1;
+        layoutConstraints.gridy = 1;
+        this.add(reportingPanel, layoutConstraints);
+        
+        layoutConstraints.gridx = 0;
+        layoutConstraints.gridy = 2;
+        this.add(validationPanel, layoutConstraints);
+        
+        layoutConstraints.gridx = 1;
+        layoutConstraints.gridy = 2;
+        this.add(propertiesPanel, layoutConstraints);
        
     }
 
@@ -74,20 +97,11 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         setMaximumSize(new java.awt.Dimension(32500, 3250));
         setName(""); // NOI18N
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 884, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 466, Short.MAX_VALUE)
-        );
+        setLayout(new java.awt.GridBagLayout());
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -141,6 +155,16 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
         return UndoRedo.NONE;
     }
 
+    @Override
+    public Dimension getMinimumSize() {
+        return new Dimension(1280, 800);
+    }
+    
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(1280, 800);
+    }
+    
     @Override
     public void setMultiViewCallback(MultiViewElementCallback callback) {
         this.callback = callback;
