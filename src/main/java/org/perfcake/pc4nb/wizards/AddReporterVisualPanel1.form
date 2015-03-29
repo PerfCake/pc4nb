@@ -18,29 +18,22 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Component id="jScrollPane1" min="-2" pref="368" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="addDestinationButton" max="32767" attributes="0"/>
                           <Component id="deleteDestinationButton" max="32767" attributes="0"/>
                           <Component id="editDestinationButton" alignment="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Component id="destinationsLabel" min="-2" max="-2" attributes="0"/>
-                  <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="propertiesListScrollPane" max="32767" attributes="0"/>
-                          <Component id="propertiesLabel" min="-2" max="-2" attributes="0"/>
-                          <Component id="reporterTypeLabel" min="-2" max="-2" attributes="0"/>
-                          <Component id="reporterSelection" pref="368" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="addPropertyButton" max="32767" attributes="0"/>
-                          <Component id="deletePropertyButton" max="32767" attributes="0"/>
-                      </Group>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="propertiesListScrollPane" max="32767" attributes="0"/>
+                      <Component id="propertiesLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="reporterTypeLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="reporterSelection" pref="368" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
@@ -57,14 +50,7 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="propertiesLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="propertiesListScrollPane" min="-2" pref="103" max="-2" attributes="0"/>
-                  <Group type="102" attributes="0">
-                      <Component id="addPropertyButton" min="-2" pref="35" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="deletePropertyButton" min="-2" pref="35" max="-2" attributes="0"/>
-                  </Group>
-              </Group>
+              <Component id="propertiesListScrollPane" min="-2" pref="103" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="destinationsLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -86,8 +72,8 @@
   <SubComponents>
     <Component class="javax.swing.JComboBox" name="reporterSelection">
       <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new javax.swing.DefaultComboBoxModel(new String[] { &quot;MemoryUsageReporter&quot;, &quot;Item 2&quot;, &quot;Item 3&quot;, &quot;Item 4&quot; })" type="code"/>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor" preCode="ComponentScanner scanner = new ComponentScanner();&#xa;Set&lt;Class&lt;? extends Reporter&gt;&gt; subTypes = scanner.findComponentsOfType(Reporter.class, &quot;org.perfcake.reporting.reporters&quot;);&#xa;Set&lt;String&gt; reporterNames = new HashSet&lt;&gt;();&#xa;&#xa;for(Class&lt;? extends Reporter&gt; reporter : subTypes) {&#xa;    reporterNames.add(reporter.getSimpleName());&#xa;}&#xa;&#xa;String[] reporterNamesArray = new String[reporterNames.size()];&#xa;reporterNames.toArray(reporterNamesArray);" postCode="reporterSelection.setSelectedItem (reporterNamesArray[0]);&#xa;&#xa;reporterSelection.addItemListener (new ItemListener() {&#xa;    public void itemStateChanged(ItemEvent e) {&#xa;        try {&#xa;            listProperties();&#xa;        } catch (ClassNotFoundException | NoSuchFieldException ex) {&#xa;            // blah&#xa;        }&#xa;    }&#xa;});">
+          <Connection code="new DefaultComboBoxModel(reporterNamesArray)" type="code"/>
         </Property>
         <Property name="name" type="java.lang.String" value="reporterSelection" noResource="true"/>
       </Properties>
@@ -124,26 +110,6 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="addPropertyButton">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/perfcake/pc4nb/wizards/Bundle.properties" key="AddReporterVisualPanel1.addPropertyButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addPropertyButtonActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="deletePropertyButton">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/perfcake/pc4nb/wizards/Bundle.properties" key="AddReporterVisualPanel1.deletePropertyButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deletePropertyButtonActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JLabel" name="destinationsLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">

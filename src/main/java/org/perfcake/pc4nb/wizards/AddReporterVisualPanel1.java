@@ -17,19 +17,31 @@ package org.perfcake.pc4nb.wizards;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.HashSet;
+import java.util.Set;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
+import org.perfcake.pc4nb.reflect.ComponentScanner;
+import org.perfcake.reporting.reporters.Reporter;
 
 public final class AddReporterVisualPanel1 extends JPanel {
-    
+
     public AddReporterVisualPanel1() {
         initComponents();
+        try {
+            listProperties();
+        } catch (ClassNotFoundException | NoSuchFieldException ex) {
+            System.err.println("Class not found " + ex.getMessage());
+        }
     }
 
     @Override
@@ -39,14 +51,6 @@ public final class AddReporterVisualPanel1 extends JPanel {
 
     public JComboBox getReporterSelection() {
         return reporterSelection;
-    }
-
-    public JButton getAddPropertyButton() {
-        return addPropertyButton;
-    }
-
-    public JButton getDeletePropertyButton() {
-        return deletePropertyButton;
     }
 
     public JScrollPane getjScrollPane1() {
@@ -68,9 +72,40 @@ public final class AddReporterVisualPanel1 extends JPanel {
     public JLabel getReporterTypeLabel() {
         return reporterTypeLabel;
     }
-    
+
     public void addProperty(String name, String value) {
         propertiesListModel.insertElementAt(name + " : " + value, propertiesListModel.getSize());
+    }
+
+    private void listProperties() throws ClassNotFoundException, NoSuchFieldException {
+        String selectedReporterName = (String) reporterSelection.getSelectedItem();
+        String selectedReporterFullName = "org.perfcake.reporting.reporters." + selectedReporterName;
+        Class selectedReporterClass = Class.forName(selectedReporterFullName);
+        
+        ComponentPropertiesScanner propertyScanner = new ComponentPropertiesScanner();
+        Set<String> properties = propertyScanner.getPropertiesOfComponent(selectedReporterClass);
+        
+        Class superClass = selectedReporterClass.getSuperclass();
+        while (org.perfcake.reporting.reporters.Reporter.class.isAssignableFrom(superClass)) {
+            properties.addAll(propertyScanner.getPropertiesOfComponent(superClass));
+            superClass = superClass.getSuperclass();
+        }
+        
+        /*Class[] interfaces = selectedReporterClass.getInterfaces();
+        
+        for (Class interfce : interfaces) {
+            Class[] moreInterfaces;
+            
+            while(org.perfcake.reporting.reporters.Reporter.class.isAssignableFrom(interfce)) {
+                properties.addAll(propertyScanner.getPropertiesOfComponent(interfce));
+                moreInterfaces = interfce.getInterfaces();
+            }
+        }*/
+
+        propertiesListModel.clear();
+        
+        for (String property : properties)
+            propertiesListModel.addElement(property);
     }
 
     /**
@@ -86,8 +121,6 @@ public final class AddReporterVisualPanel1 extends JPanel {
         propertiesLabel = new javax.swing.JLabel();
         propertiesListScrollPane = new javax.swing.JScrollPane();
         propertiesList = new javax.swing.JList();
-        addPropertyButton = new javax.swing.JButton();
-        deletePropertyButton = new javax.swing.JButton();
         destinationsLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         destinationsList = new javax.swing.JList();
@@ -95,7 +128,28 @@ public final class AddReporterVisualPanel1 extends JPanel {
         deleteDestinationButton = new javax.swing.JButton();
         editDestinationButton = new javax.swing.JButton();
 
-        reporterSelection.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "MemoryUsageReporter", "Item 2", "Item 3", "Item 4" }));
+        ComponentScanner scanner = new ComponentScanner();
+        Set<Class<? extends Reporter>> subTypes = scanner.findComponentsOfType(Reporter.class, "org.perfcake.reporting.reporters");
+        Set<String> reporterNames = new HashSet<>();
+
+        for(Class<? extends Reporter> reporter : subTypes) {
+            reporterNames.add(reporter.getSimpleName());
+        }
+
+        String[] reporterNamesArray = new String[reporterNames.size()];
+        reporterNames.toArray(reporterNamesArray);
+        reporterSelection.setModel(new DefaultComboBoxModel(reporterNamesArray));
+        reporterSelection.setSelectedItem (reporterNamesArray[0]);
+
+        reporterSelection.addItemListener (new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                try {
+                    listProperties();
+                } catch (ClassNotFoundException | NoSuchFieldException ex) {
+                    // blah
+                }
+            }
+        });
         reporterSelection.setName("reporterSelection"); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(reporterTypeLabel, org.openide.util.NbBundle.getMessage(AddReporterVisualPanel1.class, "AddReporterVisualPanel1.reporterTypeLabel.text")); // NOI18N
@@ -107,20 +161,6 @@ public final class AddReporterVisualPanel1 extends JPanel {
         propertiesList.setLayoutOrientation(javax.swing.JList.HORIZONTAL_WRAP);
         propertiesList.setVisibleRowCount(30000);
         propertiesListScrollPane.setViewportView(propertiesList);
-
-        org.openide.awt.Mnemonics.setLocalizedText(addPropertyButton, org.openide.util.NbBundle.getMessage(AddReporterVisualPanel1.class, "AddReporterVisualPanel1.addPropertyButton.text")); // NOI18N
-        addPropertyButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addPropertyButtonActionPerformed(evt);
-            }
-        });
-
-        org.openide.awt.Mnemonics.setLocalizedText(deletePropertyButton, org.openide.util.NbBundle.getMessage(AddReporterVisualPanel1.class, "AddReporterVisualPanel1.deletePropertyButton.text")); // NOI18N
-        deletePropertyButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deletePropertyButtonActionPerformed(evt);
-            }
-        });
 
         org.openide.awt.Mnemonics.setLocalizedText(destinationsLabel, org.openide.util.NbBundle.getMessage(AddReporterVisualPanel1.class, "AddReporterVisualPanel1.destinationsLabel.text")); // NOI18N
 
@@ -150,25 +190,20 @@ public final class AddReporterVisualPanel1 extends JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(36, 36, 36)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(addDestinationButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(deleteDestinationButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(editDestinationButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(destinationsLabel)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(propertiesListScrollPane)
-                            .addComponent(propertiesLabel)
-                            .addComponent(reporterTypeLabel)
-                            .addComponent(reporterSelection, 0, 368, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(addPropertyButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(deletePropertyButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(propertiesListScrollPane)
+                        .addComponent(propertiesLabel)
+                        .addComponent(reporterTypeLabel)
+                        .addComponent(reporterSelection, 0, 368, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -181,12 +216,7 @@ public final class AddReporterVisualPanel1 extends JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(propertiesLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(propertiesListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(addPropertyButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deletePropertyButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addComponent(propertiesListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(destinationsLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -202,31 +232,6 @@ public final class AddReporterVisualPanel1 extends JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void addPropertyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPropertyButtonActionPerformed
-        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        JFrame frame = new JFrame();
-        frame.setLocationRelativeTo(null);
-        AddPropertyDialog dialog = new AddPropertyDialog(frame, true);
-        dialog.setLocationRelativeTo(null);
-        frame.pack();
-        
-        dialog.setVisible(true);
-        
-        if(!dialog.isNameEmptyOrNull() && !dialog.isValueEmptyOrNull()) {
-            this.addProperty(dialog.getPropertyNameTextField().getText(), dialog.getPropertyValueTextField().getText());
-        }
-    }//GEN-LAST:event_addPropertyButtonActionPerformed
-
-    private void deletePropertyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletePropertyButtonActionPerformed
-        if (propertiesList.getSelectedIndices().length > 0) {
-            int[] elementsToRemove = propertiesList.getSelectedIndices();
-            
-            for (int i = elementsToRemove.length - 1; i >= 0; i--) {
-                propertiesListModel.removeElementAt(elementsToRemove[i]);
-            }
-        }
-    }//GEN-LAST:event_deletePropertyButtonActionPerformed
-
     private void addDestinationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDestinationButtonActionPerformed
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         JFrame frame = new JFrame();
@@ -236,7 +241,7 @@ public final class AddReporterVisualPanel1 extends JPanel {
     private void deleteDestinationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteDestinationButtonActionPerformed
         if (destinationsList.getSelectedIndices().length > 0) {
             int[] elementsToRemove = destinationsList.getSelectedIndices();
-            
+
             for (int i = elementsToRemove.length - 1; i >= 0; i--) {
                 destinationsListModel.removeElementAt(elementsToRemove[i]);
             }
@@ -245,9 +250,7 @@ public final class AddReporterVisualPanel1 extends JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addDestinationButton;
-    private javax.swing.JButton addPropertyButton;
     private javax.swing.JButton deleteDestinationButton;
-    private javax.swing.JButton deletePropertyButton;
     private javax.swing.JLabel destinationsLabel;
     private javax.swing.JList destinationsList;
     private javax.swing.DefaultListModel destinationsListModel;
