@@ -30,10 +30,10 @@
                   </Group>
                   <Component id="destinationsLabel" min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="propertiesListScrollPane" max="32767" attributes="0"/>
+                      <Component id="propertiesTableScrollPane" max="32767" attributes="0"/>
                       <Component id="propertiesLabel" min="-2" max="-2" attributes="0"/>
                       <Component id="reporterTypeLabel" min="-2" max="-2" attributes="0"/>
-                      <Component id="reporterSelection" pref="368" max="32767" attributes="0"/>
+                      <Component id="reporterSelection" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
@@ -50,7 +50,7 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="propertiesLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="propertiesListScrollPane" min="-2" pref="103" max="-2" attributes="0"/>
+              <Component id="propertiesTableScrollPane" min="-2" pref="103" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="destinationsLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -92,20 +92,18 @@
         </Property>
       </Properties>
     </Component>
-    <Container class="javax.swing.JScrollPane" name="propertiesListScrollPane">
+    <Container class="javax.swing.JScrollPane" name="propertiesTableScrollPane">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JList" name="propertiesList">
+        <Component class="javax.swing.JTable" name="propertiesTable">
           <Properties>
-            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor" preCode="propertiesListModel = new DefaultListModel();">
-              <Connection code="propertiesListModel" type="code"/>
+            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor" preCode="propertiesTableModel = new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;    },&#xa;    new String [] {&#xa;        &quot;Property Name&quot;, &quot;Value&quot;&#xa;    }&#xa;);">
+              <Connection code="propertiesTableModel" type="code"/>
             </Property>
-            <Property name="layoutOrientation" type="int" value="2"/>
-            <Property name="visibleRowCount" type="int" value="30000"/>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private javax.swing.DefaultListModel propertiesListModel;"/>
+            <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private javax.swing.table.DefaultTableModel propertiesTableModel;"/>
           </AuxValues>
         </Component>
       </SubComponents>

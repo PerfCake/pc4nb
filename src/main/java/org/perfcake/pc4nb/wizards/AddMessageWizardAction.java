@@ -13,54 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.perfcake.pc4nb.ui;
+package org.perfcake.pc4nb.wizards;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
-import org.perfcake.pc4nb.wizards.AddReporterWizardPanel1;
-import org.perfcake.pc4nb.wizards.AddValidatorWizardPanel1;
 
-/**
- *
- * @author Andrej Halaj
- */
-public class PcnbValidationPanel extends JPanel implements ActionListener {
-    private JMenuItem addComponent = new JMenuItem("Add new validator");
-    private JPopupMenu menu = new JPopupMenu();
-    
-    public PcnbValidationPanel() {
-        addComponent.addActionListener(this);
-        menu.add(addComponent);
-        this.setComponentPopupMenu(menu);
+// An example action demonstrating how the wizard could be called from within
+// your code. You can move the code below wherever you need, or register an action:
+// @ActionID(category="...", id="org.perfcake.pc4nb.wizards.AddMessageWizardAction")
+// @ActionRegistration(displayName="Open AddMessage Wizard")
+// @ActionReference(path="Menu/Tools", position=...)
+public final class AddMessageWizardAction implements ActionListener {
 
-        Border border = new TitledBorder("Validation");
-        this.setBackground(Color.white);
-        this.setBorder(border);
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        this.setPreferredSize(new Dimension(390, 300));
-        this.setMinimumSize(new Dimension(390, 300));
-    }
-    
-     @Override
+    @Override
     public void actionPerformed(ActionEvent e) {
-        List<WizardDescriptor.Panel<WizardDescriptor>> panels = new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
-        panels.add(new AddValidatorWizardPanel1());
+        List<WizardDescriptor.Panel<WizardDescriptor>> panels = new ArrayList<>();
+        panels.add(new AddMessageWizardPanel1());
         String[] steps = new String[panels.size()];
         for (int i = 0; i < panels.size(); i++) {
             Component c = panels.get(i).getComponent();
@@ -71,21 +46,17 @@ public class PcnbValidationPanel extends JPanel implements ActionListener {
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DATA, steps);
                 jc.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, true);
+                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, true);
+                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, true);
             }
         }
-        WizardDescriptor wiz = new WizardDescriptor(new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
+        WizardDescriptor wiz = new WizardDescriptor(new WizardDescriptor.ArrayIterator<>(panels));
         // {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
         wiz.setTitleFormat(new MessageFormat("{0}"));
-        wiz.setTitle("Add Validator");
+        wiz.setTitle("...dialog title...");
         if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-            String text = (String) wiz.getProperty("validator-type");
-            JButton newButton = new JButton(text);
-            newButton.setMinimumSize(new Dimension(120, 45));
-            newButton.setPreferredSize(new Dimension(120, 45));
-            this.add(newButton);
-
-            this.revalidate();
-            this.repaint();
+            // do something
         }
     }
+
 }

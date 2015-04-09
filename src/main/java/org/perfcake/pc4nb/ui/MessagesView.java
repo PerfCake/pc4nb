@@ -27,39 +27,36 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.TransferHandler;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
-import org.perfcake.pc4nb.wizards.AddReporterWizardPanel1;
+import org.perfcake.pc4nb.core.model.MessageModel;
+import org.perfcake.pc4nb.wizards.AddMessageWizardPanel1;
 
 /**
  *
  * @author Andrej Halaj
  */
-public class PcnbReportingPanel extends JPanel implements ActionListener {
-    private JMenuItem addComponent = new JMenuItem("Add new reporter");
+public class MessagesView extends ContentView implements ActionListener {
+    private JMenuItem addComponent = new JMenuItem("Add new message");
     private JPopupMenu menu = new JPopupMenu();
+    private TransferHandler transferHandler = new MessagesView.MessageTransferHandler();
     
-    public PcnbReportingPanel() {
+    public MessagesView() {
+        super("Messages");
         addComponent.addActionListener(this);
         menu.add(addComponent);
         this.setComponentPopupMenu(menu);
-
-        Border border = new TitledBorder("Reporting");
-        this.setBackground(Color.white);
-        this.setBorder(border);
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        this.setPreferredSize(new Dimension(390, 300));
-        this.setMinimumSize(new Dimension(390, 300));
+        this.setTransferHandler(transferHandler);
     }
     
      @Override
     public void actionPerformed(ActionEvent e) {
-        List<WizardDescriptor.Panel<WizardDescriptor>> panels = new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
-        panels.add(new AddReporterWizardPanel1());
+        List<WizardDescriptor.Panel<WizardDescriptor>> panels = new ArrayList<>();
+        panels.add(new AddMessageWizardPanel1());
         String[] steps = new String[panels.size()];
         for (int i = 0; i < panels.size(); i++) {
             Component c = panels.get(i).getComponent();
@@ -72,19 +69,46 @@ public class PcnbReportingPanel extends JPanel implements ActionListener {
                 jc.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, true);
             }
         }
-        WizardDescriptor wiz = new WizardDescriptor(new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
+        WizardDescriptor wiz = new WizardDescriptor(new WizardDescriptor.ArrayIterator<>(panels));
         // {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
         wiz.setTitleFormat(new MessageFormat("{0}"));
-        wiz.setTitle("Add Reporter");
+        wiz.setTitle("Add Message");
         if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-            String text = (String) wiz.getProperty("reporter-type");
-            JButton newButton = new JButton(text);
+            String text = (String) wiz.getProperty("message-type");
+            
+            JButton newButton = new JButton("Message");
             newButton.setMinimumSize(new Dimension(120, 45));
             newButton.setPreferredSize(new Dimension(120, 45));
             this.add(newButton);
 
             this.revalidate();
             this.repaint();
+        }
+    }
+    
+    private final class MessageTransferHandler extends TransferHandler {
+
+        @Override
+        public boolean canImport(TransferSupport support) {
+            return support.isDataFlavorSupported(MessageModel.DATA_FLAVOR);
+        }
+
+        @Override
+        public boolean importData(TransferSupport support) {
+            try {
+                MessageModel model = (MessageModel) support.getTransferable().getTransferData(MessageModel.DATA_FLAVOR);
+                
+                JButton newButton = new JButton(model.getName());
+                newButton.setMinimumSize(new Dimension(120, 45));
+                newButton.setPreferredSize(new Dimension(120, 45));
+                MessagesView.this.add(newButton);
+
+                MessagesView.this.revalidate();
+                MessagesView.this.repaint();
+                return true;
+            } catch(Exception ex) {
+                return false;
+            }
         }
     }
 }

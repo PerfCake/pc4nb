@@ -19,6 +19,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
@@ -26,9 +28,10 @@ import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import org.openide.util.Exceptions;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.reflect.ComponentScanner;
 import org.perfcake.reporting.reporters.Reporter;
@@ -54,19 +57,19 @@ public final class AddReporterVisualPanel1 extends JPanel {
     }
 
     public JScrollPane getjScrollPane1() {
-        return propertiesListScrollPane;
+        return propertiesTableScrollPane;
     }
 
     public JLabel getPropertiesLabel() {
         return propertiesLabel;
     }
 
-    public JList getPropertiesList() {
-        return propertiesList;
+    public JTable getPropertiesTable() {
+        return propertiesTable;
     }
 
     public JScrollPane getPropertiesListScrollPane() {
-        return propertiesListScrollPane;
+        return propertiesTableScrollPane;
     }
 
     public JLabel getReporterTypeLabel() {
@@ -74,38 +77,31 @@ public final class AddReporterVisualPanel1 extends JPanel {
     }
 
     public void addProperty(String name, String value) {
-        propertiesListModel.insertElementAt(name + " : " + value, propertiesListModel.getSize());
+        propertiesTableModel.addRow(new Object[]{name, value});
     }
 
     private void listProperties() throws ClassNotFoundException, NoSuchFieldException {
+
         String selectedReporterName = (String) reporterSelection.getSelectedItem();
         String selectedReporterFullName = "org.perfcake.reporting.reporters." + selectedReporterName;
         Class selectedReporterClass = Class.forName(selectedReporterFullName);
-        
+
         ComponentPropertiesScanner propertyScanner = new ComponentPropertiesScanner();
         Set<String> properties = propertyScanner.getPropertiesOfComponent(selectedReporterClass);
-        
-        Class superClass = selectedReporterClass.getSuperclass();
-        while (org.perfcake.reporting.reporters.Reporter.class.isAssignableFrom(superClass)) {
-            properties.addAll(propertyScanner.getPropertiesOfComponent(superClass));
-            superClass = superClass.getSuperclass();
-        }
-        
-        /*Class[] interfaces = selectedReporterClass.getInterfaces();
-        
-        for (Class interfce : interfaces) {
-            Class[] moreInterfaces;
-            
-            while(org.perfcake.reporting.reporters.Reporter.class.isAssignableFrom(interfce)) {
-                properties.addAll(propertyScanner.getPropertiesOfComponent(interfce));
-                moreInterfaces = interfce.getInterfaces();
-            }
-        }*/
 
-        propertiesListModel.clear();
-        
-        for (String property : properties)
-            propertiesListModel.addElement(property);
+        for (int row = 0; row < propertiesTableModel.getRowCount(); row++) {
+            propertiesTableModel.removeRow(row);
+        }
+        try {
+            Object object = selectedReporterClass.getConstructor().newInstance();
+
+            for (String property : properties) {
+
+                addProperty(property, "");
+            }
+        } catch (NoSuchMethodException | SecurityException | IllegalArgumentException | IllegalAccessException | InstantiationException | InvocationTargetException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     /**
@@ -119,8 +115,8 @@ public final class AddReporterVisualPanel1 extends JPanel {
         reporterSelection = new javax.swing.JComboBox();
         reporterTypeLabel = new javax.swing.JLabel();
         propertiesLabel = new javax.swing.JLabel();
-        propertiesListScrollPane = new javax.swing.JScrollPane();
-        propertiesList = new javax.swing.JList();
+        propertiesTableScrollPane = new javax.swing.JScrollPane();
+        propertiesTable = new javax.swing.JTable();
         destinationsLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         destinationsList = new javax.swing.JList();
@@ -156,11 +152,15 @@ public final class AddReporterVisualPanel1 extends JPanel {
 
         org.openide.awt.Mnemonics.setLocalizedText(propertiesLabel, org.openide.util.NbBundle.getMessage(AddReporterVisualPanel1.class, "AddReporterVisualPanel1.propertiesLabel.text")); // NOI18N
 
-        propertiesListModel = new DefaultListModel();
-        propertiesList.setModel(propertiesListModel);
-        propertiesList.setLayoutOrientation(javax.swing.JList.HORIZONTAL_WRAP);
-        propertiesList.setVisibleRowCount(30000);
-        propertiesListScrollPane.setViewportView(propertiesList);
+        propertiesTableModel = new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+            },
+            new String [] {
+                "Property Name", "Value"
+            }
+        );
+        propertiesTable.setModel(propertiesTableModel);
+        propertiesTableScrollPane.setViewportView(propertiesTable);
 
         org.openide.awt.Mnemonics.setLocalizedText(destinationsLabel, org.openide.util.NbBundle.getMessage(AddReporterVisualPanel1.class, "AddReporterVisualPanel1.destinationsLabel.text")); // NOI18N
 
@@ -200,10 +200,10 @@ public final class AddReporterVisualPanel1 extends JPanel {
                             .addComponent(editDestinationButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(destinationsLabel)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(propertiesListScrollPane)
+                        .addComponent(propertiesTableScrollPane)
                         .addComponent(propertiesLabel)
                         .addComponent(reporterTypeLabel)
-                        .addComponent(reporterSelection, 0, 368, Short.MAX_VALUE)))
+                        .addComponent(reporterSelection, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -216,7 +216,7 @@ public final class AddReporterVisualPanel1 extends JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(propertiesLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(propertiesListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(propertiesTableScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(destinationsLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -257,9 +257,9 @@ public final class AddReporterVisualPanel1 extends JPanel {
     private javax.swing.JButton editDestinationButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel propertiesLabel;
-    private javax.swing.JList propertiesList;
-    private javax.swing.DefaultListModel propertiesListModel;
-    private javax.swing.JScrollPane propertiesListScrollPane;
+    private javax.swing.JTable propertiesTable;
+    private javax.swing.table.DefaultTableModel propertiesTableModel;
+    private javax.swing.JScrollPane propertiesTableScrollPane;
     private javax.swing.JComboBox reporterSelection;
     private javax.swing.JLabel reporterTypeLabel;
     // End of variables declaration//GEN-END:variables

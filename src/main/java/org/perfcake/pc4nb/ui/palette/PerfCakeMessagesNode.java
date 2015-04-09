@@ -15,27 +15,17 @@
  */
 package org.perfcake.pc4nb.ui.palette;
 
-import org.openide.nodes.Children;
-import org.openide.nodes.Node;
+import org.openide.nodes.AbstractNode;
 
 /**
  *
  * @author Andrej Halaj
  */
-public class PerfCakeComponentCategoryNodeContainer extends Children.Keys<String> {
-    
-    @Override
-    protected void addNotify() {
-        setKeys(new String[] {"root"});
-    }
+public class PerfCakeMessagesNode extends AbstractNode {
 
-    @Override
-    protected Node[] createNodes(String t) {
-        return (new Node[] {
-            new PerfCakeReportingNode(),
-            new PerfCakeValidationNode(),
-            new PerfCakeMessagesNode(),
-            new PerfCakeDestionationsNode()
-        });
+    public PerfCakeMessagesNode() {
+        super(new PerfCakeComponentNodeContainer("Messages"));
+        this.setDisplayName("Messages");
     }
+    
 }

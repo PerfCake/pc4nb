@@ -15,32 +15,81 @@
  */
 package org.perfcake.pc4nb.ui.palette;
 
+import java.util.Set;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
+import org.perfcake.message.Message;
+import org.perfcake.pc4nb.core.model.MessageModel;
+import org.perfcake.pc4nb.core.model.ReporterModel;
+import org.perfcake.pc4nb.core.model.ValidatorModel;
+import org.perfcake.pc4nb.reflect.ComponentScanner;
+import org.perfcake.reporting.destinations.Destination;
+import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.validation.MessageValidator;
 
 /**
  *
  * @author Andrej Halaj
  */
 class PerfCakeComponentNodeContainer extends Children.Keys<String> {
+
     private String category = new String();
-    
+
     public PerfCakeComponentNodeContainer(String category) {
         this.category = category;
     }
-    
+
     @Override
     protected void addNotify() {
-        setKeys(new String[] {category});
+        setKeys(new String[]{category});
     }
 
     @Override
     protected Node[] createNodes(String category) {
-        return(new Node[] {
-            new PerfCakeComponentNode("MemoryUsageReporter"),
-            new PerfCakeComponentNode("SomethingSomethingReporter"),
-            new PerfCakeComponentNode("AnotherReporter")
-        });
+        Node[] components;
+        ComponentScanner scanner = new ComponentScanner();
+
+        if (category.equalsIgnoreCase("Reporting")) {
+            Set<Class<? extends Reporter>> subTypes = scanner.findComponentsOfType(Reporter.class, "org.perfcake.reporting.reporters");
+            components = new Node[subTypes.size()];
+            int i = 0;
+            for (Class<? extends Reporter> subType : subTypes) {
+                ReporterModel newModel = new ReporterModel(subType.getSimpleName());
+                components[i] = new PerfCakeReporterNode(newModel);
+                i++;
+            }
+        } else if (category.equalsIgnoreCase("Validation")) {
+            Set<Class<? extends MessageValidator>> subTypes = scanner.findComponentsOfType(MessageValidator.class, "org.perfcake.validation");
+            components = new Node[subTypes.size()];
+            int i = 0;
+            for (Class<? extends MessageValidator> subType : subTypes) {
+                ValidatorModel newModel = new ValidatorModel(subType.getSimpleName());
+                components[i] = new PerfCakeValidatorNode(newModel);
+                i++;
+            }
+        } else if (category.equalsIgnoreCase("Messages")) {
+            Set<Class<? extends Message>> subTypes = scanner.findComponentsOfType(Message.class, "org.perfcake.message");
+            components = new Node[subTypes.size()];
+            int i = 0;
+            for (Class<? extends Message> subType : subTypes) {
+                MessageModel newModel = new MessageModel(subType.getSimpleName());
+                components[i] = new PerfCakeMessageNode(newModel);
+                i++;
+            }
+        } else if (category.equalsIgnoreCase("Destinations")) {
+            Set<Class<? extends Destination>> subTypes = scanner.findComponentsOfType(Destination.class, "org.perfcake.reporting.destinations");
+            components = new Node[subTypes.size()];
+            int i = 0;
+            for (Class<? extends Destination> subType : subTypes) {
+                components[i] = new PerfCakeComponentNode(subType.getSimpleName());
+                i++;
+            }
+        } else {
+            components = new Node[] {};
+            // TODO: throw exception and log
+        }
+
+        return components;
     }
-    
+
 }

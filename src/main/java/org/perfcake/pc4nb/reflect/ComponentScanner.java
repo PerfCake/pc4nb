@@ -37,6 +37,10 @@ public class ComponentScanner {
                 classes.add(componentClass);
             }
         }
+        
+         if (!Modifier.isAbstract(componentType.getModifiers())) {
+             classes.add(componentType);
+         }
 
         return classes;
     }

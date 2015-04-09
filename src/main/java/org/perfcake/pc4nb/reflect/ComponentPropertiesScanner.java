@@ -15,8 +15,8 @@
  */
 package org.perfcake.pc4nb.reflect;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,36 +26,44 @@ import java.util.Set;
  * @author Andrej Halaj
  */
 public class ComponentPropertiesScanner {
-    
+
     public <T> ComponentPropertiesScanner() {
     }
-    
+
     public <T> Set<String> getPropertiesOfComponent(Class<T> component) throws NoSuchFieldException {
         Set<String> properties = getFieldNamesForComponent(component);
-        
+
         return properties;
     }
 
-    private <T> Set<String> getFieldNamesForComponent(Class<T> component) {
+    private <T> Set<String> getFieldNamesForComponent(Class<T> component) throws NoSuchFieldException {
         Method[] allComponentMethods = component.getDeclaredMethods();
         Set<Method> allComponentMethodsSet = new HashSet<>(Arrays.asList(allComponentMethods));
         Set<String> componentFieldNames = new HashSet<>();
-        
+
         for (Method componentMethod : allComponentMethodsSet) {
             String componentMethodName = componentMethod.getName();
             String fieldName;
-            
-            if (componentMethodName.startsWith("get")) {
-                fieldName = componentMethodName.substring(3);
-            } else if (componentMethodName.startsWith("is")) {
-                fieldName = componentMethodName.substring(2);
-            } else {
-                continue;
+
+            if (Modifier.isPublic(componentMethod.getModifiers())) {
+                if (componentMethodName.startsWith("get")) {
+                    fieldName = componentMethodName.substring(3); 
+                } else if (componentMethodName.startsWith("is")) {
+                    fieldName = componentMethodName.substring(2);
+                } else {
+                    continue;
+                }
+                fieldName = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
+                componentFieldNames.add(fieldName);
             }
-            
-            componentFieldNames.add(fieldName); 
         }
-        
+
+        Class superClass = component.getSuperclass();
+        while (org.perfcake.reporting.reporters.Reporter.class.isAssignableFrom(superClass)) {
+            componentFieldNames.addAll(getPropertiesOfComponent(superClass));
+            superClass = superClass.getSuperclass();
+        }
+
         return componentFieldNames;
     }
 }

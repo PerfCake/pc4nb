@@ -7,13 +7,14 @@ package org.perfcake.pc4nb.scenario;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
+import java.awt.FlowLayout;
 import java.io.IOException;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import net.miginfocom.swing.MigLayout;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
@@ -28,16 +29,17 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
-import org.perfcake.pc4nb.ui.PcnbContentPanel;
-import org.perfcake.pc4nb.ui.PcnbReportingPanel;
-import org.perfcake.pc4nb.ui.PcnbValidationPanel;
+import org.perfcake.pc4nb.ui.ContentView;
+import org.perfcake.pc4nb.ui.MessagesView;
+import org.perfcake.pc4nb.ui.ReportingView;
+import org.perfcake.pc4nb.ui.ValidationView;
 import org.perfcake.pc4nb.ui.palette.PerfCakeComponentCategoryNodeContainer;
 
 @MultiViewElement.Registration(
         displayName = "#LBL_PCScenario_VISUAL",
         iconBase = "org/perfcake/pc4nb/favicon.png",
         mimeType = "text/myformat+xml",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS,
+        persistenceType = TopComponent.PERSISTENCE_NEVER,
         preferredID = "PCScenarioVisual",
         position = 2000
 )
@@ -46,14 +48,15 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
 
     private PCScenarioDataObject obj;
     private JToolBar toolbar = new JToolBar();
-    private transient MultiViewElementCallback callback;
+    private MultiViewElementCallback callback;
     private PaletteController controller = null;
+    JScrollPane scrollPane = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
     public PCScenarioVisualElement(Lookup lkp) throws IOException {
         obj = lkp.lookup(PCScenarioDataObject.class);
         assert obj != null;
         initComponents();
-        
+
         initPalette();
         initUI();
 
@@ -71,18 +74,75 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
         setMaximumSize(new java.awt.Dimension(32500, 3250));
         setName(""); // NOI18N
-        setLayout(new java.awt.GridBagLayout());
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+        private void initPalette() {
+        Node palette = new AbstractNode(new PerfCakeComponentCategoryNodeContainer());
+        PaletteActions actions = new PaletteActions() {
+            @Override
+            public Action[] getImportActions() {
+                return null;
+            }
+
+            @Override
+            public Action[] getCustomPaletteActions() {
+                return null;
+            }
+
+            @Override
+            public Action[] getCustomCategoryActions(Lookup lkp) {
+                return null;
+            }
+
+            @Override
+            public Action[] getCustomItemActions(Lookup lkp) {
+                return null;
+            }
+
+            @Override
+            public Action getPreferredAction(Lookup lkp) {
+                return null;
+            }
+        };
+        controller = PaletteFactory.createPalette(palette, actions);
+    }
+
+    private void initUI() {
+        JPanel contentPane = new JPanel();
+        this.setLayout(new FlowLayout(FlowLayout.LEFT));
+        
+        MigLayout layout = new MigLayout("fillx", "[center]20[center]", "[center]20[center]20[center]");
+        contentPane.setLayout(layout);
+        contentPane.setBackground(Color.gray);
+        /*contentPane.setPreferredSize(new Dimension(640, 480));
+         contentPane.setMinimumSize(new Dimension(640, 480));*/
+
+        ContentView generatorPanel = new ContentView("Generator");
+        ContentView senderPanel = new ContentView("Sender");
+        ContentView messagesPanel = new MessagesView();
+        ContentView reportingPanel = new ReportingView();
+        ContentView validationPanel = new ValidationView();
+        ContentView propertiesPanel = new ContentView("Properties");
+
+        contentPane.add(generatorPanel, "span 2, wrap, growx 150");
+        contentPane.add(senderPanel, " span 2, wrap, growx 150");
+        contentPane.add(messagesPanel, "growx 150");
+        contentPane.add(reportingPanel, "span 1 2, wrap, growy 200");
+        contentPane.add(validationPanel, "wrap, growx 150");
+        contentPane.add(propertiesPanel, "span 2, growx 150");
+        
+        this.add(contentPane);
+        scrollPane.setViewportView(contentPane);
+    }
+
     @Override
     public JComponent getVisualRepresentation() {
-        return this;
+        return scrollPane;
     }
 
     @Override
@@ -131,7 +191,7 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
 
     @Override
     public Dimension getMinimumSize() {
-        return new Dimension(1280, 800);
+        return new Dimension(200, 100);
     }
 
     @Override
@@ -147,58 +207,5 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
     @Override
     public CloseOperationState canCloseElement() {
         return CloseOperationState.STATE_OK;
-    }
-    
-    private void initPalette() {
-        Node palette = new AbstractNode(new PerfCakeComponentCategoryNodeContainer());
-        PaletteActions actions = new PaletteActions() {
-                    @Override public Action[] getImportActions() {return null;}
-                    @Override public Action[] getCustomPaletteActions() {return null;}
-                    @Override public Action[] getCustomCategoryActions(Lookup lkp) {return null;}
-                    @Override public Action[] getCustomItemActions(Lookup lkp) {return null;}
-                    @Override public Action getPreferredAction(Lookup lkp) {return null;}
-                };
-        controller = PaletteFactory.createPalette(palette, actions);
-    }
-
-    private void initUI() {
-        GridBagConstraints layoutConstraints = new GridBagConstraints();
-        this.setBackground(Color.gray);
-        this.setPreferredSize(new Dimension(640, 480));
-        this.setMinimumSize(new Dimension(640, 480));
-
-        PcnbContentPanel generatorPanel = new PcnbContentPanel("Generator");
-        PcnbContentPanel senderPanel = new PcnbContentPanel("Sender");
-        PcnbContentPanel messagesPanel = new PcnbContentPanel("Messages");
-        PcnbReportingPanel reportingPanel = new PcnbReportingPanel();
-        PcnbValidationPanel validationPanel = new PcnbValidationPanel();
-        PcnbContentPanel propertiesPanel = new PcnbContentPanel("Properties");
-
-        layoutConstraints.gridx = 0;
-        layoutConstraints.gridy = 0;
-        layoutConstraints.weightx = 0.5;
-        layoutConstraints.weighty = 0.5;
-        layoutConstraints.insets = new Insets(20, 20, 20, 20);
-        this.add(generatorPanel, layoutConstraints);
-
-        layoutConstraints.gridx = 1;
-        layoutConstraints.gridy = 0;
-        this.add(senderPanel, layoutConstraints);
-
-        layoutConstraints.gridx = 0;
-        layoutConstraints.gridy = 1;
-        this.add(messagesPanel, layoutConstraints);
-
-        layoutConstraints.gridx = 1;
-        layoutConstraints.gridy = 1;
-        this.add(reportingPanel, layoutConstraints);
-
-        layoutConstraints.gridx = 0;
-        layoutConstraints.gridy = 2;
-        this.add(validationPanel, layoutConstraints);
-
-        layoutConstraints.gridx = 1;
-        layoutConstraints.gridy = 2;
-        this.add(propertiesPanel, layoutConstraints);
     }
 }

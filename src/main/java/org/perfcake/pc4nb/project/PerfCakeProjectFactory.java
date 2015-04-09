@@ -17,7 +17,7 @@ public class PerfCakeProjectFactory implements ProjectFactory {
     //if "customer.txt" is present in a folder:
     @Override
     public boolean isProject(FileObject projectDirectory) {
-    return projectDirectory.getFileObject(SCENARIOS_DIR) != null && projectDirectory.getFileObject(MESSAGES_DIR) != null;
+        return projectDirectory.getFileObject(SCENARIOS_DIR) != null && projectDirectory.getFileObject(MESSAGES_DIR) != null;
     }
 
     //Specifies when the project will be opened, i.e., if the project exists:
