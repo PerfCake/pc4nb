@@ -26,6 +26,7 @@ import org.perfcake.pc4nb.reflect.ComponentScanner;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.validation.MessageValidator;
+import org.perfcake.model.*;
 
 /**
  *
@@ -54,7 +55,9 @@ class PerfCakeComponentNodeContainer extends Children.Keys<String> {
             components = new Node[subTypes.size()];
             int i = 0;
             for (Class<? extends Reporter> subType : subTypes) {
-                ReporterModel newModel = new ReporterModel(subType.getSimpleName());
+                Scenario.Reporting.Reporter reporter = new Scenario.Reporting.Reporter();
+                reporter.setClazz(subType.getSimpleName());
+                ReporterModel newModel = new ReporterModel(reporter);
                 components[i] = new PerfCakeReporterNode(newModel);
                 i++;
             }
@@ -63,7 +66,8 @@ class PerfCakeComponentNodeContainer extends Children.Keys<String> {
             components = new Node[subTypes.size()];
             int i = 0;
             for (Class<? extends MessageValidator> subType : subTypes) {
-                ValidatorModel newModel = new ValidatorModel(subType.getSimpleName());
+                Scenario.Validation.Validator validator = new Scenario.Validation.Validator();
+                ValidatorModel newModel = new ValidatorModel(validator);
                 components[i] = new PerfCakeValidatorNode(newModel);
                 i++;
             }
@@ -72,7 +76,8 @@ class PerfCakeComponentNodeContainer extends Children.Keys<String> {
             components = new Node[subTypes.size()];
             int i = 0;
             for (Class<? extends Message> subType : subTypes) {
-                MessageModel newModel = new MessageModel(subType.getSimpleName());
+                Scenario.Messages.Message message = new Scenario.Messages.Message();
+                MessageModel newModel = new MessageModel(message);
                 components[i] = new PerfCakeMessageNode(newModel);
                 i++;
             }

@@ -15,29 +15,23 @@
  */
 package org.perfcake.pc4nb.ui;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.JButton;
-import javax.swing.JComponent;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.beans.PropertyChangeEvent;
+import java.io.IOException;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
-import org.openide.DialogDisplayer;
-import org.openide.WizardDescriptor;
+import org.perfcake.model.Scenario;
+import org.perfcake.pc4nb.core.model.ModelMap;
 import org.perfcake.pc4nb.core.model.ReporterModel;
-import static org.perfcake.pc4nb.ui.LayoutSizeConstants.*;
-import org.perfcake.pc4nb.wizards.AddReporterWizardPanel1;
+import org.perfcake.pc4nb.core.model.ReportingModel;
+import org.perfcake.pc4nb.ui.actions.AddReporterAction;
 
 /**
  *
  * @author Andrej Halaj
  */
-public class ReportingView extends ContentView implements ActionListener {
+public class ReportingView extends TopLevelView {
 
     private JMenuItem addComponent = new JMenuItem("Add new reporter");
     private JPopupMenu menu = new JPopupMenu();
@@ -45,65 +39,41 @@ public class ReportingView extends ContentView implements ActionListener {
 
     public ReportingView() {
         super("Reporting");
-        addComponent.addActionListener(this);
         menu.add(addComponent);
+        addComponent.addActionListener(new AddReporterAction(this));
         this.setComponentPopupMenu(menu);
-        this.setTransferHandler(transferHandler);
+        setTransferHandler(transferHandler);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        List<WizardDescriptor.Panel<WizardDescriptor>> panels = new ArrayList<>();
-        panels.add(new AddReporterWizardPanel1());
-        String[] steps = new String[panels.size()];
-        for (int i = 0; i < panels.size(); i++) {
-            Component c = panels.get(i).getComponent();
-            // Default step name to component name of panel.
-            steps[i] = c.getName();
-            if (c instanceof JComponent) { // assume Swing components
-                JComponent jc = (JComponent) c;
-                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
-                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DATA, steps);
-                jc.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, true);
-            }
-        }
-        WizardDescriptor wiz = new WizardDescriptor(new WizardDescriptor.ArrayIterator<>(panels));
-        // {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
-        wiz.setTitleFormat(new MessageFormat("{0}"));
-        wiz.setTitle("Add Reporter");
-        if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-            String text = (String) wiz.getProperty("reporter-type");
-            JButton newButton = new JButton(text);
-            newButton.setMinimumSize(new Dimension(120, 45));
-            newButton.setPreferredSize(new Dimension(120, 45));
-            this.add(newButton);
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getSource() instanceof ReportingModel) {
+            ReportingModel model = (ReportingModel) evt.getSource();
 
-            this.revalidate();
-            this.repaint();
+            this.removeAll();
+
+            for (Scenario.Reporting.Reporter reporter : model.getReporting().getReporter()) {
+                this.add(new SecondLevelView(reporter.getClazz()));
+            }
         }
     }
 
     private final class ReporterTansferHandler extends TransferHandler {
 
         @Override
-        public boolean canImport(TransferSupport support) {
+        public boolean canImport(TransferHandler.TransferSupport support) {
             return support.isDataFlavorSupported(ReporterModel.DATA_FLAVOR);
         }
 
         @Override
-        public boolean importData(TransferSupport support) {
+        public boolean importData(TransferHandler.TransferSupport support) {
             try {
                 ReporterModel model = (ReporterModel) support.getTransferable().getTransferData(ReporterModel.DATA_FLAVOR);
+                ((ReportingModel) getModel()).addReporter(model.getReporter());
+                ModelMap.getDefault().addEntry(model.getReporter(), model);
 
-                JButton newButton = new JButton(model.getName());
-                newButton.setMinimumSize(new Dimension(120, 45));
-                newButton.setPreferredSize(new Dimension(120, 45));
-                ReportingView.this.add(newButton);
-
-                ReportingView.this.revalidate();
-                ReportingView.this.repaint();
                 return true;
-            } catch (Exception ex) {
+            } catch (UnsupportedFlavorException | IOException ex) {
                 return false;
             }
         }

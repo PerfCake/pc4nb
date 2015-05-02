@@ -15,11 +15,21 @@
  */
 package org.perfcake.pc4nb.reflect;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
+import org.openide.util.Exceptions;
+import org.perfcake.message.Message;
+import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.destinations.Destination;
+import org.perfcake.message.sender.MessageSender;
+import org.perfcake.validation.MessageValidator;
+import org.perfcake.message.generator.AbstractMessageGenerator;
 
 /**
  *
@@ -27,43 +37,126 @@ import java.util.Set;
  */
 public class ComponentPropertiesScanner {
 
-    public <T> ComponentPropertiesScanner() {
+    Set<Method> allComponentMethods;
+    Set<String> allComponentFieldNames;
+    Object componentObject;
+    Class baseClass = null;
+
+    public Properties getPropertiesOfComponent(Class component) {
+        baseClass = getBaseClass(component);
+        allComponentMethods = getAllMethodsOfComponent(component);
+        allComponentFieldNames = getAllFieldNamesOfComponent(component);
+        componentObject = null;
+
+        try {
+            componentObject = component.newInstance();
+        } catch (InstantiationException | IllegalAccessException ex) {
+            Exceptions.printStackTrace(ex);
+            // log
+        }
+
+        Properties properties = getDefaultValuesOfFields();
+
+        return properties;
+    }
+    
+    private Class getBaseClass(Class component) {
+        Class baseClass;
+        
+        if (Reporter.class.isAssignableFrom(component)) {
+            baseClass = Reporter.class;
+        } else if (MessageValidator.class.isAssignableFrom(component)) {
+            baseClass = MessageValidator.class;
+        } else if (AbstractMessageGenerator.class.isAssignableFrom(component)) {
+            baseClass = AbstractMessageGenerator.class;
+        } else if (MessageSender.class.isAssignableFrom(component)) {
+            baseClass = MessageSender.class;
+        } else if (Destination.class.isAssignableFrom(component)) {
+            baseClass = Destination.class;
+        } else if (Message.class.isAssignableFrom(component)) {
+            baseClass = Message.class;
+        } else {
+            baseClass = null;
+            // throw exception, log
+        }
+        
+        return baseClass;
     }
 
-    public <T> Set<String> getPropertiesOfComponent(Class<T> component) throws NoSuchFieldException {
-        Set<String> properties = getFieldNamesForComponent(component);
+    private Set<Method> getAllMethodsOfComponent(Class component) {
+        Set<Method> allMethodsOfComponent = new HashSet<>(Arrays.asList(component.getDeclaredMethods()));
+
+        Class superClass = component.getSuperclass();
+
+        while (baseClass.isAssignableFrom(superClass)) {
+            allMethodsOfComponent.addAll(getAllMethodsOfComponent(superClass));
+            superClass = superClass.getSuperclass();
+        }
+
+        return allMethodsOfComponent;
+    }
+
+    private Set<String> getAllFieldNamesOfComponent(Class component) {
+        Set<String> componentFieldNames = new HashSet<>();
+
+        for (Field componentField : getAllFieldsOfComponent(component)) {
+            componentFieldNames.add(componentField.getName());
+        }
+
+        return componentFieldNames;
+    }
+
+    private Properties getDefaultValuesOfFields() {
+        Properties properties = new Properties();
+
+        for (Method componentMethod : allComponentMethods) {
+            String componentMethodName = componentMethod.getName();
+            String fieldName;
+
+            if (isFieldGetter(componentMethod)) { // kuknut sa na to s tym array
+                if (componentMethodName.startsWith("get")) {
+                    fieldName = Character.toLowerCase(componentMethodName.charAt(3)) + componentMethodName.substring(4);
+                } else if (componentMethodName.startsWith("is")) {
+                    fieldName = Character.toLowerCase(componentMethodName.charAt(2)) + componentMethodName.substring(3);
+                } else {
+                    continue;
+                }
+
+                if (allComponentFieldNames.contains(fieldName)) {
+                    try {
+                        properties.setProperty(fieldName, String.valueOf(componentMethod.invoke(componentObject)));
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+            }
+        }
 
         return properties;
     }
 
-    private <T> Set<String> getFieldNamesForComponent(Class<T> component) throws NoSuchFieldException {
-        Method[] allComponentMethods = component.getDeclaredMethods();
-        Set<Method> allComponentMethodsSet = new HashSet<>(Arrays.asList(allComponentMethods));
-        Set<String> componentFieldNames = new HashSet<>();
-
-        for (Method componentMethod : allComponentMethodsSet) {
-            String componentMethodName = componentMethod.getName();
-            String fieldName;
-
-            if (Modifier.isPublic(componentMethod.getModifiers())) {
-                if (componentMethodName.startsWith("get")) {
-                    fieldName = componentMethodName.substring(3); 
-                } else if (componentMethodName.startsWith("is")) {
-                    fieldName = componentMethodName.substring(2);
-                } else {
-                    continue;
-                }
-                fieldName = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
-                componentFieldNames.add(fieldName);
-            }
-        }
+    private Set<Field> getAllFieldsOfComponent(Class component) {
+        Set<Field> componentFields = new HashSet<>(Arrays.asList(component.getDeclaredFields()));
 
         Class superClass = component.getSuperclass();
-        while (org.perfcake.reporting.reporters.Reporter.class.isAssignableFrom(superClass)) {
-            componentFieldNames.addAll(getPropertiesOfComponent(superClass));
+        while (baseClass.isAssignableFrom(superClass)) {
+            componentFields.addAll(getAllFieldsOfComponent(superClass));
             superClass = superClass.getSuperclass();
         }
 
-        return componentFieldNames;
+        return componentFields;
+    }
+    
+    private boolean isFieldGetter(Method componentMethod) {
+        return isPublic(componentMethod) && takesNoParameters(componentMethod)
+                && !componentMethod.getReturnType().isArray() && !componentMethod.getReturnType().equals(Properties.class);
+    }
+    
+    private boolean isPublic(Method componentMethod) {
+        return Modifier.isPublic(componentMethod.getModifiers());
+    }
+    
+    private static boolean takesNoParameters(Method componentMethod) {
+        return componentMethod.getParameterTypes().length == 0;
     }
 }

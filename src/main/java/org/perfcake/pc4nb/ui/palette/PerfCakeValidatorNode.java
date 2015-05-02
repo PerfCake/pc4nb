@@ -31,7 +31,7 @@ public class PerfCakeValidatorNode extends AbstractNode {
     public PerfCakeValidatorNode(ValidatorModel model) {
         super(Children.LEAF);
         this.model = model;
-        this.setDisplayName(model.getName());
+        this.setDisplayName(model.getValidator().getClazz());
     }
     
     @Override

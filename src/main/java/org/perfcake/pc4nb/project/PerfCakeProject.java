@@ -44,15 +44,13 @@ public class PerfCakeProject implements Project {
     public Lookup getLookup() {
         if (lkp == null) {
             lkp = Lookups.fixed(new Object[]{
-            
                 new Info(),
                 new PerfCakeProjectLogicalView(this),
-            
             });
         }
         return lkp;
     }
-    
+
     private final class Info implements ProjectInformation {
 
         @StaticResource()
@@ -89,7 +87,7 @@ public class PerfCakeProject implements Project {
         }
 
     }
-    
+
     class PerfCakeProjectLogicalView implements LogicalViewProvider {
 
         @StaticResource()
@@ -122,26 +120,26 @@ public class PerfCakeProject implements Project {
 
             final PerfCakeProject project;
 
-            public ProjectNode(Node node, PerfCakeProject project) 
-                throws DataObjectNotFoundException {
+            public ProjectNode(Node node, PerfCakeProject project)
+                    throws DataObjectNotFoundException {
                 super(node,
                         new FilterNode.Children(node),
                         new ProxyLookup(
-                        new Lookup[]{
-                            Lookups.singleton(project),
-                            node.getLookup()
-                        }));
+                                new Lookup[]{
+                                    Lookups.singleton(project),
+                                    node.getLookup()
+                                }));
                 this.project = project;
             }
 
             @Override
             public Action[] getActions(boolean arg0) {
                 return new Action[]{
-                            CommonProjectActions.newFileAction(),
-                            CommonProjectActions.copyProjectAction(),
-                            CommonProjectActions.deleteProjectAction(),
-                            CommonProjectActions.closeProjectAction()
-                        };
+                    CommonProjectActions.newFileAction(),
+                    CommonProjectActions.copyProjectAction(),
+                    CommonProjectActions.deleteProjectAction(),
+                    CommonProjectActions.closeProjectAction()
+                };
             }
 
             @Override

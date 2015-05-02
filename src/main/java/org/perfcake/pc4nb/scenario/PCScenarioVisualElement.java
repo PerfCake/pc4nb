@@ -29,16 +29,16 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
-import org.perfcake.pc4nb.ui.ContentView;
-import org.perfcake.pc4nb.ui.MessagesView;
-import org.perfcake.pc4nb.ui.ReportingView;
-import org.perfcake.pc4nb.ui.ValidationView;
+import org.perfcake.model.Scenario.*;
+import org.perfcake.pc4nb.core.controller.*;
+import org.perfcake.pc4nb.core.model.*;
+import org.perfcake.pc4nb.ui.*;
 import org.perfcake.pc4nb.ui.palette.PerfCakeComponentCategoryNodeContainer;
 
 @MultiViewElement.Registration(
         displayName = "#LBL_PCScenario_VISUAL",
         iconBase = "org/perfcake/pc4nb/favicon.png",
-        mimeType = "text/myformat+xml",
+        mimeType = "text/pcscenario+xml",
         persistenceType = TopComponent.PERSISTENCE_NEVER,
         preferredID = "PCScenarioVisual",
         position = 2000
@@ -49,7 +49,7 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
     private PCScenarioDataObject obj;
     private JToolBar toolbar = new JToolBar();
     private MultiViewElementCallback callback;
-    private PaletteController controller = null;
+    private PaletteController paletteController = null;
     JScrollPane scrollPane = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
     public PCScenarioVisualElement(Lookup lkp) throws IOException {
@@ -109,7 +109,7 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
                 return null;
             }
         };
-        controller = PaletteFactory.createPalette(palette, actions);
+        paletteController = PaletteFactory.createPalette(palette, actions);
     }
 
     private void initUI() {
@@ -122,18 +122,44 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
         /*contentPane.setPreferredSize(new Dimension(640, 480));
          contentPane.setMinimumSize(new Dimension(640, 480));*/
 
-        ContentView generatorPanel = new ContentView("Generator");
-        ContentView senderPanel = new ContentView("Sender");
-        ContentView messagesPanel = new MessagesView();
-        ContentView reportingPanel = new ReportingView();
-        ContentView validationPanel = new ValidationView();
-        ContentView propertiesPanel = new ContentView("Properties");
+        
+        Generator generator = new Generator();
+        generator.setClazz("DefaultMessageGenerator");
+        TopLevelView generatorView = new TopLevelView(generator.getClazz());
+        GeneratorModel generatorModel = new GeneratorModel(generator);
+        GeneratorController generatorController = new GeneratorController(generatorModel, generatorView);
+        generatorView.setController(generatorController);
+        
+        Sender sender = new Sender();
+        sender.setClazz("HttpSender");
+        TopLevelView senderView = new TopLevelView(sender.getClazz());
+        SenderModel senderModel = new SenderModel(sender);
+        SenderController senderController = new SenderController(senderModel, senderView);
+        senderView.setController(senderController);
+        
+        MessagesModel messagesModel = new MessagesModel(new org.perfcake.model.Scenario.Messages());
+        TopLevelView messagesView = new TopLevelView("Messages");
+        MessagesController messagesController = new MessagesController(messagesModel, messagesView);
+        messagesView.setController(messagesController);
+        
+        ReportingModel reportingModel = new ReportingModel(new Reporting());
+        TopLevelView reportingView = new TopLevelView("Reporting");
+        ReportingController reportingController = new ReportingController(reportingModel, reportingView);
+        reportingView.setController(reportingController);
+        
+        ValidationModel validationModel = new ValidationModel(new Validation());
+        TopLevelView validationView = new TopLevelView("Validation");
+        ValidationController validationController = new ValidationController(validationModel, validationView);
+        validationView.setController(validationController);
+        
+        
+        TopLevelView propertiesPanel = new TopLevelView("Properties");
 
-        contentPane.add(generatorPanel, "span 2, wrap, growx 150");
-        contentPane.add(senderPanel, " span 2, wrap, growx 150");
-        contentPane.add(messagesPanel, "growx 150");
-        contentPane.add(reportingPanel, "span 1 2, wrap, growy 200");
-        contentPane.add(validationPanel, "wrap, growx 150");
+        contentPane.add(generatorView, "span 2, wrap, growx 150");
+        contentPane.add(senderView, " span 2, wrap, growx 150");
+        contentPane.add(messagesView, "growx 150");
+        contentPane.add(reportingView, "span 1 2, wrap, growy 200, growx 150");
+        contentPane.add(validationView, "wrap, growx 150");
         contentPane.add(propertiesPanel, "span 2, growx 150");
         
         this.add(contentPane);
@@ -157,7 +183,7 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
 
     @Override
     public Lookup getLookup() {
-        return new ProxyLookup(obj.getLookup(), Lookups.fixed(controller));
+        return new ProxyLookup(obj.getLookup(), Lookups.fixed(paletteController));
     }
 
     @Override

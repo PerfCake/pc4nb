@@ -22,17 +22,12 @@ import java.beans.PropertyChangeSupport;
  *
  * @author Andrej Halaj
  */
-public class PC4NBModel{
+public class PC4NBModel {
 
-    private String name;
     private PropertyChangeSupport listeners;
 
-    public PC4NBModel(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
+    public PC4NBModel() {
+        this.listeners = new PropertyChangeSupport(this);
     }
 
     public PropertyChangeSupport getListeners() {

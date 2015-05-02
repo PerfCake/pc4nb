@@ -31,7 +31,7 @@ public class PerfCakeReporterNode extends AbstractNode {
     public PerfCakeReporterNode(ReporterModel model) {
         super(Children.LEAF);
         this.model = model;
-        this.setDisplayName(model.getName());
+        this.setDisplayName(model.getReporter().getClazz());
     }
     
     @Override

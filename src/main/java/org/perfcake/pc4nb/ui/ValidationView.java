@@ -16,31 +16,31 @@
 package org.perfcake.pc4nb.ui;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
+import org.perfcake.pc4nb.core.model.ValidationModel;
 import org.perfcake.pc4nb.core.model.ValidatorModel;
-import org.perfcake.pc4nb.wizards.AddValidatorWizardPanel1;
+import org.perfcake.pc4nb.wizards.ValidatorWizardPanel;
 
 /**
  *
  * @author Andrej Halaj
  */
-public class ValidationView extends ContentView implements ActionListener {
+public class ValidationView extends TopLevelView implements ActionListener {
+
     private JMenuItem addComponent = new JMenuItem("Add new validator");
     private JPopupMenu menu = new JPopupMenu();
     private TransferHandler transferHandler = new ValidationView.ValidatorTransferHandler();
-    
+
     public ValidationView() {
         super("Validation");
         addComponent.addActionListener(this);
@@ -48,11 +48,23 @@ public class ValidationView extends ContentView implements ActionListener {
         this.setComponentPopupMenu(menu);
         this.setTransferHandler(transferHandler);
     }
-    
-     @Override
+
+    public void refreshView(ValidationModel model) {
+        this.removeAll();
+
+        for (int i = 0; i < model.getValidation().getValidator().size(); i++) {
+            SecondLevelView newValidatorView = new SecondLevelView(model.getValidation().getValidator().get(i).getClazz());
+            this.add(newValidatorView);
+        }
+
+        this.revalidate();
+        this.repaint();
+    }
+
+    @Override
     public void actionPerformed(ActionEvent e) {
         List<WizardDescriptor.Panel<WizardDescriptor>> panels = new ArrayList<>();
-        panels.add(new AddValidatorWizardPanel1());
+        panels.add(new ValidatorWizardPanel());
         String[] steps = new String[panels.size()];
         for (int i = 0; i < panels.size(); i++) {
             Component c = panels.get(i).getComponent();
@@ -71,13 +83,7 @@ public class ValidationView extends ContentView implements ActionListener {
         wiz.setTitle("Add Validator");
         if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
             String text = (String) wiz.getProperty("validator-type");
-            JButton newButton = new JButton(text);
-            newButton.setMinimumSize(new Dimension(120, 45));
-            newButton.setPreferredSize(new Dimension(120, 45));
-            this.add(newButton);
 
-            this.revalidate();
-            this.repaint();
         }
     }
 
@@ -92,16 +98,10 @@ public class ValidationView extends ContentView implements ActionListener {
         public boolean importData(TransferSupport support) {
             try {
                 ValidatorModel model = (ValidatorModel) support.getTransferable().getTransferData(ValidatorModel.DATA_FLAVOR);
-                
-                JButton newButton = new JButton(model.getName());
-                newButton.setMinimumSize(new Dimension(120, 45));
-                newButton.setPreferredSize(new Dimension(120, 45));
-                ValidationView.this.add(newButton);
+                ((ValidationModel) getModel()).addValidator(model.getValidator());
 
-                ValidationView.this.revalidate();
-                ValidationView.this.repaint();
                 return true;
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 return false;
             }
         }

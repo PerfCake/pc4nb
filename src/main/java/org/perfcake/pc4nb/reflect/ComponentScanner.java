@@ -33,12 +33,13 @@ public class ComponentScanner {
         Set<Class<? extends T>> allClasses = reflections.getSubTypesOf(componentType);
 
         for (Class<? extends T> componentClass : allClasses) {
-            if (!Modifier.isAbstract(componentClass.getModifiers())) {
+            int componentClassModifiers = componentClass.getModifiers();
+            if (!Modifier.isAbstract(componentClassModifiers) && !Modifier.isInterface(componentClassModifiers)) {
                 classes.add(componentClass);
             }
         }
         
-         if (!Modifier.isAbstract(componentType.getModifiers())) {
+         if (!Modifier.isAbstract(componentType.getModifiers()) && !Modifier.isInterface(componentType.getModifiers())) {
              classes.add(componentType);
          }
 
