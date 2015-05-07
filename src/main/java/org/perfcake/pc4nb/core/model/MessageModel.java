@@ -59,11 +59,13 @@ public class MessageModel extends PC4NBModel implements Transferable {
     public void addProperty(int index, Property property) {
         getMessage().getProperty().add(index, property);
         getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
+        ModelMap.getDefault().createModelAndAddEntry(property);
     }
 
     public void removeProperty(Property property) {
         if (getMessage().getProperty().remove(property)) {
             getListeners().firePropertyChange(PROPERTY_PROPERTIES, property, null);
+            ModelMap.getDefault().removeEntry(property);
         }
     }
 
@@ -78,11 +80,13 @@ public class MessageModel extends PC4NBModel implements Transferable {
     public void addHeader(int index, Header header) {
         getMessage().getHeader().add(index, header);
         getListeners().firePropertyChange(PROPERTY_HEADERS, null, header);
+        ModelMap.getDefault().createModelAndAddEntry(header);
     }
 
     public void removeHeader(Header header) {
         if (getMessage().getHeader().remove(header)) {
             getListeners().firePropertyChange(PROPERTY_HEADERS, header, null);
+            ModelMap.getDefault().removeEntry(header);
         }
     }
 
@@ -93,11 +97,13 @@ public class MessageModel extends PC4NBModel implements Transferable {
     public void addValidatorRef(int index, ValidatorRef ref) {
         getMessage().getValidatorRef().add(index, ref);
         getListeners().firePropertyChange(PROPERTY_VALIDATOR_REFS, null, ref);
+        ModelMap.getDefault().createModelAndAddEntry(ref);
     }
 
     public void removeValidatorRef(ValidatorRef ref) {
         if (getMessage().getValidatorRef().remove(ref)) {
             getListeners().firePropertyChange(PROPERTY_VALIDATOR_REFS, ref, null);
+            ModelMap.getDefault().removeEntry(ref);
         }
     }
 

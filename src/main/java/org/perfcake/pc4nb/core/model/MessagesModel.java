@@ -16,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.perfcake.pc4nb.core.model;
 
 import org.perfcake.model.Scenario.Messages;
@@ -24,30 +23,55 @@ import org.perfcake.model.Scenario.Messages.Message;
 
 public class MessagesModel extends PC4NBModel {
 
-	public  static final String PROPERTY_MESSAGE = "messages-message";
+    public static final String PROPERTY_MESSAGE = "messages-message";
 
-	private Messages messages;
+    private Messages messages;
 
-	public MessagesModel(Messages messages){
+    public MessagesModel(Messages messages) {
+        this.messages = messages;
+    }
 
-		this.messages = messages;
-	}
-	
-	public Messages getMessages(){
-		return messages;
-	}
-	
-	public void addMessage(Message m){
-		addMessage(getMessages().getMessage().size(), m);
-	}
-	public void addMessage(int index, Message m){
-		getMessages().getMessage().add(index, m);
-		getListeners().firePropertyChange(PROPERTY_MESSAGE, null, m);
-	}
-	
-	public void removeMessage(Message m){
-		if (getMessages().getMessage().remove(m)){
-			getListeners().firePropertyChange(PROPERTY_MESSAGE, m, null);
-		}
-	}
+    public Messages getMessages() {
+        return messages;
+    }
+
+    public void addMessage(Message message) {
+        if (getMessages() == null) {
+            createMessages();
+        }
+        
+        addMessage(getMessages().getMessage().size(), message);
+        ModelMap.getDefault().createModelAndAddEntry(message);
+    }
+
+    public void addMessage(int index, Message message) {
+        if (getMessages() == null) {
+            createMessages();
+        }
+        
+        getMessages().getMessage().add(index, message);
+        getListeners().firePropertyChange(PROPERTY_MESSAGE, null, message);
+        ModelMap.getDefault().createModelAndAddEntry(message);
+    }
+
+    public void removeMessage(Message message) {
+        if (getMessages().getMessage().remove(message)) {
+            getListeners().firePropertyChange(PROPERTY_MESSAGE, message, null);
+            ModelMap.getDefault().removeEntry(message);
+        }
+        
+        if (getMessages().getMessage().isEmpty()) {
+            removeMessages();
+        }
+    }
+    
+    private void createMessages() {
+        this.messages = new Messages();
+        ModelMap.getDefault().addEntry(messages, this);
+    }
+
+    private void removeMessages() {
+        ModelMap.getDefault().removeEntry(messages);
+        this.messages = null;
+    }
 }

@@ -71,11 +71,13 @@ public class DestinationModel extends PC4NBModel implements Transferable {
     public void addPeriod(int index, Period period) {
         getDestination().getPeriod().add(index, period);
         getListeners().firePropertyChange(PROPERTY_PERIOD, null, period);
+        ModelMap.getDefault().createModelAndAddEntry(period);
     }
 
     public void removePeriod(Period period) {
         if (getDestination().getPeriod().remove(period)) {
             getListeners().firePropertyChange(PROPERTY_PERIOD, period, null);
+            ModelMap.getDefault().removeEntry(period);
         }
     }
 
@@ -86,11 +88,13 @@ public class DestinationModel extends PC4NBModel implements Transferable {
     public void addProperty(int index, Property property) {
         getDestination().getProperty().add(index, property);
         getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
+        ModelMap.getDefault().createModelAndAddEntry(property);
     }
 
     public void removeProperty(Property property) {
         if (getDestination().getProperty().remove(property)) {
             getListeners().firePropertyChange(PROPERTY_PROPERTIES, property, null);
+            ModelMap.getDefault().removeEntry(property);
         }
     }
 

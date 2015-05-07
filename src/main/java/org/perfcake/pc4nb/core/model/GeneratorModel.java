@@ -66,14 +66,16 @@ public class GeneratorModel extends PC4NBModel {
 	public void addProperty(Property newProperty){
 		addProperty(getGenerator().getProperty().size(), newProperty);
 	}
-	public void addProperty(int index, Property newProperty){
-		getGenerator().getProperty().add(index, newProperty);
-		getListeners().firePropertyChange(PROPERTY_PROPERTY, null, newProperty);
+	public void addProperty(int index, Property property){
+		getGenerator().getProperty().add(index, property);
+		getListeners().firePropertyChange(PROPERTY_PROPERTY, null, property);
+                ModelMap.getDefault().createModelAndAddEntry(property);
 	}
 	
 	public void removeProperty(Property property){
 		if (getGenerator().getProperty().remove(property)){
 			getListeners().firePropertyChange(PROPERTY_PROPERTY, property, null);
+                        ModelMap.getDefault().removeEntry(property);
 		}
 		
 	}
