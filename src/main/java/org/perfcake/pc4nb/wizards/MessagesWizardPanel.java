@@ -19,9 +19,6 @@ import org.perfcake.pc4nb.wizards.visuals.MessagesVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
-import org.perfcake.model.Scenario;
-import org.perfcake.pc4nb.core.controller.MessagesController;
-import org.perfcake.pc4nb.core.model.MessagesModel;
 
 public class MessagesWizardPanel implements WizardDescriptor.Panel<WizardDescriptor> {
 

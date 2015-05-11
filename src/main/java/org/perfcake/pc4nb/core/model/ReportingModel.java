@@ -16,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.perfcake.pc4nb.core.model;
 
 import java.util.List;
@@ -26,58 +25,82 @@ import org.perfcake.model.Scenario.Reporting;
 import org.perfcake.model.Scenario.Reporting.Reporter;
 
 public class ReportingModel extends PC4NBModel {
-    
-	public static final String PROPERTY_PROPERTIES = "reporting-property";
-	public static final String PROPERTY_REPORTERS = "reporting-reporter";
-	
-	private Reporting reporting;
-	
-	public ReportingModel(Reporting reporting){
-		if (reporting == null){
-			throw new IllegalArgumentException("Reporting must not be null.");
-		}
-		this.reporting = reporting;
-	}
 
-	public Reporting getReporting() {
-		return reporting;
-	}
-	public void addReporter(Reporter reporter){
-		addReporter(getReporting().getReporter().size(), reporter);
-	}
-	public void addReporter(int index, Reporter reporter){
-		getReporting().getReporter().add(index, reporter);
-		getListeners().firePropertyChange(PROPERTY_REPORTERS, null, reporter);
-	}
-	
-	public void removeReporter(Reporter reporter){
-		if (getReporting().getReporter().remove(reporter)){
-			getListeners().firePropertyChange(PROPERTY_REPORTERS, reporter, null);
-		}
-	}
-	
-	public void addProperty(Property Property){
-		if (reporting == null)
-			return;
-		addProperty(getReporting().getProperty().size(), Property);
-	}
-	
-	public void addProperty(int index, Property property){
-		if (reporting == null)
-			return;
-		getReporting().getProperty().add(index, property);
-		getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
-	}
-	
-	public void removeProperty(Property property){
-		if (reporting == null)
-			return;
-		if (getReporting().getProperty().remove(property)){
-			getListeners().firePropertyChange(PROPERTY_PROPERTIES, property, null);
-		}
-	}
-	
-	public List<Property> getProperty(){
-		return getReporting().getProperty();
-	}
+    public static final String PROPERTY_PROPERTIES = "reporting-property";
+    public static final String PROPERTY_REPORTERS = "reporting-reporter";
+
+    private Reporting reporting;
+
+    public ReportingModel(Reporting reporting) {
+        this.reporting = reporting;
+    }
+
+    public Reporting getReporting() {
+        return reporting;
+    }
+
+    public void addReporter(Reporter reporter) {
+        if (getReporting() == null) {
+            createReporting();
+        }
+        
+        addReporter(getReporting().getReporter().size(), reporter);
+    }
+
+    public void addReporter(int index, Reporter reporter) {
+        if (getReporting() == null) {
+            createReporting();
+        }
+        
+        getReporting().getReporter().add(index, reporter);
+        ModelMap.getDefault().createModelAndAddEntry(reporter);
+        getListeners().firePropertyChange(PROPERTY_REPORTERS, null, reporter);
+    }
+
+    public void removeReporter(Reporter reporter) {
+        if (getReporting().getReporter().remove(reporter)) {
+            getListeners().firePropertyChange(PROPERTY_REPORTERS, reporter, null);
+        }
+        
+        if (reporting.getReporter().isEmpty() && reporting.getProperty().isEmpty()) {
+            removeReporting();
+        }
+    }
+
+    public void addProperty(Property Property) {
+        addProperty(getReporting().getProperty().size(), Property);
+    }
+
+    public void addProperty(int index, Property property) {
+        if (reporting == null) {
+            createReporting();
+        }
+        
+        getReporting().getProperty().add(index, property);
+        getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
+    }
+
+    public void removeProperty(Property property) {
+        if (getReporting().getProperty().remove(property)) {
+            getListeners().firePropertyChange(PROPERTY_PROPERTIES, property, null);
+        }
+
+        if (reporting.getReporter().isEmpty() && reporting.getProperty().isEmpty()) {
+            removeReporting();
+        }
+    }
+
+    private void createReporting() {
+        this.reporting = new Reporting();
+        ModelMap.getDefault().addEntry(reporting, this);
+    }
+
+    private void removeReporting() {
+        ModelMap.getDefault().removeEntry(reporting);
+        this.reporting = null;
+    }
+
+    public List<Property> getProperty() {
+        return getReporting().getProperty();
+    }
 }

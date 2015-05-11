@@ -31,7 +31,7 @@ public class PerfCakeMessageNode extends AbstractNode {
     public PerfCakeMessageNode(MessageModel model) {
         super(Children.LEAF);
         this.model = model;
-        this.setDisplayName(model.getMessage().getUri());
+        this.setDisplayName("Message");
     }
     
     @Override

@@ -15,20 +15,24 @@
  */
 package org.perfcake.pc4nb.wizards.visuals;
 
+import java.beans.PropertyChangeEvent;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.ui.OpenProjects;
+import org.perfcake.model.Scenario;
+import org.perfcake.pc4nb.core.model.ScenarioModel;
+import org.perfcake.pc4nb.ui3.AbstractPC4NBView;
 
-public final class ScenarioVisualPanel extends JPanel {
+public final class ScenarioVisualPanel extends AbstractPC4NBView {
     private Project[] projects;
     
     public ScenarioVisualPanel() {
+        setModel(new ScenarioModel(new Scenario()));
         projects = OpenProjects.getDefault().getOpenProjects();
         initComponents();
     }
@@ -128,4 +132,9 @@ public final class ScenarioVisualPanel extends JPanel {
     private javax.swing.JTextField scenarioNameTextField;
     private javax.swing.JLabel xmlLabel;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

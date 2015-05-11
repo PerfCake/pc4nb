@@ -62,11 +62,13 @@ public class SenderModel extends PC4NBModel {
 	public void addProperty(int index, Property property){
 		getSender().getProperty().add(index, property);
 		getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
+                ModelMap.getDefault().createModelAndAddEntry(property);
 	}
 	
 	public void removeProperty(Property property){
 		if (getSender().getProperty().remove(property)){
 			getListeners().firePropertyChange(PROPERTY_PROPERTIES, property, null);
+                        ModelMap.getDefault().removeEntry(property);
 		}
 	}
 	

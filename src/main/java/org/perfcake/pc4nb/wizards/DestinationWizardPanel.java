@@ -19,9 +19,6 @@ import org.perfcake.pc4nb.wizards.visuals.DestinationVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
-import org.perfcake.model.Scenario.Reporting.Reporter.Destination;
-import org.perfcake.pc4nb.core.controller.DestinationController;
-import org.perfcake.pc4nb.core.model.DestinationModel;
 
 public class DestinationWizardPanel implements WizardDescriptor.Panel<WizardDescriptor> {
 

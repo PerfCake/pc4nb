@@ -16,6 +16,7 @@
 package org.perfcake.pc4nb.ui.tableModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import org.perfcake.model.Scenario.Validation.Validator;
@@ -57,6 +58,10 @@ public class ValidatorsTableModel extends AbstractTableModel {
     public void removeRow(int rowNum) {
         validators.remove(rowNum);
         fireTableRowsDeleted(rowNum, rowNum);
+    }
+    
+    public List<Validator> getValidators() {
+        return Collections.unmodifiableList(validators);
     }
 
     @Override

@@ -5,16 +5,22 @@
  */
 package org.perfcake.pc4nb.scenario;
 
+import org.perfcake.pc4nb.ui3.AbstractPC4NBView;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.beans.PropertyChangeEvent;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URL;
 import javax.swing.Action;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
-import net.miginfocom.swing.MigLayout;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
@@ -22,18 +28,27 @@ import org.netbeans.spi.palette.PaletteActions;
 import org.netbeans.spi.palette.PaletteController;
 import org.netbeans.spi.palette.PaletteFactory;
 import org.openide.awt.UndoRedo;
+import org.openide.filesystems.FileChangeAdapter;
+import org.openide.filesystems.FileEvent;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Node;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
-import org.perfcake.model.Scenario.*;
-import org.perfcake.pc4nb.core.controller.*;
+import org.perfcake.model.Scenario;
+import org.perfcake.model.Scenario.Reporting;
+import org.perfcake.model.Scenario.Sender;
+import org.perfcake.model.Scenario.Validation;
 import org.perfcake.pc4nb.core.model.*;
-import org.perfcake.pc4nb.ui.*;
+import org.perfcake.pc4nb.ui.palette.PC4NBPaletteActions;
 import org.perfcake.pc4nb.ui.palette.PerfCakeComponentCategoryNodeContainer;
+import org.perfcake.pc4nb.ui3.ComponentCategory;
+import static org.perfcake.pc4nb.ui3.ComponentCategory.*;
+import org.perfcake.pc4nb.ui3.ScenarioLayoutManager;
 
 @MultiViewElement.Registration(
         displayName = "#LBL_PCScenario_VISUAL",
@@ -44,22 +59,40 @@ import org.perfcake.pc4nb.ui.palette.PerfCakeComponentCategoryNodeContainer;
         position = 2000
 )
 @Messages("LBL_PCScenario_VISUAL=Designer")
-public final class PCScenarioVisualElement extends JPanel implements MultiViewElement {
+public final class PCScenarioVisualElement extends AbstractPC4NBView implements MultiViewElement {
 
     private PCScenarioDataObject obj;
     private JToolBar toolbar = new JToolBar();
     private MultiViewElementCallback callback;
     private PaletteController paletteController = null;
     JScrollPane scrollPane = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+    ScenarioLayoutManager scenarioLayout = new ScenarioLayoutManager();
 
     public PCScenarioVisualElement(Lookup lkp) throws IOException {
         obj = lkp.lookup(PCScenarioDataObject.class);
         assert obj != null;
         initComponents();
 
-        initPalette();
-        initUI();
+        this.setLayout(null);
 
+        initPalette();
+
+        this.add(scenarioLayout.getView(GENERATOR));
+        this.add(scenarioLayout.getView(SENDER));
+        this.add(scenarioLayout.getView(MESSAGES));
+        this.add(scenarioLayout.getView(VALIDATION));
+        this.add(scenarioLayout.getView(REPORTING));
+        this.add(scenarioLayout.getView(ComponentCategory.PROPERTIES));
+        scenarioLayout.getView(ComponentCategory.PROPERTIES).setColor(Color.ORANGE);
+
+        refreshScenarioView();
+
+        obj.getPrimaryFile().addFileChangeListener(new FileChangeAdapter() {
+            @Override
+            public void fileChanged(FileEvent fe) {
+                refreshScenarioView();
+            }
+        });
     }
 
     @Override
@@ -78,92 +111,60 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
         setMaximumSize(new java.awt.Dimension(32500, 3250));
         setName(""); // NOI18N
     }// </editor-fold>//GEN-END:initComponents
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
         private void initPalette() {
         Node palette = new AbstractNode(new PerfCakeComponentCategoryNodeContainer());
-        PaletteActions actions = new PaletteActions() {
-            @Override
-            public Action[] getImportActions() {
-                return null;
-            }
+        PaletteActions actions = new PC4NBPaletteActions();
 
-            @Override
-            public Action[] getCustomPaletteActions() {
-                return null;
-            }
-
-            @Override
-            public Action[] getCustomCategoryActions(Lookup lkp) {
-                return null;
-            }
-
-            @Override
-            public Action[] getCustomItemActions(Lookup lkp) {
-                return null;
-            }
-
-            @Override
-            public Action getPreferredAction(Lookup lkp) {
-                return null;
-            }
-        };
         paletteController = PaletteFactory.createPalette(palette, actions);
     }
 
-    private void initUI() {
-        JPanel contentPane = new JPanel();
-        this.setLayout(new FlowLayout(FlowLayout.LEFT));
-        
-        MigLayout layout = new MigLayout("fillx", "[center]20[center]", "[center]20[center]20[center]");
-        contentPane.setLayout(layout);
-        contentPane.setBackground(Color.gray);
-        /*contentPane.setPreferredSize(new Dimension(640, 480));
-         contentPane.setMinimumSize(new Dimension(640, 480));*/
+    public void refreshScenarioView() {
+        try {
+            URL scenarioUrl = obj.getPrimaryFile().toURL();
 
-        
-        Generator generator = new Generator();
-        generator.setClazz("DefaultMessageGenerator");
-        TopLevelView generatorView = new TopLevelView(generator.getClazz());
-        GeneratorModel generatorModel = new GeneratorModel(generator);
-        GeneratorController generatorController = new GeneratorController(generatorModel, generatorView);
-        generatorView.setController(generatorController);
-        
-        Sender sender = new Sender();
-        sender.setClazz("HttpSender");
-        TopLevelView senderView = new TopLevelView(sender.getClazz());
-        SenderModel senderModel = new SenderModel(sender);
-        SenderController senderController = new SenderController(senderModel, senderView);
-        senderView.setController(senderController);
-        
-        MessagesModel messagesModel = new MessagesModel(new org.perfcake.model.Scenario.Messages());
-        TopLevelView messagesView = new TopLevelView("Messages");
-        MessagesController messagesController = new MessagesController(messagesModel, messagesView);
-        messagesView.setController(messagesController);
-        
-        ReportingModel reportingModel = new ReportingModel(new Reporting());
-        TopLevelView reportingView = new TopLevelView("Reporting");
-        ReportingController reportingController = new ReportingController(reportingModel, reportingView);
-        reportingView.setController(reportingController);
-        
-        ValidationModel validationModel = new ValidationModel(new Validation());
-        TopLevelView validationView = new TopLevelView("Validation");
-        ValidationController validationController = new ValidationController(validationModel, validationView);
-        validationView.setController(validationController);
-        
-        
-        TopLevelView propertiesPanel = new TopLevelView("Properties");
+            ScenarioManager manager = new ScenarioManager();
+            ScenarioModel scenarioModel = manager.createModel(scenarioUrl);
+            Scenario scenario = scenarioModel.getScenario();
+            this.setModel(scenarioModel);
 
-        contentPane.add(generatorView, "span 2, wrap, growx 150");
-        contentPane.add(senderView, " span 2, wrap, growx 150");
-        contentPane.add(messagesView, "growx 150");
-        contentPane.add(reportingView, "span 1 2, wrap, growy 200, growx 150");
-        contentPane.add(validationView, "wrap, growx 150");
-        contentPane.add(propertiesPanel, "span 2, growx 150");
-        
-        this.add(contentPane);
-        scrollPane.setViewportView(contentPane);
+            GeneratorModel generatorModel = (GeneratorModel) ModelMap.getDefault().getPC4NBModelFor(scenario.getGenerator());
+            scenarioLayout.getView(GENERATOR).setModel(generatorModel);
+
+            Sender sender = scenario.getSender();
+            SenderModel senderModel = (SenderModel) ModelMap.getDefault().getPC4NBModelFor(sender);
+            scenarioLayout.getView(SENDER).setModel(senderModel);
+
+            Scenario.Messages messages = scenario.getMessages();
+            MessagesModel messagesModel = (MessagesModel) ModelMap.getDefault().getPC4NBModelFor(messages);
+            if (messagesModel == null) {
+                messagesModel = new MessagesModel(null);
+            }
+            scenarioLayout.getView(MESSAGES).setModel(messagesModel);
+
+            Reporting reporting = scenario.getReporting();
+            ReportingModel reportingModel = (ReportingModel) ModelMap.getDefault().getPC4NBModelFor(reporting);
+            if (reportingModel == null) {
+                reportingModel = new ReportingModel(null);
+            }
+            scenarioLayout.getView(REPORTING).setModel(reportingModel);
+
+            Validation validation = scenario.getValidation();
+            ValidationModel validationModel = (ValidationModel) ModelMap.getDefault().getPC4NBModelFor(validation);
+            if (validationModel == null) {
+                validationModel = new ValidationModel(null);
+            }
+            scenarioLayout.getView(VALIDATION).setModel(validationModel);
+
+            scenarioLayout.recomputeChildren();
+            //getVisualRepresentation().addMouseListener((MouseListener) scenarioLayout.getView(REPORTING));
+
+            this.revalidate();
+            this.repaint();
+        } catch (ScenarioException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     @Override
@@ -208,6 +209,18 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
 
     @Override
     public void componentDeactivated() {
+        ScenarioManager manager = new ScenarioManager();
+
+        URI scenarioPath = obj.getPrimaryFile().toURI();
+
+        try {
+            OutputStream os = new FileOutputStream(Utilities.toFile(scenarioPath));
+            manager.createXML(((ScenarioModel) getModel()).getScenario(), os);
+        } catch (ScenarioException | ScenarioManagerException ex) {
+            // error
+        } catch (FileNotFoundException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     @Override
@@ -233,5 +246,18 @@ public final class PCScenarioVisualElement extends JPanel implements MultiViewEl
     @Override
     public CloseOperationState canCloseElement() {
         return CloseOperationState.STATE_OK;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        return;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+
+        scenarioLayout.setWidth(scrollPane.getViewport().getWidth());
     }
 }

@@ -89,7 +89,7 @@
   <SubComponents>
     <Component class="javax.swing.JComboBox" name="reporterSelection">
       <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor" postCode="reporterSelection.addItemListener (new ItemListener() {&#xa;    public void itemStateChanged(ItemEvent e) {&#xa;        try {&#xa;            listProperties((String) reporterSelection.getSelectedItem());&#xa;            propertiesTable.setModel(getPropertiesTableModel());&#xa;        } catch (ClassNotFoundException | NoSuchFieldException ex) {&#xa;            System.err.println(&quot;Class not found &quot; + ex.getMessage());&#xa;        }&#xa;    }&#xa;});">
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor" postCode="reporterSelection.addItemListener(new ItemListener() {&#xa;            public void itemStateChanged(ItemEvent e) {&#xa;                try {&#xa;                    listProperties((String) reporterSelection.getSelectedItem());&#xa;                } catch (ClassNotFoundException | NoSuchFieldException ex) {&#xa;                    System.err.println(&quot;Class not found &quot; + ex.getMessage());&#xa;                }&#xa;            }&#xa;        });">
           <Connection code="new DefaultComboBoxModel(componentNamesArray)" type="code"/>
         </Property>
         <Property name="name" type="java.lang.String" value="reporterSelection" noResource="true"/>

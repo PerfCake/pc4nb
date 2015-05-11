@@ -5,7 +5,11 @@
  */
 package org.perfcake.pc4nb.scenario;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.text.MultiViewEditorElement;
 import org.openide.awt.ActionID;
@@ -19,7 +23,9 @@ import org.openide.loaders.MultiDataObject;
 import org.openide.loaders.MultiFileLoader;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
+import org.perfcake.pc4nb.core.model.ScenarioModel;
 
 @Messages({
     "LBL_PCScenario_LOADER=Files of PCScenario"
@@ -88,7 +94,6 @@ import org.openide.windows.TopComponent;
     )
 })
 public class PCScenarioDataObject extends MultiDataObject {
-
     public PCScenarioDataObject(FileObject pf, MultiFileLoader loader) throws DataObjectExistsException, IOException {
         super(pf, loader);
         registerEditor("text/pcscenario+xml", true);
@@ -110,6 +115,6 @@ public class PCScenarioDataObject extends MultiDataObject {
     @Messages("LBL_PCScenario_EDITOR=Source")
     public static MultiViewEditorElement createEditor(Lookup lkp) {
         return new MultiViewEditorElement(lkp);
-    }
 
+    }
 }

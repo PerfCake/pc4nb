@@ -104,7 +104,7 @@
         </Property>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="destinationSelection.addItemListener (new ItemListener() {&#xa;    public void itemStateChanged(ItemEvent e) {&#xa;        try {&#xa;            listProperties((String) destinationSelection.getSelectedItem());&#xa;            propertiesTable.setModel(getPropertiesTableModel());&#xa;        } catch (ClassNotFoundException | NoSuchFieldException ex) {&#xa;            System.err.println(&quot;Class not found &quot; + ex.getMessage());&#xa;        }&#xa;    }&#xa;});"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="destinationSelection.addItemListener (new ItemListener() {&#xa;    public void itemStateChanged(ItemEvent e) {&#xa;        try {&#xa;            listProperties((String) destinationSelection.getSelectedItem());&#xa;        } catch (ClassNotFoundException | NoSuchFieldException ex) {&#xa;            System.err.println(&quot;Class not found &quot; + ex.getMessage());&#xa;        }&#xa;    }&#xa;});"/>
         <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="Set&lt;String&gt; componentNames = getComponentPropertiesModelMap().keySet();&#xa;String[] componentNamesArray = new String[componentNames.size()];&#xa;componentNames.toArray(componentNamesArray);"/>
       </AuxValues>
     </Component>

@@ -19,6 +19,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -27,24 +28,30 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import org.openide.util.Exceptions;
+import org.perfcake.model.Property;
+import org.perfcake.model.Scenario;
+import org.perfcake.model.Scenario.Validation.Validator;
+import org.perfcake.pc4nb.core.model.ModelMap;
+import org.perfcake.pc4nb.core.model.PC4NBModel;
+import org.perfcake.pc4nb.core.model.ValidatorModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.reflect.ComponentScanner;
 import org.perfcake.validation.MessageValidator;
 
-public final class ValidatorVisualPanel extends ComponentWithPropertiesVisualPanel {
-    
+public final class ValidatorVisualPanel extends VisualPanelWithProperties {
+
     public static final String VALIDATOR_PACKAGE = "org.perfcake.validation";
-    
+
     public ValidatorVisualPanel() {
         ComponentScanner scanner = new ComponentScanner();
         Set<Class<? extends MessageValidator>> subTypes = scanner.findComponentsOfType(MessageValidator.class, VALIDATOR_PACKAGE);
 
         Set<String> components = new HashSet<>();
-        
+
         for (Class<? extends MessageValidator> validator : subTypes) {
             components.add(validator.getSimpleName());
         }
-        
+
         ComponentPropertiesScanner propertyScanner = new ComponentPropertiesScanner();
 
         for (String component : components) {
@@ -54,12 +61,12 @@ public final class ValidatorVisualPanel extends ComponentWithPropertiesVisualPan
                 Exceptions.printStackTrace(ex);
             }
         }
-        
+
         initComponents();
-        
+        setModel(new ValidatorModel(new Scenario.Validation.Validator()));
+
         try {
             listProperties((String) validatorSelection.getSelectedItem());
-            propertiesTable.setModel(getPropertiesTableModel());
         } catch (ClassNotFoundException | NoSuchFieldException ex) {
             System.err.println("Class not found " + ex.getMessage());
         }
@@ -98,7 +105,38 @@ public final class ValidatorVisualPanel extends ComponentWithPropertiesVisualPan
     public JTextField getValidatorIdTextField() {
         return validatorIdTextField;
     }
-    
+
+    @Override
+    public void setModel(PC4NBModel model) {
+        super.setModel(model);
+
+        Validator validator = ((ValidatorModel) model).getValidator();
+        
+        String id = validator.getId();
+        if (id != null) {
+            getValidatorIdTextField().setText(validator.getId());
+        }
+        String validatorClazz = validator.getClazz();
+        
+        Properties properties = new Properties();
+        properties.putAll(getPropertiesFor(validatorClazz));
+
+        for (Property property : validator.getProperty()) {
+            properties.put(property.getName(), property.getValue());
+        }
+        
+        try {
+            if (validatorClazz != null) {
+                getValidatorSelection().setSelectedItem(validatorClazz);
+                putToComponentPropertiesMap(validatorClazz, properties);
+                listProperties(validatorClazz);
+            }
+
+        } catch (ClassNotFoundException | NoSuchFieldException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -108,12 +146,12 @@ public final class ValidatorVisualPanel extends ComponentWithPropertiesVisualPan
     private void initComponents() {
 
         validatorSelection = new javax.swing.JComboBox();
-        validatorTypeLabel = new javax.swing.JLabel();
-        propertiesLabel = new javax.swing.JLabel();
         propertiesListScrollPane = new javax.swing.JScrollPane();
         propertiesTable = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
         validatorIdTextField = new javax.swing.JTextField();
+        validatorTypeLabel = new javax.swing.JLabel();
+        validatorIdLabel = new javax.swing.JLabel();
+        propertiesLabel = new javax.swing.JLabel();
 
         ComponentScanner scanner = new ComponentScanner();
         Set<Class<? extends MessageValidator>> subTypes = scanner.findComponentsOfType(MessageValidator.class, "org.perfcake.validation");
@@ -132,17 +170,12 @@ public final class ValidatorVisualPanel extends ComponentWithPropertiesVisualPan
             public void itemStateChanged(ItemEvent e) {
                 try {
                     listProperties((String) validatorSelection.getSelectedItem());
-                    propertiesTable.setModel(getPropertiesTableModel());
                 } catch (ClassNotFoundException | NoSuchFieldException ex) {
                     System.err.println("Class not found " + ex.getMessage());
                 }
             }
         });
         validatorSelection.setName("validatorSelection"); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(validatorTypeLabel, org.openide.util.NbBundle.getMessage(ValidatorVisualPanel.class, "AddReporterVisualPanel1.reporterTypeLabel.text")); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(propertiesLabel, org.openide.util.NbBundle.getMessage(ValidatorVisualPanel.class, "AddReporterVisualPanel1.propertiesLabel.text")); // NOI18N
 
         propertiesTable.setModel(getPropertiesTableModel());
         propertiesListScrollPane.setViewportView(propertiesTable);
@@ -151,9 +184,13 @@ public final class ValidatorVisualPanel extends ComponentWithPropertiesVisualPan
             propertiesTable.getColumnModel().getColumn(1).setHeaderValue(org.openide.util.NbBundle.getMessage(ValidatorVisualPanel.class, "ValidatorVisualPanel.propertiesTable.columnModel.title1_1")); // NOI18N
         }
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(ValidatorVisualPanel.class, "ValidatorVisualPanel.jLabel1.text")); // NOI18N
-
         validatorIdTextField.setText(org.openide.util.NbBundle.getMessage(ValidatorVisualPanel.class, "ValidatorVisualPanel.validatorIdTextField.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(validatorTypeLabel, org.openide.util.NbBundle.getMessage(ValidatorVisualPanel.class, "ValidatorVisualPanel.validatorTypeLabel.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(validatorIdLabel, org.openide.util.NbBundle.getMessage(ValidatorVisualPanel.class, "ValidatorVisualPanel.validatorIdLabel.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(propertiesLabel, org.openide.util.NbBundle.getMessage(ValidatorVisualPanel.class, "ValidatorVisualPanel.propertiesLabel.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -162,44 +199,44 @@ public final class ValidatorVisualPanel extends ComponentWithPropertiesVisualPan
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(25, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(validatorIdTextField, javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(propertiesListScrollPane, javax.swing.GroupLayout.Alignment.TRAILING))
-                            .addComponent(propertiesLabel)))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(validatorTypeLabel)
-                            .addComponent(validatorSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(validatorSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(validatorIdLabel)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(25, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(propertiesLabel)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(validatorIdTextField, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(propertiesListScrollPane, javax.swing.GroupLayout.Alignment.TRAILING)))))
                 .addGap(23, 23, 23))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(12, 12, 12)
                 .addComponent(validatorTypeLabel)
-                .addGap(6, 6, 6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(validatorSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel1)
+                .addGap(13, 13, 13)
+                .addComponent(validatorIdLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(validatorIdTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                 .addComponent(propertiesLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(propertiesListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(22, 22, 22))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel propertiesLabel;
     private javax.swing.JScrollPane propertiesListScrollPane;
     private javax.swing.JTable propertiesTable;
+    private javax.swing.JLabel validatorIdLabel;
     private javax.swing.JTextField validatorIdTextField;
     private javax.swing.JComboBox validatorSelection;
     private javax.swing.JLabel validatorTypeLabel;
@@ -207,6 +244,5 @@ public final class ValidatorVisualPanel extends ComponentWithPropertiesVisualPan
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

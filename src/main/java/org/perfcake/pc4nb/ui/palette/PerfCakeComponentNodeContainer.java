@@ -67,6 +67,7 @@ class PerfCakeComponentNodeContainer extends Children.Keys<String> {
             int i = 0;
             for (Class<? extends MessageValidator> subType : subTypes) {
                 Scenario.Validation.Validator validator = new Scenario.Validation.Validator();
+                validator.setClazz(subType.getSimpleName());
                 ValidatorModel newModel = new ValidatorModel(validator);
                 components[i] = new PerfCakeValidatorNode(newModel);
                 i++;

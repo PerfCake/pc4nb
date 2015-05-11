@@ -16,26 +16,37 @@
 package org.perfcake.pc4nb.wizards.visuals;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import org.openide.util.Exceptions;
+import org.perfcake.model.Property;
+import org.perfcake.model.Scenario;
+import org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period;
 import org.perfcake.pc4nb.core.model.DestinationModel;
+import org.perfcake.pc4nb.core.model.ModelMap;
+import org.perfcake.pc4nb.core.model.PC4NBModel;
+import org.perfcake.pc4nb.core.model.PeriodModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.reflect.ComponentScanner;
-import org.perfcake.pc4nb.ui.actions.AddPeriodAction;
-import org.perfcake.pc4nb.ui.actions.EditPeriodAction;
+import org.perfcake.pc4nb.ui3.actions.AddPeriodAction;
+import org.perfcake.pc4nb.ui3.actions.DeletePeriodAction;
+import org.perfcake.pc4nb.ui3.actions.EditPeriodAction;
 import org.perfcake.pc4nb.ui.tableModel.PeriodsTableModel;
 import org.perfcake.pc4nb.ui.tableModel.PropertiesTableModel;
 import org.perfcake.reporting.destinations.Destination;
 
-public final class DestinationVisualPanel extends ComponentWithPropertiesVisualPanel {
+public final class DestinationVisualPanel extends VisualPanelWithProperties {
 
     public static final String DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
 
@@ -58,22 +69,16 @@ public final class DestinationVisualPanel extends ComponentWithPropertiesVisualP
                 Exceptions.printStackTrace(ex);
             }
         }
-
+        
         initComponents();
-
-        addPeriodButton.addActionListener(new AddPeriodAction(this));
-        editPeriodButton.addActionListener(new EditPeriodAction(this));
-        deletePeriodButton.addActionListener((ActionEvent e) -> {
-            int[] selectedRows = getPeriodsTable().getSelectedRows();
-
-            for (int i = selectedRows.length - 1; i >= 0; i--) {
-                getPeriodsTableModel().removeRow(selectedRows[i]);
-            }
-        });
+        setModel(new DestinationModel(new Scenario.Reporting.Reporter.Destination()));
+        
+        addPeriodButton.addActionListener(new AddPeriodListener());
+        editPeriodButton.addActionListener(new EditPeriodListener());
+        deletePeriodButton.addActionListener(new DeletePeriodListener());
 
         try {
             listProperties((String) destinationSelection.getSelectedItem());
-            propertiesTable.setModel(getPropertiesTableModel());
         } catch (ClassNotFoundException | NoSuchFieldException ex) {
             System.err.println("Class not found " + ex.getMessage());
         }
@@ -98,6 +103,42 @@ public final class DestinationVisualPanel extends ComponentWithPropertiesVisualP
 
     public JTable getPeriodsTable() {
         return periodsTable;
+    }
+
+    @Override
+    public void setModel(PC4NBModel model) {
+        super.setModel(model);
+        
+        Scenario.Reporting.Reporter.Destination destination = ((DestinationModel) model).getDestination();
+
+        String destinationClazz = destination.getClazz();
+        Properties properties = new Properties();
+        properties.putAll(getPropertiesFor(destinationClazz));
+
+        for (Property property : destination.getProperty()) {
+            properties.put(property.getName(), property.getValue());
+        }
+
+        try {
+            if (destinationClazz != null) {
+                destinationSelection.setSelectedItem(destinationClazz);
+                putToComponentPropertiesMap(destinationClazz, properties);
+                listProperties(destinationClazz);
+            }
+
+        } catch (ClassNotFoundException | NoSuchFieldException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        for (Period period : destination.getPeriod()) {
+            periodsTableModel.addRow(period);
+        }
+        
+        if (destination.isEnabled()) {
+            enabledCheckBox.setSelected(true);
+        } else {
+            enabledCheckBox.setSelected(false);
+        }
     }
 
     /**
@@ -132,7 +173,6 @@ public final class DestinationVisualPanel extends ComponentWithPropertiesVisualP
             public void itemStateChanged(ItemEvent e) {
                 try {
                     listProperties((String) destinationSelection.getSelectedItem());
-                    propertiesTable.setModel(getPropertiesTableModel());
                 } catch (ClassNotFoundException | NoSuchFieldException ex) {
                     System.err.println("Class not found " + ex.getMessage());
                 }
@@ -256,5 +296,44 @@ public final class DestinationVisualPanel extends ComponentWithPropertiesVisualP
             }
         }
     }
+    
+    private class AddPeriodListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            AddPeriodAction action = new AddPeriodAction(getModel());
+            action.execute();
+        }
+    }
 
+    private class EditPeriodListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = DestinationVisualPanel.this.getPeriodsTable().getSelectedRow();
+
+            if (selectedRow != -1) {
+                DestinationModel destinationModel = (DestinationModel) DestinationVisualPanel.this.getModel();
+                Period period = destinationModel.getDestination().getPeriod().get(selectedRow);
+                EditPeriodAction action = new EditPeriodAction((PeriodModel) ModelMap.getDefault().getPC4NBModelFor(period));
+                action.execute();
+            }
+        }
+    }
+
+    private class DeletePeriodListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int[] selectedRows = DestinationVisualPanel.this.getPeriodsTable().getSelectedRows();
+            DestinationModel destinationModel = (DestinationModel) DestinationVisualPanel.this.getModel();
+            List<Period> toRemove = new ArrayList<>();
+
+            for (int i = 0; i < selectedRows.length; i++) {
+                Period period = destinationModel.getDestination().getPeriod().get(selectedRows[i]);
+                toRemove.add(period);
+            }
+
+            DeletePeriodAction action = new DeletePeriodAction(getModel(), toRemove);
+            action.execute();
+        }
+    }
 }

@@ -15,21 +15,25 @@
  */
 package org.perfcake.pc4nb.wizards.visuals;
 
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
-import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import org.perfcake.common.PeriodType;
+import org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period;
+import org.perfcake.pc4nb.core.model.PeriodModel;
+import org.perfcake.pc4nb.ui3.AbstractPC4NBView;
 
-public final class PeriodVisualPanel extends JPanel {
+public final class PeriodVisualPanel extends AbstractPC4NBView {
 
     /**
      * Creates new form PeriodVisualPanel1
      */
     public PeriodVisualPanel() {
+        setModel(new PeriodModel(new Period()));
         initComponents();
     }
 
@@ -108,4 +112,9 @@ public final class PeriodVisualPanel extends JPanel {
     private javax.swing.JSpinner periodValueSpinner;
     private javax.swing.JLabel valueLabel;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

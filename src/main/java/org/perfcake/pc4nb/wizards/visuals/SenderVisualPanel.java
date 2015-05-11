@@ -25,16 +25,19 @@ import javax.swing.JComboBox;
 import javax.swing.JTable;
 import org.openide.util.Exceptions;
 import org.perfcake.message.sender.MessageSender;
+import org.perfcake.model.Scenario;
+import org.perfcake.pc4nb.core.model.SenderModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.reflect.ComponentScanner;
 
-public final class SenderVisualPanel extends ComponentWithPropertiesVisualPanel {
+public final class SenderVisualPanel extends VisualPanelWithProperties {
     public static final String SENDER_PACKAGE = "org.perfcake.message.sender";
 
     /**
      * Creates new form ScenarioVisualPanel2
      */
     public SenderVisualPanel() {
+        setModel(new SenderModel(new Scenario.Sender()));
         ComponentScanner scanner = new ComponentScanner();
         Set<Class<? extends MessageSender>> subTypes = scanner.findComponentsOfType(MessageSender.class, SENDER_PACKAGE);
 
@@ -58,7 +61,6 @@ public final class SenderVisualPanel extends ComponentWithPropertiesVisualPanel 
         
         try {
             listProperties((String) senderSelection.getSelectedItem());
-            propertiesTable.setModel(getPropertiesTableModel());
         } catch (ClassNotFoundException | NoSuchFieldException ex) {
             System.err.println("Class not found " + ex.getMessage());
         }
@@ -66,7 +68,7 @@ public final class SenderVisualPanel extends ComponentWithPropertiesVisualPanel 
 
     @Override
     public String getName() {
-        return "Senders";
+        return "Sender";
     }
 
     public JComboBox getSenderSelection() {
@@ -96,7 +98,6 @@ public final class SenderVisualPanel extends ComponentWithPropertiesVisualPanel 
             public void itemStateChanged(ItemEvent e) {
                 try {
                     listProperties((String) senderSelection.getSelectedItem());
-                    propertiesTable.setModel(getPropertiesTableModel());
                 } catch (ClassNotFoundException | NoSuchFieldException ex) {
                     // blah
                 }

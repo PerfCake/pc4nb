@@ -19,9 +19,6 @@ import org.perfcake.pc4nb.wizards.visuals.HeaderVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
-import org.perfcake.model.Header;
-import org.perfcake.pc4nb.core.controller.HeaderController;
-import org.perfcake.pc4nb.core.model.HeaderModel;
 
 public class HeaderWizardPanel implements WizardDescriptor.Panel<WizardDescriptor> {
 

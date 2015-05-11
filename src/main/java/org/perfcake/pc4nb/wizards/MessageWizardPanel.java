@@ -17,7 +17,6 @@ package org.perfcake.pc4nb.wizards;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import org.perfcake.pc4nb.wizards.visuals.MessageVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
@@ -80,6 +79,7 @@ public class MessageWizardPanel implements WizardDescriptor.Panel<WizardDescript
     public void storeSettings(WizardDescriptor wiz) {
         MessageVisualPanel component = getComponent();
         wiz.putProperty("message-uri", component.getUriTexField().getText());
+        wiz.putProperty("message-content", component.getContentTextField().getText());
         wiz.putProperty("message-multiplicity", component.getMultiplicitySpinner().getValue());
         wiz.putProperty("message-properties", component.getProperties());
         

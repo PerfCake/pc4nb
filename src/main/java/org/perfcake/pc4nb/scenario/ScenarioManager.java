@@ -21,14 +21,13 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import org.apache.log4j.Logger;
-import org.openide.util.Exceptions;
-import org.perfcake.PerfCakeException;
+import org.perfcake.model.Scenario;
+import org.perfcake.pc4nb.core.model.ModelMap;
 import org.perfcake.pc4nb.core.model.ScenarioModel;
-import org.perfcake.scenario.Scenario;
-import org.perfcake.scenario.ScenarioLoader;
 import org.xml.sax.SAXException;
 
 /**
@@ -36,12 +35,10 @@ import org.xml.sax.SAXException;
  * @author Andrej Halaj
  */
 public class ScenarioManager {
-
     public static final String SCHEMA_PATH = "perfcake-scenario-4.0.xsd";
-
     private static final Logger log = Logger.getLogger(ScenarioManager.class.getName());
 
-    public void createXML(org.perfcake.model.Scenario scenarioModel, OutputStream out) throws ScenarioException, ScenarioManagerException {
+    public void createXML(Scenario scenarioModel, OutputStream out) throws ScenarioException, ScenarioManagerException {
         if (scenarioModel == null) {
             String message = "scenario model is null. please use setModel() to set model.";
             log.warn(message);
@@ -49,7 +46,7 @@ public class ScenarioManager {
         }
 
         try {
-            JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
+            JAXBContext context = JAXBContext.newInstance(Scenario.class);
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
             URL schemaUrl = this.getClass().getResource(SCHEMA_PATH);
@@ -60,14 +57,48 @@ public class ScenarioManager {
             marshaller.setSchema(schema);
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(scenarioModel, out);
-        } catch (JAXBException e) {
+        } catch (JAXBException ex) {
             String message = "JAXB error";
-            log.error(message, e);
-            throw new ScenarioException(message, e);
-        } catch (SAXException e) {
+            log.error(message, ex);
+            throw new ScenarioException(message, ex);
+        } catch (SAXException ex) {
             String message = "Cannot obtain schema definition.";
-            log.error(message, e);
-            throw new ScenarioException(message, e);
+            log.error(message, ex);
+            throw new ScenarioException(message, ex);
         }
+    }
+
+    public ScenarioModel createModel(URL scenarioURL) throws ScenarioException {
+        Scenario scenario = new Scenario();
+
+        if (scenarioURL == null) {
+            log.error("URL to scenario is null");
+            throw new IllegalArgumentException("URL to scenario is null.");
+        }
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(Scenario.class);
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+            URL schemaUrl = this.getClass().getResource(SCHEMA_PATH);
+
+            Schema schema = schemaFactory.newSchema(schemaUrl);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            
+            unmarshaller.setSchema(schema);
+            scenario = (Scenario) unmarshaller.unmarshal(scenarioURL);
+        } catch (JAXBException ex) {
+            String message = "JAXB error";
+            log.error(message, ex);
+            throw new ScenarioException(message, ex);
+        } catch (SAXException ex) {
+            String message = "Cannot obtain schema definition.";
+            log.error(message, ex);
+            throw new ScenarioException(message, ex);
+        }
+        
+        ModelMap.getDefault().createModelAndAddEntry(scenario);
+        
+        return (ScenarioModel) ModelMap.getDefault().getPC4NBModelFor(scenario);
     }
 }

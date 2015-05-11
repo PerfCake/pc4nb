@@ -19,6 +19,7 @@ import org.perfcake.pc4nb.wizards.visuals.ReporterVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
+import org.perfcake.pc4nb.core.model.ReporterModel;
 
 public class ReporterWizardPanel implements WizardDescriptor.Panel<WizardDescriptor> {
 
@@ -76,6 +77,8 @@ public class ReporterWizardPanel implements WizardDescriptor.Panel<WizardDescrip
         wiz.putProperty("reporter-clazz", getComponent().getReporterSelection().getSelectedItem());
         wiz.putProperty("reporter-enabled", getComponent().getEnabledCheckBox().isSelected());
         wiz.putProperty("reporter-properties", getComponent().getProperties());
-        wiz.putProperty("reporter-destinations", getComponent().getDestinationsTableModel().getDestinations());
+        
+        ReporterModel reporterModel = (ReporterModel) getComponent().getModel();
+        wiz.putProperty("reporter-destinations", reporterModel.getReporter().getDestination());
     }
 }

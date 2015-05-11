@@ -16,57 +16,68 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.perfcake.pc4nb.core.model;
 
 import java.util.List;
 
 import org.perfcake.model.Property;
+import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Properties;
 
 public class PropertiesModel extends PC4NBModel {
 
+    public static final String PROPERTY_PROPERTIES = "properties-property";
 
-	public static final String PROPERTY_PROPERTIES = "properties-property";
-	
-	private Properties properties;
+    private Properties properties;
 
-	public PropertiesModel(Properties properties) {
-		if (properties == null){
-			throw new IllegalArgumentException("Properties must not be null");
-		}
+    public PropertiesModel(Properties properties) {
+        if (properties == null) {
+            throw new IllegalArgumentException("Properties must not be null");
+        }
 
-		this.properties = properties;
-	}
+        this.properties = properties;
+    }
 
-	
-	/**
-	 * This method should not be used for modifying properties (in a way getProperties().add()))
-	 * since these changes would not fire PropertyChange getListeners() which implies that
-	 * the GEF View will not be updated according to these changes. Use set methods of this class instead.
-	 * 
-	 * @return PerfCake model of Properties 
-	 */
-	public Properties getProperties() {
-		return properties;
-	}
-	
-	public void addProperty(Property Property){
-		addProperty(getProperties().getProperty().size(), Property);
-	}
-	
-	public void addProperty(int index, Property property){
-		getProperties().getProperty().add(index, property);
-		getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
-	}
-	
-	public void removeProperty(Property property){
-		if (getProperties().getProperty().remove(property)){
-			getListeners().firePropertyChange(PROPERTY_PROPERTIES, property, null);
-		}
-	}
-	
-	public List<Property> getProperty(){
-		return getProperties().getProperty();
-	}
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void addProperty(Property Property) {
+        addProperty(getProperties().getProperty().size(), Property);
+    }
+
+    public void addProperty(int index, Property property) {
+        if (getProperties() == null) {
+            createProperties();
+        }
+        
+        getProperties().getProperty().add(index, property);
+        getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
+        ModelMap.getDefault().createModelAndAddEntry(property);
+    }
+
+    public void removeProperty(Property property) {
+        if (getProperties().getProperty().remove(property)) {
+            getListeners().firePropertyChange(PROPERTY_PROPERTIES, property, null);
+            ModelMap.getDefault().removeEntry(property);
+        }
+        
+        if (getProperties().getProperty().isEmpty()) {
+            removeProperties();
+        }
+    }
+
+    public List<Property> getProperty() {
+        return getProperties().getProperty();
+    }
+
+    private void createProperties() {
+        this.properties = new Properties();
+        ModelMap.getDefault().addEntry(properties, this);
+    }
+
+    private void removeProperties() {
+        ModelMap.getDefault().removeEntry(properties);
+        this.properties = null;
+    }
 }

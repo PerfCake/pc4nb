@@ -17,15 +17,17 @@ package org.perfcake.pc4nb.wizards.visuals;
 
 import java.beans.PropertyChangeEvent;
 import javax.swing.JTextField;
+import org.perfcake.model.Header;
 import org.perfcake.pc4nb.core.model.HeaderModel;
-import org.perfcake.pc4nb.ui.AbstractPC4NBVisualPanel;
+import org.perfcake.pc4nb.ui3.AbstractPC4NBView;
 
-public final class HeaderVisualPanel extends AbstractPC4NBVisualPanel {
+public final class HeaderVisualPanel extends AbstractPC4NBView {
 
     /**
      * Creates new form HeaderVisualPanel1
      */
     public HeaderVisualPanel() {
+        setModel(new HeaderModel(new Header()));
         initComponents();
     }
 

@@ -16,33 +16,50 @@
 package org.perfcake.pc4nb.wizards.visuals;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JTable;
+import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Reporting.Reporter;
+import org.perfcake.pc4nb.core.model.ModelMap;
+import org.perfcake.pc4nb.core.model.ReporterModel;
 import org.perfcake.pc4nb.core.model.ReportingModel;
-import org.perfcake.pc4nb.ui.AbstractPC4NBVisualPanel;
+import org.perfcake.pc4nb.ui3.AbstractPC4NBView;
 import org.perfcake.pc4nb.ui.tableModel.ReportersTableModel;
-import org.perfcake.pc4nb.ui.actions.AddReporterAction;
+import org.perfcake.pc4nb.ui3.actions.AddReporterAction;
+import org.perfcake.pc4nb.ui3.actions.DeleteReportersAction;
+import org.perfcake.pc4nb.ui3.actions.EditReporterAction;
 
-public final class ReportingVisualPanel extends AbstractPC4NBVisualPanel {
+public final class ReportingVisualPanel extends AbstractPC4NBView {
 
     public ReportingVisualPanel() {
+        setModel(new ReportingModel(new Scenario.Reporting()));
+
+        for (Reporter reporter : ((ReportingModel) getModel()).getReporting().getReporter()) {
+            ModelMap.getDefault().getPC4NBModelFor(reporter).addPropertyChangeListener(this);
+        }
+
+        ModelMap.getDefault().addEntry(((ReportingModel) getModel()).getReporting(), getModel());
         initComponents();
 
-        addReporterButton.addActionListener(new AddReporterAction(this));
-        deleteReporterButton.addActionListener((ActionEvent e) -> {
-            int[] selectedRows = reportersTable.getSelectedRows();
-            ReportingModel model = (ReportingModel) getModel();
-            
-            for (int i = selectedRows.length - 1; i >= 0; i--) {
-                Reporter reporter = model.getReporting().getReporter().get(selectedRows[i]);
-                model.removeReporter(reporter);
-            }
-        });
+        addReporterButton.addActionListener(new AddReporterListener());
+        editReporterButton.addActionListener(new EditReporterListener());
+        deleteReporterButton.addActionListener(new DeleteReporterListener());
     }
 
     @Override
     public String getName() {
         return "Reporting";
+    }
+
+    public ReportersTableModel getReportersTableModel() {
+        return reportersTableModel;
+    }
+
+    public JTable getReportersTable() {
+        return reportersTable;
     }
 
     /**
@@ -133,8 +150,73 @@ public final class ReportingVisualPanel extends AbstractPC4NBVisualPanel {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().startsWith("reporting-")) {
-            //something something
+        ReportingModel model = (ReportingModel) getModel();
+        List<Reporter> reportersList = model.getReporting().getReporter();
+        int targetIndex;
+
+        switch (evt.getPropertyName()) {
+            case ReportingModel.PROPERTY_REPORTERS:
+                if (evt.getNewValue() != null) {
+                    targetIndex = reportersList.indexOf(evt.getNewValue());
+                    reportersTableModel.insertRow(targetIndex, (Reporter) evt.getNewValue());
+                } else if (evt.getOldValue() != null) {
+                    targetIndex = reportersTableModel.getReporters().indexOf(evt.getOldValue());
+                    reportersTableModel.removeRow(targetIndex);
+                } else {
+                    // error
+                }
+                break;
+            case ReporterModel.PROPERTY_CLASS:
+            case ReporterModel.PROPERTY_ENABLED:
+                ReporterModel reporterModel = (ReporterModel) evt.getSource();
+                Reporter reporter = reporterModel.getReporter();
+                targetIndex = reportersTableModel.getReporters().indexOf(reporter);
+                reportersTableModel.updateRow(targetIndex, reporter);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private class AddReporterListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            AddReporterAction action = new AddReporterAction(getModel());
+            action.execute();
+        }
+    }
+
+    private class EditReporterListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = ReportingVisualPanel.this.getReportersTable().getSelectedRow();
+
+            if (selectedRow != -1) {
+                ReportingModel reportingModel = (ReportingModel) ReportingVisualPanel.this.getModel();
+                Reporter reporter = reportingModel.getReporting().getReporter().get(selectedRow);
+                EditReporterAction action = new EditReporterAction((ReporterModel) ModelMap.getDefault().getPC4NBModelFor(reporter));
+                action.execute();
+            }
+        }
+    }
+
+    private class DeleteReporterListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int[] selectedRows = ReportingVisualPanel.this.getReportersTable().getSelectedRows();
+            ReportingModel reportingModel = (ReportingModel) ReportingVisualPanel.this.getModel();
+            List<Reporter> toRemove = new ArrayList<>();
+
+            for (int i = 0; i < selectedRows.length; i++) {
+                Reporter reporter = reportingModel.getReporting().getReporter().get(selectedRows[i]);
+                toRemove.add(reporter);
+            }
+
+            DeleteReportersAction action = new DeleteReportersAction(getModel(), toRemove);
+            action.execute();
         }
     }
 }

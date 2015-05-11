@@ -35,14 +35,6 @@ public class PropertyModel extends PC4NBModel {
 		this.property = property;
 	}
 
-	
-	/**
-	 * This method should not be used for modifying property (in a way getProperty().setName()))
-	 * since these changes would not fire PropertyChange getListeners() which implies that
-	 * the GEF View will not be updated according to these changes. Use set methods of this class instead.
-	 * 
-	 * @return PerfCake model of Property
-	 */
 	public Property getProperty() {
 		return property;
 	}

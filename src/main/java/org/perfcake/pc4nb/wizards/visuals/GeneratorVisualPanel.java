@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -29,10 +30,15 @@ import javax.swing.JTable;
 import org.openide.util.Exceptions;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.generator.AbstractMessageGenerator;
+import org.perfcake.model.Property;
+import org.perfcake.model.Scenario;
+import org.perfcake.model.Scenario.Generator.Run;
+import org.perfcake.pc4nb.core.model.GeneratorModel;
+import org.perfcake.pc4nb.core.model.PC4NBModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.reflect.ComponentScanner;
 
-public final class GeneratorVisualPanel extends ComponentWithPropertiesVisualPanel {
+public final class GeneratorVisualPanel extends VisualPanelWithProperties {
     public static final String GENERATOR_PACKAGE = "org.perfcake.message.generator";
 
     /**
@@ -47,7 +53,7 @@ public final class GeneratorVisualPanel extends ComponentWithPropertiesVisualPan
         for (Class<? extends AbstractMessageGenerator> generator : subTypes) {
             components.add(generator.getSimpleName());
         }
-        
+
         ComponentPropertiesScanner propertyScanner = new ComponentPropertiesScanner();
 
         for (String component : components) {
@@ -57,9 +63,10 @@ public final class GeneratorVisualPanel extends ComponentWithPropertiesVisualPan
                 Exceptions.printStackTrace(ex);
             }
         }
-        
+
         initComponents();
-        
+        setModel(new GeneratorModel(new Scenario.Generator()));
+
         try {
             listProperties((String) generatorSelection.getSelectedItem());
         } catch (ClassNotFoundException | NoSuchFieldException ex) {
@@ -69,7 +76,7 @@ public final class GeneratorVisualPanel extends ComponentWithPropertiesVisualPan
 
     @Override
     public String getName() {
-        return "Generators";
+        return "Generator";
     }
 
     public JComboBox getGeneratorSelection() {
@@ -79,10 +86,46 @@ public final class GeneratorVisualPanel extends ComponentWithPropertiesVisualPan
     public JComboBox getPeriodSelection() {
         return periodSelection;
     }
-    
+
     @Override
     public JTable getPropertiesTable() {
         return propertiesTable;
+    }
+
+    @Override
+    public void setModel(PC4NBModel model) {
+        super.setModel(model);
+
+        GeneratorModel generatorModel = (GeneratorModel) model;
+        String generatorClazz = generatorModel.getGenerator().getClazz();
+
+        Properties properties = new Properties();
+        properties.putAll(getPropertiesFor(generatorClazz));
+
+        for (Property property : generatorModel.getProperty()) {
+            properties.put(property.getName(), property.getValue());
+        }
+
+        try {
+            if (generatorClazz != null) {
+                getGeneratorSelection().setSelectedItem(generatorClazz);
+                putToComponentPropertiesMap(generatorClazz, properties);
+                listProperties(generatorClazz);
+            }
+
+        } catch (ClassNotFoundException | NoSuchFieldException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        Run generatorRun = generatorModel.getGenerator().getRun();
+
+        if (generatorRun != null) {
+            periodSelection.setSelectedItem(generatorRun.getType());
+        }
+
+        for (Property property : generatorModel.getProperty()) {
+            getPropertiesTableModel().addRow(property);
+        }
     }
 
     /**
@@ -105,12 +148,10 @@ public final class GeneratorVisualPanel extends ComponentWithPropertiesVisualPan
         String[] componentNamesArray = new String[componentNames.size()];
         componentNames.toArray(componentNamesArray);
         generatorSelection.setModel(new DefaultComboBoxModel(componentNamesArray));
-
-        generatorSelection.addItemListener (new ItemListener() {
+        generatorSelection.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 try {
                     listProperties((String) generatorSelection.getSelectedItem());
-                    propertiesTable.setModel(getPropertiesTableModel());
                 } catch (ClassNotFoundException | NoSuchFieldException ex) {
                     // blah
                 }
@@ -184,7 +225,6 @@ public final class GeneratorVisualPanel extends ComponentWithPropertiesVisualPan
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return;
     }
-
 }

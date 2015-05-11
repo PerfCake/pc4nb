@@ -16,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.perfcake.pc4nb.core.model;
 
 import org.perfcake.model.Scenario.Validation;
@@ -24,46 +23,69 @@ import org.perfcake.model.Scenario.Validation.Validator;
 
 public class ValidationModel extends PC4NBModel {
 
-	public static final String PROPERTY_VALIDATORS = "validation-validators";
-	public static final String PROPERTY_ENABLED = "validation-enabled";
-	public static final String PROPERTY_FAST_FORWARD = "validation-fast-forward";
-	
-	private Validation validation;
-	
-	public ValidationModel(Validation validation){
-		if (validation == null){
-			throw new IllegalArgumentException("Validation must not be null");
-		}
-		this.validation = validation;
-	}
+    public static final String PROPERTY_VALIDATORS = "validation-validators";
+    public static final String PROPERTY_ENABLED = "validation-enabled";
+    public static final String PROPERTY_FAST_FORWARD = "validation-fast-forward";
 
-	public Validation getValidation() {
-		return validation;
-	}
+    private Validation validation;
 
-	public void addValidator(Validator validator){
-		addValidator(getValidation().getValidator().size(), validator);
-	}
-	public void addValidator(int index, Validator validator){
-		getValidation().getValidator().add(index, validator);
-		getListeners().firePropertyChange(PROPERTY_VALIDATORS, null, validator);
-	}
-	
-	public void removeValidator(Validator validator){
-		if (getValidation().getValidator().remove(validator)){
-			getListeners().firePropertyChange(PROPERTY_VALIDATORS, validator, null);
-		}
-	}
-	
-	public void setEnabled(boolean enabled){
-		boolean oldEnabled = getValidation().isEnabled();
-		getValidation().setEnabled(enabled);
-		getListeners().firePropertyChange(PROPERTY_ENABLED, oldEnabled, enabled);
-	}
-	
-	public void setFastForward(boolean fastForward){
-		boolean oldFastForward = getValidation().isFastForward();
-		getValidation().setFastForward(fastForward);
-		getListeners().firePropertyChange(PROPERTY_FAST_FORWARD, oldFastForward, fastForward);
-	}
+    public ValidationModel(Validation validation) {
+        this.validation = validation;
+    }
+
+    public Validation getValidation() {
+        return validation;
+    }
+
+    public void addValidator(Validator validator) {
+        if (getValidation() == null) {
+            createValidation();
+        }
+        
+        addValidator(getValidation().getValidator().size(), validator);
+        ModelMap.getDefault().createModelAndAddEntry(validator);
+    }
+
+    public void addValidator(int index, Validator validator) {
+        if (getValidation() == null) {
+            createValidation();
+        }
+        
+        getValidation().getValidator().add(index, validator);
+        getListeners().firePropertyChange(PROPERTY_VALIDATORS, null, validator);
+        ModelMap.getDefault().createModelAndAddEntry(validator);
+    }
+
+    public void removeValidator(Validator validator) {
+        if (getValidation().getValidator().remove(validator)) {
+            getListeners().firePropertyChange(PROPERTY_VALIDATORS, validator, null);
+            ModelMap.getDefault().removeEntry(validator);
+        }
+        
+        if (getValidation().getValidator().isEmpty()) {
+            removeValidation();
+        }
+    }
+
+    public void setEnabled(boolean enabled) {
+        boolean oldEnabled = getValidation().isEnabled();
+        getValidation().setEnabled(enabled);
+        getListeners().firePropertyChange(PROPERTY_ENABLED, oldEnabled, enabled);
+    }
+
+    public void setFastForward(boolean fastForward) {
+        boolean oldFastForward = getValidation().isFastForward();
+        getValidation().setFastForward(fastForward);
+        getListeners().firePropertyChange(PROPERTY_FAST_FORWARD, oldFastForward, fastForward);
+    }
+
+    private void createValidation() {
+        this.validation = new Validation();
+        ModelMap.getDefault().addEntry(validation, this);
+    }
+
+    private void removeValidation() {
+        ModelMap.getDefault().removeEntry(validation);
+        this.validation = null;
+    }
 }

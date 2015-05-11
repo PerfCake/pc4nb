@@ -15,20 +15,40 @@
  */
 package org.perfcake.pc4nb.wizards.visuals;
 
-import javax.swing.JPanel;
+import java.beans.PropertyChangeEvent;
+import java.util.Properties;
+import javax.swing.JTable;
+import org.openide.util.Exceptions;
+import org.perfcake.model.Scenario;
+import org.perfcake.pc4nb.core.model.ModelMap;
+import org.perfcake.pc4nb.core.model.PropertiesModel;
 
-public final class ScenarioPropertiesVisualPanel extends JPanel {
+public final class ScenarioPropertiesVisualPanel extends VisualPanelWithProperties {
 
-    /**
-     * Creates new form ScenarioVisualPanel6
-     */
     public ScenarioPropertiesVisualPanel() {
+        setModel(new PropertiesModel(new Scenario.Properties()));
+        ModelMap.getDefault().addEntry(((PropertiesModel) getModel()).getProperties(), getModel());
+
+        try {
+            putToComponentPropertiesMap("Scenario", new Properties());
+        } catch (ClassNotFoundException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
         initComponents();
+
+        try {
+            listProperties("Scenario");
+        } catch (ClassNotFoundException | NoSuchFieldException ex) {
+            System.err.println("Class not found " + ex.getMessage());
+
+            initComponents();
+        }
     }
 
     @Override
     public String getName() {
-        return "Step #6";
+        return "Scenario Properties";
     }
 
     /**
@@ -39,18 +59,54 @@ public final class ScenarioPropertiesVisualPanel extends JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        propertiesTable = new javax.swing.JTable();
+        scenarioPropertiesLabel = new javax.swing.JLabel();
+
+        propertiesTable.setModel(getPropertiesTableModel());
+        jScrollPane1.setViewportView(propertiesTable);
+
+        org.openide.awt.Mnemonics.setLocalizedText(scenarioPropertiesLabel, org.openide.util.NbBundle.getMessage(ScenarioPropertiesVisualPanel.class, "ScenarioPropertiesVisualPanel.scenarioPropertiesLabel.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(45, 45, 45)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scenarioPropertiesLabel)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 640, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(69, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addComponent(scenarioPropertiesLabel)
+                .addGap(30, 30, 30)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(116, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable propertiesTable;
+    private javax.swing.JLabel scenarioPropertiesLabel;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        try {
+            listProperties("Scenario");
+        } catch (ClassNotFoundException | NoSuchFieldException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    @Override
+    public JTable getPropertiesTable() {
+        return propertiesTable;
+    }
 }

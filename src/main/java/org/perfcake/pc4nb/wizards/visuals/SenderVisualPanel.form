@@ -47,7 +47,7 @@
   <SubComponents>
     <Component class="javax.swing.JComboBox" name="senderSelection">
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="Set&lt;String&gt; componentNames = getComponentPropertiesModelMap().keySet();&#xa;String[] componentNamesArray = new String[componentNames.size()];&#xa;componentNames.toArray(componentNamesArray);&#xa;senderSelection.setModel(new DefaultComboBoxModel(componentNamesArray));&#xa;&#xa;senderSelection.addItemListener (new ItemListener() {&#xa;    public void itemStateChanged(ItemEvent e) {&#xa;        try {&#xa;            listProperties((String) senderSelection.getSelectedItem());&#xa;            propertiesTable.setModel(getPropertiesTableModel());&#xa;        } catch (ClassNotFoundException | NoSuchFieldException ex) {&#xa;            // blah&#xa;        }&#xa;    }&#xa;});"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="Set&lt;String&gt; componentNames = getComponentPropertiesModelMap().keySet();&#xa;String[] componentNamesArray = new String[componentNames.size()];&#xa;componentNames.toArray(componentNamesArray);&#xa;senderSelection.setModel(new DefaultComboBoxModel(componentNamesArray));&#xa;&#xa;senderSelection.addItemListener (new ItemListener() {&#xa;    public void itemStateChanged(ItemEvent e) {&#xa;        try {&#xa;            listProperties((String) senderSelection.getSelectedItem());&#xa;        } catch (ClassNotFoundException | NoSuchFieldException ex) {&#xa;            // blah&#xa;        }&#xa;    }&#xa;});"/>
       </AuxValues>
     </Component>
     <Component class="javax.swing.JLabel" name="senderTypeLabel">

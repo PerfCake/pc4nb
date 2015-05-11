@@ -15,18 +15,31 @@
  */
 package org.perfcake.pc4nb.wizards.visuals;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import org.openide.util.Exceptions;
+import org.perfcake.model.Header;
+import org.perfcake.model.Property;
+import org.perfcake.model.Scenario;
+import org.perfcake.model.Scenario.Messages.Message;
+import org.perfcake.pc4nb.core.model.HeaderModel;
 import org.perfcake.pc4nb.core.model.MessageModel;
+import org.perfcake.pc4nb.core.model.ModelMap;
+import org.perfcake.pc4nb.core.model.PC4NBModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
+import org.perfcake.pc4nb.ui3.actions.AddHeaderAction;
+import org.perfcake.pc4nb.ui3.actions.DeleteHeaderAction;
+import org.perfcake.pc4nb.ui3.actions.EditHeaderAction;
 import org.perfcake.pc4nb.ui.tableModel.HeadersTableModel;
-import org.perfcake.pc4nb.ui.actions.AddHeaderAction;
-import org.perfcake.pc4nb.ui.actions.EditHeaderAction;
 
-public final class MessageVisualPanel extends ComponentWithPropertiesVisualPanel {
+public final class MessageVisualPanel extends VisualPanelWithProperties {
 
     public static final String MESSAGE_PACKAGE = "org.perfcake.message";
 
@@ -34,15 +47,17 @@ public final class MessageVisualPanel extends ComponentWithPropertiesVisualPanel
         ComponentPropertiesScanner propertyScanner = new ComponentPropertiesScanner();
 
         try {
-            putToComponentPropertiesMap("Message", propertyScanner.getPropertiesOfComponent(Class.forName(MESSAGE_PACKAGE + "." + "Message")));
+            putToComponentPropertiesMap("Message", propertyScanner.getPropertiesOfComponent(Class.forName(MESSAGE_PACKAGE + ".Message")));
         } catch (ClassNotFoundException ex) {
             Exceptions.printStackTrace(ex);
         }
 
         initComponents();
+        setModel(new MessageModel(new Message()));
 
-        addHeaderButton.addActionListener(new AddHeaderAction(this));
-        editHeaderButton.addActionListener(new EditHeaderAction(this));
+        addHeaderButton.addActionListener(new AddHeaderListener());
+        editHeaderButton.addActionListener(new EditHeaderListener());
+        deleteHeaderButton.addActionListener(new DeleteHeaderListener());
 
         try {
             listProperties("Message");
@@ -89,11 +104,49 @@ public final class MessageVisualPanel extends ComponentWithPropertiesVisualPanel
     }
 
     public JTextField getUriTexField() {
-        return uriTexField;
+        return uriTextField;
     }
 
     public void setUriTexField(JTextField uriTexField) {
-        this.uriTexField = uriTexField;
+        this.uriTextField = uriTexField;
+    }
+
+    @Override
+    public void setModel(PC4NBModel model) {
+        super.setModel(model);
+
+        Scenario.Messages.Message message = ((MessageModel) model).getMessage();
+
+        String messageUri = message.getUri();
+        uriTextField.setText(messageUri);
+        
+        int messageMultiplicity = 0; 
+        if (message.getMultiplicity() != null) {
+            messageMultiplicity = Integer.parseInt(message.getMultiplicity());
+        }
+        multiplicitySpinner.setValue(messageMultiplicity);
+        
+        String messageContent = message.getContent();
+        contentTextField.setText(messageContent);
+        
+        Properties properties = new Properties();
+        properties.putAll(getPropertiesFor("Message"));
+
+        for (Property property : message.getProperty()) {
+            properties.put(property.getName(), property.getValue());
+        }
+
+        try {
+            putToComponentPropertiesMap("Message", properties);
+            listProperties("Message");
+
+        } catch (ClassNotFoundException | NoSuchFieldException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        for (Header header : message.getHeader()) {
+            headersTableModel.addRow(header);
+        }
     }
 
     /**
@@ -105,7 +158,7 @@ public final class MessageVisualPanel extends ComponentWithPropertiesVisualPanel
     private void initComponents() {
 
         uriLabel = new javax.swing.JLabel();
-        uriTexField = new javax.swing.JTextField();
+        uriTextField = new javax.swing.JTextField();
         multiplicityLabel = new javax.swing.JLabel();
         multiplicitySpinner = new javax.swing.JSpinner();
         contentLabel = new javax.swing.JLabel();
@@ -127,7 +180,7 @@ public final class MessageVisualPanel extends ComponentWithPropertiesVisualPanel
 
         org.openide.awt.Mnemonics.setLocalizedText(uriLabel, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.uriLabel.text")); // NOI18N
 
-        uriTexField.setText(org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.uriTexField.text")); // NOI18N
+        uriTextField.setText(org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.uriTextField.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(multiplicityLabel, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.multiplicityLabel.text")); // NOI18N
 
@@ -158,11 +211,6 @@ public final class MessageVisualPanel extends ComponentWithPropertiesVisualPanel
         org.openide.awt.Mnemonics.setLocalizedText(addHeaderButton, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.addHeaderButton.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(deleteHeaderButton, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.deleteHeaderButton.text")); // NOI18N
-        deleteHeaderButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteHeaderButtonActionPerformed(evt);
-            }
-        });
 
         org.openide.awt.Mnemonics.setLocalizedText(editHeaderButton, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.editHeaderButton.text")); // NOI18N
 
@@ -199,7 +247,7 @@ public final class MessageVisualPanel extends ComponentWithPropertiesVisualPanel
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(uriLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(uriTexField))
+                        .addComponent(uriTextField))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(multiplicityLabel)
@@ -228,7 +276,7 @@ public final class MessageVisualPanel extends ComponentWithPropertiesVisualPanel
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(uriLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(uriTexField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(uriTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(multiplicityLabel)
@@ -267,14 +315,6 @@ public final class MessageVisualPanel extends ComponentWithPropertiesVisualPanel
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void deleteHeaderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteHeaderButtonActionPerformed
-        int[] selectedRows = headersTable.getSelectedRows();
-
-        for (int i = selectedRows.length - 1; i >= 0; i--) {
-            headersTableModel.removeRow(selectedRows[i]);
-        }
-    }//GEN-LAST:event_deleteHeaderButtonActionPerformed
-
     private void attachValidatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attachValidatorButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_attachValidatorButtonActionPerformed
@@ -304,7 +344,7 @@ public final class MessageVisualPanel extends ComponentWithPropertiesVisualPanel
     private javax.swing.JLabel propertiesLabel;
     private javax.swing.JTable propertiesTable;
     private javax.swing.JLabel uriLabel;
-    private javax.swing.JTextField uriTexField;
+    private javax.swing.JTextField uriTextField;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -314,6 +354,52 @@ public final class MessageVisualPanel extends ComponentWithPropertiesVisualPanel
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        return;
+//        if (evt.getSource() instanceof MessageModel) {
+//            Message message = (Message) ((MessageModel) evt.getSource()).getMessage();
+//            uriTexField.setText(message.getUri());
+//            multiplicitySpinner.setValue(message.getMultiplicity());
+//        }
+    }
+
+    private class AddHeaderListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            AddHeaderAction action = new AddHeaderAction(getModel());
+            action.execute();
+        }
+    }
+
+    private class EditHeaderListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = MessageVisualPanel.this.getHeadersTable().getSelectedRow();
+
+            if (selectedRow != -1) {
+                MessageModel model = (MessageModel) MessageVisualPanel.this.getModel();
+                Header header = model.getMessage().getHeader().get(selectedRow);
+                EditHeaderAction action = new EditHeaderAction((HeaderModel) ModelMap.getDefault().getPC4NBModelFor(header));
+                action.execute();
+            }
+        }
+    }
+
+    private class DeleteHeaderListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int[] selectedRows = MessageVisualPanel.this.getHeadersTable().getSelectedRows();
+            MessageModel messageModel = (MessageModel) MessageVisualPanel.this.getModel();
+            List<Header> toRemove = new ArrayList<>();
+
+            for (int i = 0; i < selectedRows.length; i++) {
+                Header header = messageModel.getMessage().getHeader().get(selectedRows[i]);
+                toRemove.add(header);
+            }
+
+            DeleteHeaderAction action = new DeleteHeaderAction(getModel(), toRemove);
+            action.execute();
+        }
     }
 }

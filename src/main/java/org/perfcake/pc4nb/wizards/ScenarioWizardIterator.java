@@ -107,6 +107,8 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
         if (finished) {
             ScenarioManager manager = new ScenarioManager();
             prepareScenario();
+            
+            ModelMap.getDefault().addEntry(scenarioModel.getScenario(), scenarioModel);
 
             Project project = (Project) wizard.getProperty("scenario-project");
             URI scenarioPath = Utilities.toURI(new File(project.getProjectDirectory().getPath() + File.separator + "scenarios"

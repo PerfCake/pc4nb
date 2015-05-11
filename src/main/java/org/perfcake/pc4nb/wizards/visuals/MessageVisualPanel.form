@@ -25,7 +25,7 @@
                   <Group type="102" attributes="0">
                       <Component id="uriLabel" min="-2" pref="65" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="uriTexField" max="32767" attributes="0"/>
+                      <Component id="uriTextField" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -64,7 +64,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="uriLabel" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                  <Component id="uriTexField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="uriTextField" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -119,10 +119,10 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="uriTexField">
+    <Component class="javax.swing.JTextField" name="uriTextField">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/perfcake/pc4nb/wizards/visuals/Bundle.properties" key="MessageVisualPanel.uriTexField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/perfcake/pc4nb/wizards/visuals/Bundle.properties" key="MessageVisualPanel.uriTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -222,9 +222,6 @@
           <ResourceString bundle="org/perfcake/pc4nb/wizards/visuals/Bundle.properties" key="MessageVisualPanel.deleteHeaderButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteHeaderButtonActionPerformed"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="editHeaderButton">
       <Properties>

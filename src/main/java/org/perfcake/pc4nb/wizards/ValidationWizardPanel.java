@@ -75,5 +75,4 @@ public class ValidationWizardPanel implements WizardDescriptor.Panel<WizardDescr
     public void storeSettings(WizardDescriptor wiz) {
         wiz.putProperty("validation-model", getComponent().getModel());
     }
-
 }

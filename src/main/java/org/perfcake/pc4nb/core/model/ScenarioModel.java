@@ -48,35 +48,41 @@ public class ScenarioModel extends PC4NBModel {
 		Scenario.Sender oldSender = getScenario().getSender();
 		getScenario().setSender(sender);
 		getListeners().firePropertyChange(PROPERTY_SENDER, oldSender, sender);
+                ModelMap.getDefault().createModelAndAddEntry(sender);
 	}
 	
 	public void setGenerator(Scenario.Generator generator){
 		Scenario.Generator oldGenerator = getScenario().getGenerator();
 		getScenario().setGenerator(generator);
 		getListeners().firePropertyChange(PROPERTY_GENERATOR, oldGenerator, generator);
+                ModelMap.getDefault().createModelAndAddEntry(generator);
 	}
 	
 	public void setReporting(Scenario.Reporting reporting){
 		Scenario.Reporting oldReporting = getScenario().getReporting();
 		getScenario().setReporting(reporting);
 		getListeners().firePropertyChange(PROPERTY_REPORTING, oldReporting, reporting);
+                ModelMap.getDefault().createModelAndAddEntry(reporting);
 	}
 	
 	public void setMessages(Scenario.Messages messages){
 		Scenario.Messages oldMessages = getScenario().getMessages();
 		getScenario().setMessages(messages);
 		getListeners().firePropertyChange(PROPERTY_MESSAGES, oldMessages, messages);
+                ModelMap.getDefault().createModelAndAddEntry(messages);
 	}
 	
-	public void setValidation(Scenario.Validation validatrion){
+	public void setValidation(Scenario.Validation validation){
 		Scenario.Validation oldValidation = getScenario().getValidation();
-		getScenario().setValidation(validatrion);
-		getListeners().firePropertyChange(PROPERTY_VALIDATION, oldValidation, validatrion);
+		getScenario().setValidation(validation);
+		getListeners().firePropertyChange(PROPERTY_VALIDATION, oldValidation, validation);
+                ModelMap.getDefault().createModelAndAddEntry(validation);
 	}
 	
 	public void setProperties(Scenario.Properties properties){
 		Scenario.Properties oldProperties = getScenario().getProperties();
 		getScenario().setProperties(properties);
 		getListeners().firePropertyChange(PROPERTY_PROPERTIES, oldProperties, properties);
+                ModelMap.getDefault().createModelAndAddEntry(properties);
 	}
 }

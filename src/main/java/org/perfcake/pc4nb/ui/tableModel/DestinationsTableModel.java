@@ -45,8 +45,7 @@ public class DestinationsTableModel extends AbstractTableModel {
     }
 
     public void addRow(Destination destination) {
-        int lastRow = destinations.size();
-        insertRow(lastRow, destination);
+        destinations.add(destination);
     }
 
     public void insertRow(int index, Destination destination) {

@@ -16,21 +16,21 @@
 package org.perfcake.pc4nb.ui.tableModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import org.perfcake.model.Scenario.Reporting.Reporter;
-import org.perfcake.pc4nb.core.model.ModelMap;
 
 /**
  *
  * @author Andrej Halaj
  */
 public class ReportersTableModel extends AbstractTableModel {
-     private List<Reporter> reporters =  new ArrayList<>();
-
-    @Override
+    List<Reporter> reporters = new ArrayList<>();
+    
+     @Override
     public int getRowCount() {
-        return reporters .size();
+        return reporters.size();
     }
 
     @Override
@@ -38,38 +38,48 @@ public class ReportersTableModel extends AbstractTableModel {
         return 2;
     }
 
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        Reporter reporter = reporters.get(rowIndex);
+        
+        if (columnIndex == 0) {
+            return reporter.isEnabled();
+        } else if (columnIndex == 1) {
+            return reporter.getClazz();
+        } else {
+            return null;
+        }
+    }
+    
     public void addRow(Reporter reporter) {
-        int lastRow = reporters.size();
-        insertRow(lastRow, reporter);
+        reporters.add(reporter);
     }
 
     public void insertRow(int index, Reporter reporter) {
         reporters.add(index, reporter);
         fireTableRowsInserted(index, index);
     }
-    
+
     public void updateRow(int index, Reporter reporter) {
-        ModelMap.getDefault().removeEntry(reporters.get(index));
-        reporters.set(index, reporter);
+        setValueAt(reporter.isEnabled(), index, 0);
+        setValueAt(reporter.getClazz(), index, 1);
         fireTableRowsUpdated(index, index);
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        if (rowIndex <= getRowCount() && columnIndex <= getColumnCount()) {
+            if (columnIndex == 0) {
+                reporters.get(rowIndex).setEnabled((Boolean) aValue);
+            } else {
+                reporters.get(rowIndex).setClazz((String) aValue);
+            }
+        }
     }
 
     public void removeRow(int rowNum) {
         reporters.remove(rowNum);
         fireTableRowsDeleted(rowNum, rowNum);
-    }
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        Reporter reporter = reporters.get(rowIndex);
-        switch (columnIndex) {
-            case 0:
-                return reporter.isEnabled();
-            case 1:
-                return reporter.getClazz();
-            default:
-                throw new IllegalArgumentException("columnIndex");
-        }
     }
 
     @Override
@@ -80,10 +90,10 @@ public class ReportersTableModel extends AbstractTableModel {
             case 1:
                 return "Type";
             default:
-                throw new IllegalArgumentException("columnIndex");
+                return "";
         }
     }
-    
+
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         switch (columnIndex) {
@@ -94,5 +104,9 @@ public class ReportersTableModel extends AbstractTableModel {
             default:
                 throw new IllegalArgumentException("columnIndex");
         }
+    }
+    
+    public List<Reporter> getReporters() {
+        return Collections.unmodifiableList(reporters);
     }
 }

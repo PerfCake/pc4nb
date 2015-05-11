@@ -15,29 +15,40 @@
  */
 package org.perfcake.pc4nb.wizards.visuals;
 
-import java.awt.Component;
 import java.beans.PropertyChangeEvent;
-import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JComponent;
 import javax.swing.JTable;
-import org.openide.DialogDisplayer;
-import org.openide.WizardDescriptor;
-import org.perfcake.pc4nb.wizards.ValidatorWizardPanel;
+import org.perfcake.model.Scenario;
+import org.perfcake.model.Scenario.Validation.Validator;
+import org.perfcake.pc4nb.core.model.ValidationModel;
+import org.perfcake.pc4nb.ui3.AbstractPC4NBView;
+import org.perfcake.pc4nb.ui.tableModel.ValidatorsTableModel;
 
-public final class ValidationVisualPanel extends ComponentWithPropertiesVisualPanel {
+public final class ValidationVisualPanel extends AbstractPC4NBView {
 
     /**
      * Creates new form ScenarioVisualPanel4
      */
     public ValidationVisualPanel() {
+        setModel(new ValidationModel(new Scenario.Validation()));
         initComponents();
+        
+        /*addValidatorButton.addActionListener(new AddValidatorAction(this));
+        editValidatorButton.addActionListener(new EditValidatorAction(this));
+        deleteValidatorButton.addActionListener(new DeleteValidatorAction(this));*/
     }
 
     @Override
     public String getName() {
-        return "Step #4";
+        return "Validation";
+    }
+
+    public JTable getValidatorsTable() {
+        return validatorsTable;
+    }
+
+    public ValidatorsTableModel getValidatorsTableModel() {
+        return validatorsTableModel;
     }
 
     /**
@@ -53,7 +64,7 @@ public final class ValidationVisualPanel extends ComponentWithPropertiesVisualPa
         enabledCheckBox = new javax.swing.JCheckBox();
         fastForwardCheckBox = new javax.swing.JCheckBox();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        validatorsTable = new javax.swing.JTable();
         deleteValidatorButton = new javax.swing.JButton();
         editValidatorButton = new javax.swing.JButton();
         addValidatorButton = new javax.swing.JButton();
@@ -66,29 +77,15 @@ public final class ValidationVisualPanel extends ComponentWithPropertiesVisualPa
 
         org.openide.awt.Mnemonics.setLocalizedText(fastForwardCheckBox, org.openide.util.NbBundle.getMessage(ValidationVisualPanel.class, "ValidationVisualPanel.fastForwardCheckBox.text")); // NOI18N
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        validatorsTableModel = new ValidatorsTableModel();
+        validatorsTable.setModel(validatorsTableModel);
+        jScrollPane1.setViewportView(validatorsTable);
 
         org.openide.awt.Mnemonics.setLocalizedText(deleteValidatorButton, org.openide.util.NbBundle.getMessage(ValidationVisualPanel.class, "ValidationVisualPanel.deleteValidatorButton.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(editValidatorButton, org.openide.util.NbBundle.getMessage(ValidationVisualPanel.class, "ValidationVisualPanel.editValidatorButton.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(addValidatorButton, org.openide.util.NbBundle.getMessage(ValidationVisualPanel.class, "ValidationVisualPanel.addValidatorButton.text")); // NOI18N
-        addValidatorButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addValidatorButtonActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -142,31 +139,6 @@ public final class ValidationVisualPanel extends ComponentWithPropertiesVisualPa
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void addValidatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addValidatorButtonActionPerformed
-        List<WizardDescriptor.Panel<WizardDescriptor>> panels = new ArrayList<>();
-        panels.add(new ValidatorWizardPanel());
-        String[] steps = new String[panels.size()];
-        for (int i = 0; i < panels.size(); i++) {
-            Component c = panels.get(i).getComponent();
-            // Default step name to component name of panel.
-            steps[i] = c.getName();
-            if (c instanceof JComponent) { // assume Swing components
-                JComponent jc = (JComponent) c;
-                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
-                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DATA, steps);
-                jc.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, true);
-            }
-        }
-        WizardDescriptor wiz = new WizardDescriptor(new WizardDescriptor.ArrayIterator<>(panels));
-        // {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
-        wiz.setTitleFormat(new MessageFormat("{0}"));
-        wiz.setTitle("Add Validator");
-        if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-            String text = (String) wiz.getProperty("validator-type");
-
-        }
-    }//GEN-LAST:event_addValidatorButtonActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addValidatorButton;
     private javax.swing.JButton deleteValidatorButton;
@@ -176,16 +148,26 @@ public final class ValidationVisualPanel extends ComponentWithPropertiesVisualPa
     private javax.swing.JCheckBox fastForwardCheckBox;
     private javax.swing.JLabel fastForwardLabel;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable validatorsTable;
+    private ValidatorsTableModel validatorsTableModel;
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public JTable getPropertiesTable() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (evt.getPropertyName().equals(ValidationModel.PROPERTY_VALIDATORS)) {
+            ValidationModel model = (ValidationModel) getModel();
+            List<Validator> validatorsList = model.getValidation().getValidator();
+            int targetIndex;
+
+            if (evt.getNewValue() != null) {
+                targetIndex = validatorsList.indexOf(evt.getNewValue());
+                validatorsTableModel.insertRow(targetIndex, (Validator) evt.getNewValue());
+            } else if (evt.getOldValue() != null) {
+                targetIndex = validatorsList.indexOf(evt.getOldValue());
+                validatorsTableModel.removeRow(targetIndex);
+            } else {
+                // error
+            }
+        }
     }
 }

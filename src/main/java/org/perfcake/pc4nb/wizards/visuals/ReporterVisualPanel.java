@@ -15,10 +15,15 @@
  */
 package org.perfcake.pc4nb.wizards.visuals;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -27,26 +32,35 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import org.openide.util.Exceptions;
+import org.perfcake.model.Property;
+import org.perfcake.model.Scenario;
+import org.perfcake.model.Scenario.Reporting.Reporter.Destination;
+import org.perfcake.pc4nb.core.model.DestinationModel;
+import org.perfcake.pc4nb.core.model.ModelMap;
+import org.perfcake.pc4nb.core.model.PC4NBModel;
+import org.perfcake.pc4nb.core.model.ReporterModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.reflect.ComponentScanner;
-import org.perfcake.pc4nb.ui.actions.AddDestinationAction;
-import org.perfcake.pc4nb.ui.actions.EditDestinationAction;
+import org.perfcake.pc4nb.ui3.actions.AddDestinationAction;
+import org.perfcake.pc4nb.ui3.actions.DeleteDestinationAction;
+import org.perfcake.pc4nb.ui3.actions.EditDestinationAction;
 import org.perfcake.pc4nb.ui.tableModel.DestinationsTableModel;
 import org.perfcake.reporting.reporters.*;
 
-public final class ReporterVisualPanel extends ComponentWithPropertiesVisualPanel {
+public final class ReporterVisualPanel extends VisualPanelWithProperties {
+
     public static final String REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
-    
+
     public ReporterVisualPanel() {
         ComponentScanner scanner = new ComponentScanner();
         Set<Class<? extends Reporter>> subTypes = scanner.findComponentsOfType(Reporter.class, REPORTER_PACKAGE);
 
         Set<String> components = new HashSet<>();
-        
+
         for (Class<? extends Reporter> reporter : subTypes) {
             components.add(reporter.getSimpleName());
         }
-        
+
         ComponentPropertiesScanner propertyScanner = new ComponentPropertiesScanner();
 
         for (String component : components) {
@@ -56,15 +70,20 @@ public final class ReporterVisualPanel extends ComponentWithPropertiesVisualPane
                 Exceptions.printStackTrace(ex);
             }
         }
-        
+
         initComponents();
-        
-        addDestinationButton.addActionListener(new AddDestinationAction(this));
-        editDestinationButton.addActionListener(new EditDestinationAction(this));
-        
+        setModel(new ReporterModel(new Scenario.Reporting.Reporter()));
+
+        for (Destination destination : ((ReporterModel) getModel()).getReporter().getDestination()) {
+            ModelMap.getDefault().getPC4NBModelFor(destination).addPropertyChangeListener(this);
+        }
+
+        addDestinationButton.addActionListener(new AddDestinationListener());
+        editDestinationButton.addActionListener(new EditDestinationListener());
+        deleteDestinationButton.addActionListener(new DeleteDestinationListener());
+
         try {
             listProperties((String) reporterSelection.getSelectedItem());
-            propertiesTable.setModel(getPropertiesTableModel());
         } catch (ClassNotFoundException | NoSuchFieldException ex) {
             System.err.println("Class not found " + ex.getMessage());
         }
@@ -103,7 +122,43 @@ public final class ReporterVisualPanel extends ComponentWithPropertiesVisualPane
     public JCheckBox getEnabledCheckBox() {
         return enabledCheckBox;
     }
-    
+
+    @Override
+    public void setModel(PC4NBModel model) {
+        super.setModel(model);
+
+        Scenario.Reporting.Reporter reporter = ((ReporterModel) model).getReporter();
+
+        String reporterClazz = reporter.getClazz();
+        Properties properties = new Properties();
+        properties.putAll(getPropertiesFor(reporterClazz));
+
+        for (Property property : reporter.getProperty()) {
+            properties.put(property.getName(), property.getValue());
+        }
+
+        try {
+            if (reporterClazz != null) {
+                getReporterSelection().setSelectedItem(reporterClazz);
+                putToComponentPropertiesMap(reporterClazz, properties);
+                listProperties(reporterClazz);
+            }
+
+        } catch (ClassNotFoundException | NoSuchFieldException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        for (Destination destination : reporter.getDestination()) {
+            getDestinationsTableModel().addRow(destination);
+        }
+
+        if (reporter.isEnabled()) {
+            enabledCheckBox.setSelected(true);
+        } else {
+            enabledCheckBox.setSelected(false);
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -130,11 +185,10 @@ public final class ReporterVisualPanel extends ComponentWithPropertiesVisualPane
         String[] componentNamesArray = new String[componentNames.size()];
         componentNames.toArray(componentNamesArray);
         reporterSelection.setModel(new DefaultComboBoxModel(componentNamesArray));
-        reporterSelection.addItemListener (new ItemListener() {
+        reporterSelection.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 try {
                     listProperties((String) reporterSelection.getSelectedItem());
-                    propertiesTable.setModel(getPropertiesTableModel());
                 } catch (ClassNotFoundException | NoSuchFieldException ex) {
                     System.err.println("Class not found " + ex.getMessage());
                 }
@@ -247,7 +301,71 @@ public final class ReporterVisualPanel extends ComponentWithPropertiesVisualPane
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ReporterModel model = (ReporterModel) getModel();
+        List<Destination> destinationsList = model.getReporter().getDestination();
+        int targetIndex;
+
+        switch (evt.getPropertyName()) {
+            case ReporterModel.PROPERTY_DESTINATIONS:
+                if (evt.getNewValue() != null) {
+                    targetIndex = destinationsList.indexOf(evt.getNewValue());
+                    destinationsTableModel.insertRow(targetIndex, (Destination) evt.getNewValue());
+                } else if (evt.getOldValue() != null) {
+                    targetIndex = destinationsTableModel.getDestinations().indexOf(evt.getOldValue());
+                    destinationsTableModel.removeRow(targetIndex);
+                } else {
+                    // error
+                }
+                break;
+            case DestinationModel.PROPERTY_CLASS:
+            case DestinationModel.PROPERTY_ENABLED:
+                DestinationModel destinationModel = (DestinationModel) evt.getSource();
+                Destination destination = destinationModel.getDestination();
+                targetIndex = destinationsTableModel.getDestinations().indexOf(destination);
+                destinationsTableModel.updateRow(targetIndex, destination);
+                break;
+            default:
+                break;
+        }
     }
 
+    private class AddDestinationListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            AddDestinationAction action = new AddDestinationAction(getModel());
+            action.execute();
+        }
+    }
+
+    private class EditDestinationListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = ReporterVisualPanel.this.getDestinationsTable().getSelectedRow();
+
+            if (selectedRow != -1) {
+                ReporterModel reporterModel = (ReporterModel) ReporterVisualPanel.this.getModel();
+                Destination destination = reporterModel.getReporter().getDestination().get(selectedRow);
+                EditDestinationAction action = new EditDestinationAction((DestinationModel) ModelMap.getDefault().getPC4NBModelFor(destination));
+                action.execute();
+            }
+        }
+    }
+
+    private class DeleteDestinationListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int[] selectedRows = ReporterVisualPanel.this.getDestinationsTable().getSelectedRows();
+            ReporterModel reporterModel = (ReporterModel) ReporterVisualPanel.this.getModel();
+            List<Destination> toRemove = new ArrayList<>();
+
+            for (int i = 0; i < selectedRows.length; i++) {
+                Destination destination = reporterModel.getReporter().getDestination().get(selectedRows[i]);
+                toRemove.add(destination);
+            }
+
+            DeleteDestinationAction action = new DeleteDestinationAction(getModel(), toRemove);
+            action.execute();
+        }
+    }
 }
