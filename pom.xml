@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.perfcake</groupId>
     <artifactId>pc4nb</artifactId>
-    <version>4.0.1001</version>
+    <version>4.1-SNAPSHOT</version>
     <packaging>nbm</packaging>
     <build>
         <plugins>
@@ -111,7 +111,7 @@
         <dependency>
             <groupId>org.perfcake</groupId>
             <artifactId>perfcake</artifactId>
-            <version>4.0</version>
+            <version>${perfcake.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -170,6 +170,7 @@
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <perfcake.version>4.1</perfcake.version>
     </properties>
     <description>Graphical PerfCake scenario editor for NetBeans</description>
 </project>
