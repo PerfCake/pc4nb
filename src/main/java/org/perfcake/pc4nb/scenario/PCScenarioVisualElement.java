@@ -5,7 +5,14 @@
  */
 package org.perfcake.pc4nb.scenario;
 
-import org.perfcake.pc4nb.ui3.AbstractPC4NBView;
+import org.perfcake.pc4nb.model.SenderModel;
+import org.perfcake.pc4nb.model.GeneratorModel;
+import org.perfcake.pc4nb.model.ReportingModel;
+import org.perfcake.pc4nb.model.ValidationModel;
+import org.perfcake.pc4nb.model.ModelMap;
+import org.perfcake.pc4nb.model.ScenarioModel;
+import org.perfcake.pc4nb.model.MessagesModel;
+import org.perfcake.pc4nb.ui.AbstractPC4NBView;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -43,12 +50,11 @@ import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Reporting;
 import org.perfcake.model.Scenario.Sender;
 import org.perfcake.model.Scenario.Validation;
-import org.perfcake.pc4nb.core.model.*;
 import org.perfcake.pc4nb.ui.palette.PC4NBPaletteActions;
 import org.perfcake.pc4nb.ui.palette.PerfCakeComponentCategoryNodeContainer;
-import org.perfcake.pc4nb.ui3.ComponentCategory;
-import static org.perfcake.pc4nb.ui3.ComponentCategory.*;
-import org.perfcake.pc4nb.ui3.ScenarioLayoutManager;
+import org.perfcake.pc4nb.ui.ComponentCategory;
+import static org.perfcake.pc4nb.ui.ComponentCategory.*;
+import org.perfcake.pc4nb.ui.ScenarioLayoutManager;
 
 @MultiViewElement.Registration(
         displayName = "#LBL_PCScenario_VISUAL",

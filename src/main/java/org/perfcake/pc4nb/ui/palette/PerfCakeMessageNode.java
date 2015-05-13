@@ -19,7 +19,7 @@ import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
-import org.perfcake.pc4nb.core.model.MessageModel;
+import org.perfcake.pc4nb.model.MessageModel;
 
 /**
  *

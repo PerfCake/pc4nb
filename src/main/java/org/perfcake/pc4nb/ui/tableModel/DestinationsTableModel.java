@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import org.perfcake.model.Scenario.Reporting.Reporter.Destination;
-import org.perfcake.pc4nb.core.model.ModelMap;
+import org.perfcake.pc4nb.model.ModelMap;
 
 /**
  *

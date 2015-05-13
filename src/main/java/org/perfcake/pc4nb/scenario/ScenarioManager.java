@@ -26,8 +26,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import org.apache.log4j.Logger;
 import org.perfcake.model.Scenario;
-import org.perfcake.pc4nb.core.model.ModelMap;
-import org.perfcake.pc4nb.core.model.ScenarioModel;
+import org.perfcake.pc4nb.model.ModelMap;
+import org.perfcake.pc4nb.model.ScenarioModel;
 import org.xml.sax.SAXException;
 
 /**

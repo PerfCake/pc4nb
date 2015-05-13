@@ -25,7 +25,7 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
-import org.perfcake.pc4nb.core.model.ScenarioModel;
+import org.perfcake.pc4nb.model.ScenarioModel;
 
 @Messages({
     "LBL_PCScenario_LOADER=Files of PCScenario"
