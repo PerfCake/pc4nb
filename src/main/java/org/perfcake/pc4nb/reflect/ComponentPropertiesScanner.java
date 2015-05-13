@@ -30,6 +30,7 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.message.generator.AbstractMessageGenerator;
+import org.perfcake.message.generator.MessageGenerator;
 
 /**
  *
@@ -56,6 +57,11 @@ public class ComponentPropertiesScanner {
         }
 
         Properties properties = getDefaultValuesOfFields();
+        
+        if (MessageGenerator.class.isAssignableFrom(component)) {
+            properties.remove("threads");
+            properties.remove("monitoringPeriod");
+        }
 
         return properties;
     }
