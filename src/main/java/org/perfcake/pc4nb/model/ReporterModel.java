@@ -43,6 +43,7 @@ public class ReporterModel extends PC4NBModel implements Transferable {
             throw new IllegalArgumentException("Reporter must not be null");
         }
         this.reporter = reporter;
+        ModelMap.getDefault().addEntry(reporter, this);
     }
 
     public Reporter getReporter() {
@@ -62,13 +63,11 @@ public class ReporterModel extends PC4NBModel implements Transferable {
     public void addDestination(int index, Destination destination) {
         getReporter().getDestination().add(index, destination);
         getListeners().firePropertyChange(PROPERTY_DESTINATIONS, null, destination);
-        ModelMap.getDefault().createModelAndAddEntry(destination);
     }
 
     public void removeDestination(Destination destination) {
         if (getReporter().getDestination().remove(destination)) {
             getListeners().firePropertyChange(PROPERTY_DESTINATIONS, destination, null);
-            ModelMap.getDefault().removeEntry(destination);
         }
     }
 

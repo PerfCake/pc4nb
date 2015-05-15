@@ -47,9 +47,11 @@ import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
 import org.perfcake.model.Scenario;
+import org.perfcake.model.Scenario.Properties;
 import org.perfcake.model.Scenario.Reporting;
 import org.perfcake.model.Scenario.Sender;
 import org.perfcake.model.Scenario.Validation;
+import org.perfcake.pc4nb.model.PropertiesModel;
 import org.perfcake.pc4nb.ui.palette.PC4NBPaletteActions;
 import org.perfcake.pc4nb.ui.palette.PerfCakeComponentCategoryNodeContainer;
 import org.perfcake.pc4nb.ui.ComponentCategory;
@@ -89,7 +91,6 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
         this.add(scenarioLayout.getView(VALIDATION));
         this.add(scenarioLayout.getView(REPORTING));
         this.add(scenarioLayout.getView(ComponentCategory.PROPERTIES));
-        scenarioLayout.getView(ComponentCategory.PROPERTIES).setColor(Color.ORANGE);
 
         refreshScenarioView();
 
@@ -143,25 +144,40 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
             scenarioLayout.getView(SENDER).setModel(senderModel);
 
             Scenario.Messages messages = scenario.getMessages();
-            MessagesModel messagesModel = (MessagesModel) ModelMap.getDefault().getPC4NBModelFor(messages);
-            if (messagesModel == null) {
+            MessagesModel messagesModel;
+            if (messages == null) {
                 messagesModel = new MessagesModel(null);
+            } else {
+                messagesModel = (MessagesModel) ModelMap.getDefault().getPC4NBModelFor(messages);
             }
             scenarioLayout.getView(MESSAGES).setModel(messagesModel);
 
             Reporting reporting = scenario.getReporting();
-            ReportingModel reportingModel = (ReportingModel) ModelMap.getDefault().getPC4NBModelFor(reporting);
-            if (reportingModel == null) {
+            ReportingModel reportingModel;
+            if (reporting == null) {
                 reportingModel = new ReportingModel(null);
+            } else {
+                reportingModel = (ReportingModel) ModelMap.getDefault().getPC4NBModelFor(reporting);
             }
             scenarioLayout.getView(REPORTING).setModel(reportingModel);
 
             Validation validation = scenario.getValidation();
-            ValidationModel validationModel = (ValidationModel) ModelMap.getDefault().getPC4NBModelFor(validation);
-            if (validationModel == null) {
+            ValidationModel validationModel;
+            if (validation == null) {
                 validationModel = new ValidationModel(null);
+            } else {
+                validationModel = (ValidationModel) ModelMap.getDefault().getPC4NBModelFor(validation);
             }
             scenarioLayout.getView(VALIDATION).setModel(validationModel);
+            
+            Properties properties = scenario.getProperties();
+            PropertiesModel propertiesModel;
+            if (properties == null) {
+                propertiesModel = new PropertiesModel(null);
+            } else {
+                propertiesModel = (PropertiesModel) ModelMap.getDefault().getPC4NBModelFor(properties);
+            }
+            scenarioLayout.getView(ComponentCategory.PROPERTIES).setModel(propertiesModel);
 
             scenarioLayout.recomputeChildren();
             //getVisualRepresentation().addMouseListener((MouseListener) scenarioLayout.getView(REPORTING));
@@ -218,10 +234,18 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
         ScenarioManager manager = new ScenarioManager();
 
         URI scenarioPath = obj.getPrimaryFile().toURI();
+        
+        ScenarioModel scenarioModel = (ScenarioModel) getModel();
+        scenarioModel.setGenerator(((GeneratorModel) scenarioLayout.getView(GENERATOR).getModel()).getGenerator());
+        scenarioModel.setSender(((SenderModel) scenarioLayout.getView(SENDER).getModel()).getSender());
+        scenarioModel.setMessages(((MessagesModel) scenarioLayout.getView(MESSAGES).getModel()).getMessages());
+        scenarioModel.setReporting(((ReportingModel) scenarioLayout.getView(REPORTING).getModel()).getReporting());
+        scenarioModel.setValidation(((ValidationModel) scenarioLayout.getView(VALIDATION).getModel()).getValidation());
+        scenarioModel.setProperties(((PropertiesModel) scenarioLayout.getView(ComponentCategory.PROPERTIES).getModel()).getProperties());
 
         try {
             OutputStream os = new FileOutputStream(Utilities.toFile(scenarioPath));
-            manager.createXML(((ScenarioModel) getModel()).getScenario(), os);
+            manager.createXML(scenarioModel.getScenario(), os);
         } catch (ScenarioException | ScenarioManagerException ex) {
             // error
         } catch (FileNotFoundException ex) {

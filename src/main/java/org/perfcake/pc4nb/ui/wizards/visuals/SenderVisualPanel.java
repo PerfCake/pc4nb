@@ -19,13 +19,16 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import org.openide.util.Exceptions;
 import org.perfcake.message.sender.MessageSender;
+import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.SenderModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.reflect.ComponentScanner;
@@ -73,6 +76,36 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
 
     public JComboBox getSenderSelection() {
         return senderSelection;
+    }
+    
+    @Override
+    public void setModel(PC4NBModel model) {
+        super.setModel(model);
+
+        SenderModel senderModel = (SenderModel) model;
+        String senderClazz = senderModel.getSender().getClazz();
+
+        Properties properties = new Properties();
+        properties.putAll(getPropertiesFor(senderClazz));
+
+        for (Property property : senderModel.getProperty()) {
+            properties.put(property.getName(), property.getValue());
+        }
+
+        try {
+            if (senderClazz != null) {
+                getSenderSelection().setSelectedItem(senderClazz);
+                putToComponentPropertiesMap(senderClazz, properties);
+                listProperties(senderClazz);
+            }
+
+        } catch (ClassNotFoundException | NoSuchFieldException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        for (Property property : senderModel.getProperty()) {
+            getPropertiesTableModel().addRow(property);
+        }
     }
 
     /**

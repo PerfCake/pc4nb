@@ -15,13 +15,22 @@
  */
 package org.perfcake.pc4nb.ui.wizards.visuals;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JCheckBox;
 import javax.swing.JTable;
 import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Validation.Validator;
+import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.ValidationModel;
+import org.perfcake.pc4nb.model.ValidatorModel;
 import org.perfcake.pc4nb.ui.AbstractPC4NBView;
+import org.perfcake.pc4nb.ui.actions.AddValidatorAction;
+import org.perfcake.pc4nb.ui.actions.DeleteValidatorAction;
+import org.perfcake.pc4nb.ui.actions.EditValidatorAction;
 import org.perfcake.pc4nb.ui.tableModel.ValidatorsTableModel;
 
 public final class ValidationVisualPanel extends AbstractPC4NBView {
@@ -30,12 +39,12 @@ public final class ValidationVisualPanel extends AbstractPC4NBView {
      * Creates new form ScenarioVisualPanel4
      */
     public ValidationVisualPanel() {
-        setModel(new ValidationModel(new Scenario.Validation()));
         initComponents();
+        setModel(new ValidationModel(new Scenario.Validation()));
         
-        /*addValidatorButton.addActionListener(new AddValidatorAction(this));
-        editValidatorButton.addActionListener(new EditValidatorAction(this));
-        deleteValidatorButton.addActionListener(new DeleteValidatorAction(this));*/
+        addValidatorButton.addActionListener(new AddValidatorListener());
+        editValidatorButton.addActionListener(new EditValidatorListener());
+        deleteValidatorButton.addActionListener(new DeleteValidatorListener());
     }
 
     @Override
@@ -49,6 +58,14 @@ public final class ValidationVisualPanel extends AbstractPC4NBView {
 
     public ValidatorsTableModel getValidatorsTableModel() {
         return validatorsTableModel;
+    }
+    
+    public boolean isValidationEnabled() {
+        return enabledCheckBox.isSelected();
+    }
+
+    public boolean isFastForward() {
+        return fastForwardCheckBox.isSelected();
     }
 
     /**
@@ -168,6 +185,49 @@ public final class ValidationVisualPanel extends AbstractPC4NBView {
             } else {
                 // error
             }
+        }
+    }
+    
+    private class AddValidatorListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            AddValidatorAction action = new AddValidatorAction(getModel());
+            action.execute();
+        }
+        
+    } 
+    
+    private class EditValidatorListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = ValidationVisualPanel.this.getValidatorsTable().getSelectedRow();
+
+            if (selectedRow != -1) {
+                ValidationModel validationModel = (ValidationModel) ValidationVisualPanel.this.getModel();
+                Validator validator = validationModel.getValidation().getValidator().get(selectedRow);
+                EditValidatorAction action = new EditValidatorAction((ValidatorModel) ModelMap.getDefault().getPC4NBModelFor(validator));
+                action.execute();
+            }
+        }
+    }
+
+    private class DeleteValidatorListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int[] selectedRows = ValidationVisualPanel.this.getValidatorsTable().getSelectedRows();
+            ValidationModel validationModel = (ValidationModel) ValidationVisualPanel.this.getModel();
+            List<Validator> toRemove = new ArrayList<>();
+
+            for (int i = 0; i < selectedRows.length; i++) {
+                Validator validator = validationModel.getValidation().getValidator().get(selectedRows[i]);
+                toRemove.add(validator);
+            }
+
+            DeleteValidatorAction action = new DeleteValidatorAction((ValidationModel) getModel(), toRemove);
+            action.execute();
         }
     }
 }

@@ -211,8 +211,6 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
             prepareReporting();
             prepareMessages();
             prepareValidation();
-
-            ModelMap.getDefault().addEntry(scenarioModel.getScenario(), scenarioModel);
         } catch (ClassNotFoundException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -230,8 +228,8 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
 
         Run generatorRun = new Run();
         generatorRun.setType((String) wizard.getProperty("run-type"));
-        generatorRun.setValue((String) wizard.getProperty("run-value"));
-        generatorModel.setThreads((String) wizard.getProperty("generator-threads"));
+        generatorRun.setValue(wizard.getProperty("run-value").toString());
+        generatorModel.setThreads(wizard.getProperty("generator-threads").toString());
 
         for (Property property : properties) {
             if (!defaultProperties.get(property.getName()).equals(property.getValue())) {
@@ -240,7 +238,6 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
         }
 
         generatorModel.setRun(generatorRun);
-        ModelMap.getDefault().addEntry(generatorModel.getGenerator(), generatorModel);
 
         scenarioModel.setGenerator(generatorModel.getGenerator());
     }
@@ -260,15 +257,11 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
             }
         }
 
-        ModelMap.getDefault().addEntry(senderModel.getSender(), senderModel);
-
         scenarioModel.setSender(senderModel.getSender());
     }
 
     private void prepareReporting() {
         ReportingModel reportingModel = (ReportingModel) wizard.getProperty("reporting-model");
-
-        ModelMap.getDefault().addEntry(reportingModel.getReporting(), reportingModel);
 
         if (reportingModel.getReporting().getReporter().isEmpty()) {
             scenarioModel.setReporting(null);
@@ -280,8 +273,6 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
     private void prepareMessages() {
         MessagesModel messagesModel = (MessagesModel) wizard.getProperty("messages-model");
 
-        ModelMap.getDefault().addEntry(messagesModel.getMessages(), messagesModel);
-
         if (messagesModel.getMessages().getMessage().isEmpty()) {
             scenarioModel.setMessages(null);
         } else {
@@ -291,8 +282,6 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
 
     private void prepareValidation() {
         ValidationModel validationModel = (ValidationModel) wizard.getProperty("validation-model");
-
-        ModelMap.getDefault().addEntry(validationModel.getValidation(), validationModel);
 
         if (validationModel.getValidation().getValidator().isEmpty()) {
             scenarioModel.setValidation(null);

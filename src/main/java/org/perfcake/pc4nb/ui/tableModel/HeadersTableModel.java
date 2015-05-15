@@ -16,10 +16,10 @@
 package org.perfcake.pc4nb.ui.tableModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import org.perfcake.model.Header;
-import org.perfcake.pc4nb.model.HeaderModel;
 import org.perfcake.pc4nb.model.ModelMap;
 
 /**
@@ -95,5 +95,9 @@ public class HeadersTableModel extends AbstractTableModel {
             default:
                 throw new IllegalArgumentException("columnIndex");
         }
+    }
+    
+    public List<Header> getHeaders() {
+        return Collections.unmodifiableList(headers);
     }
 }

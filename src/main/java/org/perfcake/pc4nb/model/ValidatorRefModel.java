@@ -13,6 +13,7 @@ public class ValidatorRefModel extends PC4NBModel {
 			throw new IllegalArgumentException("ValidatorRef must not be null.");
 		}
 		this.validatorRef = validatorRef;
+                ModelMap.getDefault().addEntry(validatorRef, this);
 	}
 
 	public ValidatorRef getValidatorRef() {

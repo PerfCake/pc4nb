@@ -16,15 +16,18 @@
 package org.perfcake.pc4nb.ui;
 
 import java.awt.Color;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.io.IOException;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.TransferHandler;
 import org.perfcake.model.Scenario.Reporting.Reporter;
+import org.perfcake.pc4nb.model.DestinationModel;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.ReporterModel;
+import org.perfcake.pc4nb.model.ReportingModel;
 import org.perfcake.pc4nb.ui.actions.DeleteReportersAction;
 import org.perfcake.pc4nb.ui.actions.EditReporterAction;
 
@@ -32,18 +35,20 @@ public class ReporterView extends SecondLevelView {
     private JMenuItem editComponent = new JMenuItem("Edit reporter");
     private JMenuItem deleteComponent = new JMenuItem("Delete reporter");
     private JPopupMenu menu = new JPopupMenu();
+    private TransferHandler transferHandler = new DestinationTransferHandler();
 
     public ReporterView(int x, int y, String header) {
         super(x, y, header);
         setColor(Color.RED);
 
-        editComponent.addActionListener(new EditReporterListener());
         menu.add(editComponent);
+        editComponent.addActionListener(new EditReporterListener());
 
-        deleteComponent.addActionListener(new DeleteReporterListener());
         menu.add(deleteComponent);
+        deleteComponent.addActionListener(new DeleteReporterListener());
 
-        this.setComponentPopupMenu(menu);
+        setComponentPopupMenu(menu);
+        setTransferHandler(transferHandler);
     }
 
     @Override
@@ -53,7 +58,7 @@ public class ReporterView extends SecondLevelView {
         ReporterModel reporterModel = (ReporterModel) getModel();
         setHeader(reporterModel.getReporter().getClazz());
     }
-    
+
     private class EditReporterListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -71,6 +76,26 @@ public class ReporterView extends SecondLevelView {
             if (reportingView != null) {
                 DeleteReportersAction action = new DeleteReportersAction(reportingView.getModel(), reporter);
                 action.execute();
+            }
+        }
+    }
+    
+    private final class DestinationTransferHandler extends TransferHandler {
+
+        @Override
+        public boolean canImport(TransferHandler.TransferSupport support) {
+            return support.isDataFlavorSupported(DestinationModel.DATA_FLAVOR);
+        }
+
+        @Override
+        public boolean importData(TransferHandler.TransferSupport support) {
+            try {
+                DestinationModel model = (DestinationModel) support.getTransferable().getTransferData(DestinationModel.DATA_FLAVOR);
+                ((ReporterModel) getModel()).addDestination(model.getDestination());
+
+                return true;
+            } catch (UnsupportedFlavorException | IOException ex) {
+                return false;
             }
         }
     }

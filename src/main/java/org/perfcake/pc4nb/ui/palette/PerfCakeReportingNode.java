@@ -25,7 +25,7 @@ public class PerfCakeReportingNode extends AbstractNode {
 
     public PerfCakeReportingNode() {
         super(new PerfCakeComponentNodeContainer("Reporting"));
-        this.setDisplayName("reporting");
+        this.setDisplayName("Reporting");
     }
     
 }

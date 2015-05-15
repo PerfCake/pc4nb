@@ -76,5 +76,4 @@ public class SenderWizardPanel implements WizardDescriptor.Panel<WizardDescripto
         wiz.putProperty("sender-type", getComponent().getSenderSelection().getSelectedItem());
         wiz.putProperty("sender-properties", getComponent().getProperties());
     }
-
 }

@@ -16,39 +16,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.perfcake.pc4nb.model;
 
 import org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period;
 
 public class PeriodModel extends PC4NBModel {
-	
-	public static final String PROPERTY_TYPE = "period-type";
-	public static final String PROPERTY_VALUE= "period-value";
 
-	private Period period;
+    public static final String PROPERTY_TYPE = "period-type";
+    public static final String PROPERTY_VALUE = "period-value";
 
-	public PeriodModel(Period period) {
-		if (period == null){
-			throw new IllegalArgumentException("Period must not be null.");
-		}
-		this.period = period;
-	}
+    private Period period;
 
-	public Period getPeriod() {
-		return period;
-	}
-	
-	public void setType(String type){
-		String oldType = getPeriod().getType();
-		getPeriod().setType(type);
-		getListeners().firePropertyChange(PROPERTY_TYPE, oldType, type);
-	}
-	
-	public void setValue(String value){
-		String oldValue = getPeriod().getValue();
-		getPeriod().setValue(value);
-		getListeners().firePropertyChange(PROPERTY_VALUE, oldValue, value);
-	}
-	
+    public PeriodModel(Period period) {
+        if (period == null) {
+            throw new IllegalArgumentException("Period must not be null.");
+        }
+        this.period = period;
+        ModelMap.getDefault().addEntry(period, this);
+    }
+
+    public Period getPeriod() {
+        return period;
+    }
+
+    public void setType(String type) {
+        String oldType = getPeriod().getType();
+        getPeriod().setType(type);
+        getListeners().firePropertyChange(PROPERTY_TYPE, oldType, type);
+    }
+
+    public void setValue(String value) {
+        String oldValue = getPeriod().getValue();
+        getPeriod().setValue(value);
+        getListeners().firePropertyChange(PROPERTY_VALUE, oldValue, value);
+    }
+
 }

@@ -43,6 +43,7 @@ public class DestinationModel extends PC4NBModel implements Transferable {
             throw new IllegalArgumentException("Destination must not be null");
         }
         this.destination = destination;
+        ModelMap.getDefault().addEntry(destination, this);
     }
 
     /**
@@ -71,7 +72,6 @@ public class DestinationModel extends PC4NBModel implements Transferable {
     public void addPeriod(int index, Period period) {
         getDestination().getPeriod().add(index, period);
         getListeners().firePropertyChange(PROPERTY_PERIOD, null, period);
-        ModelMap.getDefault().createModelAndAddEntry(period);
     }
 
     public void removePeriod(Period period) {
@@ -87,14 +87,12 @@ public class DestinationModel extends PC4NBModel implements Transferable {
 
     public void addProperty(int index, Property property) {
         getDestination().getProperty().add(index, property);
-        getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
-        ModelMap.getDefault().createModelAndAddEntry(property);
+        getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);;
     }
 
     public void removeProperty(Property property) {
         if (getDestination().getProperty().remove(property)) {
             getListeners().firePropertyChange(PROPERTY_PROPERTIES, property, null);
-            ModelMap.getDefault().removeEntry(property);
         }
     }
 

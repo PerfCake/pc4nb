@@ -16,11 +16,10 @@
 package org.perfcake.pc4nb.ui;
 
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.JMenuItem;
@@ -47,33 +46,42 @@ public class MessagesView extends PC4NBView {
 
     public MessagesView(int x, int y, int width) {
         super(x, y, width);
-        setColor(Color.GREEN);
+        setColor(Color.ORANGE);
         setHeader("Messages");
-        
+
         addComponent.addActionListener(new AddMessageListener());
-        
+
         menu.add(addComponent);
         this.setComponentPopupMenu(menu);
         setTransferHandler(transferHandler);
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D graphics = (Graphics2D) g;
-        graphics.setColor(Color.ORANGE);
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(MessagesModel.PROPERTY_MESSAGE)) {
+            recomputeHeightAndRedraw();
+        }
+    }
+
+    private void drawChildren() {
         MessagesModel model = (MessagesModel) getModel();
+
+        this.removeAll();
 
         if (model != null && model.getMessages() != null) {
             List<Message> messages = model.getMessages().getMessage();
 
             int currentX = INSET;
             int currentY = TOP_INDENT;
-            
-            this.removeAll();
 
             for (Message message : messages) {
-                MessageView newMessage = new MessageView(currentX, currentY, message.getUri());
+                MessageView newMessage;
+                if (message.getContent() == null || message.getContent().isEmpty()) {
+                    newMessage = new MessageView(currentX, currentY, message.getUri());
+                } else {
+                    newMessage = new MessageView(currentX, currentY, message.getContent());
+                }
+                
                 newMessage.setModel(ModelMap.getDefault().getPC4NBModelFor(message));
                 this.add(newMessage);
 
@@ -88,8 +96,8 @@ public class MessagesView extends PC4NBView {
     }
 
     @Override
-    public void recomputeHeight() {
-        super.recomputeHeight();
+    public void recomputeHeightAndRedraw() {
+        super.recomputeHeightAndRedraw();
         MessagesModel model = (MessagesModel) getModel();
 
         if (model != null && model.getMessages() != null) {
@@ -97,8 +105,12 @@ public class MessagesView extends PC4NBView {
             int columns = (int) ((getWidth() - INSET) / (SECOND_LEVEL_RECTANGLE_WIDTH + INSET));
             this.setHeight((int) (TOP_INDENT + (Math.ceil((double) messages.size() / (double) columns) * (PERFCAKE_RECTANGLE_HEIGHT + INSET))));
         }
+
+        drawChildren();
+        revalidate();
+        repaint();
     }
-    
+
     private final class MessageTransferHandler extends TransferHandler {
 
         @Override
@@ -119,8 +131,8 @@ public class MessagesView extends PC4NBView {
             }
         }
     }
-     
-     private class AddMessageListener implements ActionListener {
+
+    private class AddMessageListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {

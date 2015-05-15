@@ -16,39 +16,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.perfcake.pc4nb.model;
 
 import org.perfcake.model.Property;
 
 public class PropertyModel extends PC4NBModel {
 
-	public static final String PROPERTY_NAME = "property-name";
-	public static final String PROPERTY_VALUE = "property-value";
-	
-	private Property property;
+    public static final String PROPERTY_NAME = "property-name";
+    public static final String PROPERTY_VALUE = "property-value";
 
-	public PropertyModel(Property property) {
-		if (property == null){
-			throw new IllegalArgumentException("Property must not be null");
-		}
-		this.property = property;
-	}
+    private Property property;
 
-	public Property getProperty() {
-		return property;
-	}
-	
-	public void setName(String name){
-		String oldName = getProperty().getName();
-		getProperty().setName(name);
-		getListeners().firePropertyChange(PROPERTY_NAME, oldName, name);
-	}
-	
+    public PropertyModel(Property property) {
+        if (property == null) {
+            throw new IllegalArgumentException("Property must not be null");
+        }
+        this.property = property;
+        ModelMap.getDefault().addEntry(property, this);
+    }
 
-	public void setValue(String value){
-		String oldValue = getProperty().getValue();
-		getProperty().setValue(value);
-		getListeners().firePropertyChange(PROPERTY_VALUE, oldValue, value);
-	}
+    public Property getProperty() {
+        return property;
+    }
+
+    public void setName(String name) {
+        String oldName = getProperty().getName();
+        getProperty().setName(name);
+        getListeners().firePropertyChange(PROPERTY_NAME, oldName, name);
+    }
+
+    public void setValue(String value) {
+        String oldValue = getProperty().getValue();
+        getProperty().setValue(value);
+        getListeners().firePropertyChange(PROPERTY_VALUE, oldValue, value);
+    }
 }

@@ -15,29 +15,27 @@
  */
 package org.perfcake.pc4nb.ui.palette;
 
+import java.awt.datatransfer.Transferable;
+import java.io.IOException;
+import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
-import org.openide.nodes.Node;
+import org.perfcake.pc4nb.model.SenderModel;
 
 /**
  *
  * @author Andrej Halaj
  */
-public class PerfCakeComponentCategoryNodeContainer extends Children.Keys<String> {
+public class PerfCakeSenderNode extends AbstractNode {
+    private SenderModel model = null;
+    
+    public PerfCakeSenderNode(SenderModel model) {
+        super(Children.LEAF);
+        this.model = model;
+        this.setDisplayName(model.getSender().getClazz());
+    }
     
     @Override
-    protected void addNotify() {
-        setKeys(new String[] {"root"});
-    }
-
-    @Override
-    protected Node[] createNodes(String t) {
-        return (new Node[] {
-            new PerfCakeGeneratorsNode(),
-            new PerfCakeSendersNode(),
-            new PerfCakeReportingNode(),
-            new PerfCakeValidationNode(),
-            new PerfCakeMessagesNode(),
-            new PerfCakeDestionationsNode()
-        });
+    public Transferable drag() throws IOException {
+        return model;
     }
 }

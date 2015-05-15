@@ -20,18 +20,17 @@ import java.util.Collections;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import org.perfcake.model.Scenario.Messages.Message;
-import org.perfcake.model.Scenario.Reporting.Reporter;
 
 /**
  *
  * @author Andrej Halaj
  */
 public class MessagesTableModel extends AbstractTableModel {
-    private List<Message> messages =  new ArrayList<>();
+    private List<Message> messages = new ArrayList<>();
 
     @Override
     public int getRowCount() {
-        return messages .size();
+        return messages.size();
     }
 
     @Override
@@ -48,7 +47,7 @@ public class MessagesTableModel extends AbstractTableModel {
         messages.add(index, message);
         fireTableRowsInserted(index, index);
     }
-    
+
     public void updateRow(int index, Message message) {
         messages.set(index, message);
         fireTableRowsUpdated(index, index);
@@ -58,7 +57,7 @@ public class MessagesTableModel extends AbstractTableModel {
         messages.remove(rowNum);
         fireTableRowsDeleted(rowNum, rowNum);
     }
-    
+
     public List<Message> getMessages() {
         return Collections.unmodifiableList(messages);
     }
@@ -68,7 +67,11 @@ public class MessagesTableModel extends AbstractTableModel {
         Message message = messages.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                return message.getUri();
+                if (message.getContent() != null && !message.getContent().isEmpty()) {
+                    return message.getContent();
+                } else {
+                    return message.getUri();
+                }
             case 1:
                 return Integer.parseInt(message.getMultiplicity());
             case 2:
@@ -82,7 +85,7 @@ public class MessagesTableModel extends AbstractTableModel {
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return "Message URI";
+                return "Message URI / Content";
             case 1:
                 return "Multiplicity";
             case 2:
@@ -91,7 +94,7 @@ public class MessagesTableModel extends AbstractTableModel {
                 throw new IllegalArgumentException("columnIndex");
         }
     }
-    
+
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         switch (columnIndex) {

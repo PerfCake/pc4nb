@@ -24,6 +24,7 @@ import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 import org.perfcake.common.PeriodType;
 import org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period;
+import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.PeriodModel;
 import org.perfcake.pc4nb.ui.AbstractPC4NBView;
 
@@ -48,6 +49,23 @@ public final class PeriodVisualPanel extends AbstractPC4NBView {
 
     public JSpinner getPeriodValueSpinner() {
         return periodValueSpinner;
+    }
+
+    @Override
+    public void setModel(PC4NBModel model) {
+        super.setModel(model);
+
+        PeriodModel periodModel = (PeriodModel) model;
+        String periodType = periodModel.getPeriod().getType();
+        String periodValue = periodModel.getPeriod().getValue();
+
+        if (periodType != null) {
+            periodSelection.setSelectedItem(periodType);
+        }
+
+        if (periodValue != null) {
+            periodValueSpinner.setValue(Integer.parseInt(periodModel.getPeriod().getValue()));
+        }
     }
 
     /**
@@ -115,6 +133,6 @@ public final class PeriodVisualPanel extends AbstractPC4NBView {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 }

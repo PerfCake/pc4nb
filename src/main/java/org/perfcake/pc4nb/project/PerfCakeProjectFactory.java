@@ -20,8 +20,7 @@ public class PerfCakeProjectFactory implements ProjectFactory {
     @Override
     public boolean isProject(FileObject projectDirectory) {
         return containsScenariosDir(projectDirectory)
-                && containsMessagesDir(projectDirectory)
-                && containsPerfcakeScenario(projectDirectory);
+                && containsMessagesDir(projectDirectory);
     }
 
     //Specifies when the project will be opened, i.e., if the project exists:

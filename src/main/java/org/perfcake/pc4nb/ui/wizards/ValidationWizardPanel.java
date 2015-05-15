@@ -19,6 +19,7 @@ import org.perfcake.pc4nb.ui.wizards.visuals.ValidationVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
+import org.perfcake.pc4nb.model.ValidationModel;
 
 public class ValidationWizardPanel implements WizardDescriptor.Panel<WizardDescriptor> {
 
@@ -73,6 +74,10 @@ public class ValidationWizardPanel implements WizardDescriptor.Panel<WizardDescr
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        wiz.putProperty("validation-model", getComponent().getModel());
+        ValidationModel validationModel = (ValidationModel) getComponent().getModel();
+        validationModel.setEnabled(getComponent().isValidationEnabled());
+        validationModel.setFastForward(getComponent().isFastForward());
+        
+        wiz.putProperty("validation-model", validationModel);
     }
 }

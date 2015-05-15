@@ -15,15 +15,21 @@
  */
 package org.perfcake.pc4nb.ui.wizards;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import org.perfcake.pc4nb.ui.wizards.visuals.MessageVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
+import org.openide.util.ChangeSupport;
 import org.openide.util.HelpCtx;
 import org.perfcake.model.Header;
 
-public class MessageWizardPanel implements WizardDescriptor.Panel<WizardDescriptor> {
+public class MessageWizardPanel implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
+    ChangeSupport listeners = new ChangeSupport(this);
+    WizardDescriptor wizardDescriptor = null;
+    boolean isValid;
 
     /**
      * The visual component that displays this panel. If you need to access the
@@ -39,7 +45,6 @@ public class MessageWizardPanel implements WizardDescriptor.Panel<WizardDescript
     public MessageVisualPanel getComponent() {
         if (component == null) {
             component = new MessageVisualPanel();
-            //component.setController(null);
         }
         return component;
     }
@@ -55,7 +60,7 @@ public class MessageWizardPanel implements WizardDescriptor.Panel<WizardDescript
     @Override
     public boolean isValid() {
         // If it is always OK to press Next or Finish, then:
-        return true;
+        return isValid;
         // If it depends on some condition (form filled out...) and
         // this condition changes (last form field filled in...) then
         // use ChangeSupport to implement add/removeChangeListener below.
@@ -64,34 +69,65 @@ public class MessageWizardPanel implements WizardDescriptor.Panel<WizardDescript
 
     @Override
     public void addChangeListener(ChangeListener l) {
+        listeners.addChangeListener(l);
     }
 
     @Override
     public void removeChangeListener(ChangeListener l) {
+        listeners.addChangeListener(l);
     }
 
     @Override
     public void readSettings(WizardDescriptor wiz) {
-        // use wiz.getProperty to retrieve previous panel state
+        wizardDescriptor = wiz;
+        getComponent().addPropertyChangeListener(this);
+        String uri = getComponent().getUriTexField().getText();
+        String content = getComponent().getContentTextField().getText();
+        isValid = notNullNotEmpty(content) || notNullNotEmpty(uri);
+    }
+
+    public MessageWizardPanel() {
     }
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
         MessageVisualPanel component = getComponent();
-        wiz.putProperty("message-uri", component.getUriTexField().getText());
-        wiz.putProperty("message-content", component.getContentTextField().getText());
-        wiz.putProperty("message-multiplicity", component.getMultiplicitySpinner().getValue().toString());
-        wiz.putProperty("message-properties", component.getProperties());
-        
+        wizardDescriptor.putProperty("message-uri", component.getUriTexField().getText());
+        wizardDescriptor.putProperty("message-content", component.getContentTextField().getText());
+        wizardDescriptor.putProperty("message-multiplicity", component.getMultiplicitySpinner().getValue().toString());
+        wizardDescriptor.putProperty("message-properties", component.getProperties());
+
         List<Header> headers = new ArrayList<>();
-        
+
         for (int i = 0; i < component.getHeadersTableModel().getRowCount(); i++) {
             Header header = new Header();
             header.setName((String) component.getHeadersTableModel().getValueAt(i, 0));
             header.setValue((String) component.getHeadersTableModel().getValueAt(i, 1));
             headers.add(header);
         }
-        
+
         wiz.putProperty("message-headers", headers);
+    }
+    
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        String uri = getComponent().getUriTexField().getText();
+        String content = getComponent().getContentTextField().getText();
+        if (notNullNotEmpty(content) && notNullNotEmpty(uri)) {
+            wizardDescriptor.putProperty(WizardDescriptor.PROP_WARNING_MESSAGE, "Both Content and URI fields are filled. In this case URI is ignored and Content is used.");
+            isValid = true;
+        } else if (notNullNotEmpty(content) || notNullNotEmpty(uri)) {
+            wizardDescriptor.putProperty(WizardDescriptor.PROP_WARNING_MESSAGE, null);
+            isValid = true;
+        } else {
+            wizardDescriptor.putProperty(WizardDescriptor.PROP_WARNING_MESSAGE, "Please fill in URI or Content field.");
+            isValid = false;
+        }
+        
+        listeners.fireChange();
+    }
+
+    public boolean notNullNotEmpty(String value) {
+        return value != null && !value.isEmpty();
     }
 }

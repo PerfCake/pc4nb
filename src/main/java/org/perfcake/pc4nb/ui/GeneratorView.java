@@ -16,11 +16,14 @@
 package org.perfcake.pc4nb.ui;
 
 import java.awt.Color;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.io.IOException;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.TransferHandler;
 import org.perfcake.pc4nb.model.GeneratorModel;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.ui.actions.EditGeneratorAction;
@@ -32,17 +35,19 @@ import org.perfcake.pc4nb.ui.actions.EditGeneratorAction;
 public class GeneratorView extends PC4NBView {
     private JMenuItem editComponent = new JMenuItem("Edit generator");
     private JPopupMenu menu = new JPopupMenu();
+    TransferHandler transferHandler = new GeneratorTransferHandler();
 
     public GeneratorView(int x, int y, int width) {
         super(x, y, width);
-        setColor(Color.GREEN);
+        setColor(Color.RED);
         setHeader("Generator");
 
         editComponent.addActionListener(new EditGeneratorListener());
 
         menu.add(editComponent);
         this.setComponentPopupMenu(menu);
-
+        
+        setTransferHandler(transferHandler);
     }
 
     @Override
@@ -67,8 +72,28 @@ public class GeneratorView extends PC4NBView {
         if (evt.getPropertyName().equals(GeneratorModel.PROPERTY_CLASS))  {
             GeneratorModel generatorModel = (GeneratorModel) evt.getSource();
             setHeader(generatorModel.getGenerator().getClazz());
-            revalidate();
-            repaint();
+        }
+    }
+    
+    private final class GeneratorTransferHandler extends TransferHandler {
+
+        @Override
+        public boolean canImport(TransferHandler.TransferSupport support) {
+            return support.isDataFlavorSupported(GeneratorModel.DATA_FLAVOR);
+        }
+
+        @Override
+        public boolean importData(TransferHandler.TransferSupport support) {
+            try {
+                GeneratorModel model = (GeneratorModel) support.getTransferable().getTransferData(GeneratorModel.DATA_FLAVOR);
+                setModel(model);
+                revalidate();
+                repaint();
+
+                return true;
+            } catch (UnsupportedFlavorException | IOException ex) {
+                return false;
+            }
         }
     }
 }

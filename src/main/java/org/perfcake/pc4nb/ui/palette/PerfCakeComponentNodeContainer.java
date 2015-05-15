@@ -19,6 +19,8 @@ import java.util.Set;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.perfcake.message.Message;
+import org.perfcake.message.generator.MessageGenerator;
+import org.perfcake.message.sender.MessageSender;
 import org.perfcake.pc4nb.model.MessageModel;
 import org.perfcake.pc4nb.model.ReporterModel;
 import org.perfcake.pc4nb.model.ValidatorModel;
@@ -27,6 +29,9 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.model.*;
+import org.perfcake.pc4nb.model.DestinationModel;
+import org.perfcake.pc4nb.model.GeneratorModel;
+import org.perfcake.pc4nb.model.SenderModel;
 
 /**
  *
@@ -87,11 +92,36 @@ class PerfCakeComponentNodeContainer extends Children.Keys<String> {
             components = new Node[subTypes.size()];
             int i = 0;
             for (Class<? extends Destination> subType : subTypes) {
-                components[i] = new PerfCakeComponentNode(subType.getSimpleName());
+                Scenario.Reporting.Reporter.Destination destination = new Scenario.Reporting.Reporter.Destination();
+                destination.setClazz(subType.getSimpleName());
+                DestinationModel newModel = new DestinationModel(destination);
+                components[i] = new PerfCakeDestinationNode(newModel);
+                i++;
+            }
+        } else if (category.equalsIgnoreCase("Generators")) {
+            Set<Class<? extends MessageGenerator>> subTypes = scanner.findComponentsOfType(MessageGenerator.class, "org.perfcake.message.generator");
+            components = new Node[subTypes.size()];
+            int i = 0;
+            for (Class<? extends MessageGenerator> subType : subTypes) {
+                Scenario.Generator generator = new Scenario.Generator();
+                generator.setClazz(subType.getSimpleName());
+                GeneratorModel newModel = new GeneratorModel(generator);
+                components[i] = new PerfCakeGeneratorNode(newModel);
+                i++;
+            }
+        } else if (category.equalsIgnoreCase("Senders")) {
+            Set<Class<? extends MessageSender>> subTypes = scanner.findComponentsOfType(MessageSender.class, "org.perfcake.message.sender");
+            components = new Node[subTypes.size()];
+            int i = 0;
+            for (Class<? extends MessageSender> subType : subTypes) {
+                Scenario.Sender sender = new Scenario.Sender();
+                sender.setClazz(subType.getSimpleName());
+                SenderModel newModel = new SenderModel(sender);
+                components[i] = new PerfCakeSenderNode(newModel);
                 i++;
             }
         } else {
-            components = new Node[] {};
+            components = new Node[]{};
             // TODO: throw exception and log
         }
 

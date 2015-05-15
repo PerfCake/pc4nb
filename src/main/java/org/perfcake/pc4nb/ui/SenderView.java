@@ -16,26 +16,84 @@
 package org.perfcake.pc4nb.ui;
 
 import java.awt.Color;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.io.IOException;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.TransferHandler;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.SenderModel;
+import org.perfcake.pc4nb.ui.actions.EditSenderAction;
 
 /**
  *
  * @author Andrej Halaj
  */
 public class SenderView extends PC4NBView {
+    private JMenuItem editComponent = new JMenuItem("Edit sender");
+    private JPopupMenu menu = new JPopupMenu();
+    TransferHandler transferHandler = new SenderTransferHandler();
 
     public SenderView(int x, int y, int width) {
         super(x, y, width);
-        setColor(Color.BLUE);
-        setHeader("Sender");
+        setColor(Color.GREEN);
+        setHeader("Generator");
+
+        editComponent.addActionListener(new EditSenderListener());
+
+        menu.add(editComponent);
+        this.setComponentPopupMenu(menu);
+        
+        setTransferHandler(transferHandler);
     }
-    
+
     @Override
     public void setModel(PC4NBModel model) {
         super.setModel(model);
-        
+
         SenderModel senderModel = (SenderModel) model;
         setHeader(senderModel.getSender().getClazz());
+    }
+    
+    private class EditSenderListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            EditSenderAction action = new EditSenderAction((SenderModel) getModel());
+            action.execute();
+        }
+    }
+    
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(SenderModel.PROPERTY_CLASS))  {
+            SenderModel senderModel = (SenderModel) evt.getSource();
+            setHeader(senderModel.getSender().getClazz());
+        }
+    }
+
+    private final class SenderTransferHandler extends TransferHandler {
+
+        @Override
+        public boolean canImport(TransferHandler.TransferSupport support) {
+            return support.isDataFlavorSupported(SenderModel.DATA_FLAVOR);
+        }
+
+        @Override
+        public boolean importData(TransferHandler.TransferSupport support) {
+            try {
+                SenderModel model = (SenderModel) support.getTransferable().getTransferData(SenderModel.DATA_FLAVOR);
+                setModel(model);
+                revalidate();
+                repaint();
+
+                return true;
+            } catch (UnsupportedFlavorException | IOException ex) {
+                return false;
+            }
+        }
     }
 }

@@ -73,7 +73,7 @@ public class ScenarioPropertiesWizardPanel implements WizardDescriptor.Panel<Wiz
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        // use wiz.putProperty to remember current panel state
+        wiz.putProperty("scenario-properties", getComponent().getProperties());
     }
 
 }

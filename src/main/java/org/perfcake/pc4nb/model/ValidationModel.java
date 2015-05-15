@@ -31,6 +31,10 @@ public class ValidationModel extends PC4NBModel {
 
     public ValidationModel(Validation validation) {
         this.validation = validation;
+        
+        if (validation != null) {
+            ModelMap.getDefault().addEntry(validation, this);
+        }
     }
 
     public Validation getValidation() {
@@ -42,8 +46,8 @@ public class ValidationModel extends PC4NBModel {
             createValidation();
         }
         
-        addValidator(getValidation().getValidator().size(), validator);
-        ModelMap.getDefault().createModelAndAddEntry(validator);
+        getValidation().getValidator().add(validator);
+        getListeners().firePropertyChange(PROPERTY_VALIDATORS, null, validator);
     }
 
     public void addValidator(int index, Validator validator) {
@@ -53,13 +57,11 @@ public class ValidationModel extends PC4NBModel {
         
         getValidation().getValidator().add(index, validator);
         getListeners().firePropertyChange(PROPERTY_VALIDATORS, null, validator);
-        ModelMap.getDefault().createModelAndAddEntry(validator);
     }
 
     public void removeValidator(Validator validator) {
         if (getValidation().getValidator().remove(validator)) {
             getListeners().firePropertyChange(PROPERTY_VALIDATORS, validator, null);
-            ModelMap.getDefault().removeEntry(validator);
         }
         
         if (getValidation().getValidator().isEmpty()) {

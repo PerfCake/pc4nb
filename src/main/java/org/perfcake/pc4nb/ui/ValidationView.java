@@ -20,6 +20,7 @@ import java.awt.Graphics;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.JMenuItem;
@@ -56,17 +57,22 @@ public class ValidationView extends PC4NBView {
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(ValidationModel.PROPERTY_VALIDATORS)) {
+            recomputeHeightAndRedraw();
+        }
+    }
+
+    protected void drawChildren() {
         ValidationModel model = (ValidationModel) getModel();
+
+        this.removeAll();
 
         if (model != null && model.getValidation() != null) {
             List<Validator> validators = model.getValidation().getValidator();
 
             int currentX = INSET;
             int currentY = TOP_INDENT;
-
-            this.removeAll();
 
             for (Validator validator : validators) {
                 ValidatorView newValidator = new ValidatorView(currentX, currentY, validator.getClazz());
@@ -84,8 +90,8 @@ public class ValidationView extends PC4NBView {
     }
 
     @Override
-    public void recomputeHeight() {
-        super.recomputeHeight();
+    public void recomputeHeightAndRedraw() {
+        super.recomputeHeightAndRedraw();
         ValidationModel model = (ValidationModel) getModel();
 
         if (model != null && model.getValidation() != null) {
@@ -93,6 +99,10 @@ public class ValidationView extends PC4NBView {
             int columns = (int) ((getWidth() - INSET) / (SECOND_LEVEL_RECTANGLE_WIDTH + INSET));
             this.setHeight((int) (TOP_INDENT + (Math.ceil((double) validators.size() / (double) columns) * (PERFCAKE_RECTANGLE_HEIGHT + INSET))));
         }
+
+        drawChildren();
+        revalidate();
+        repaint();
     }
 
     private final class ValidatorTransferHandler extends TransferHandler {

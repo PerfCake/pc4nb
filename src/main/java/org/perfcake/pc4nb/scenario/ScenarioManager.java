@@ -25,9 +25,11 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeException;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.ScenarioModel;
+import org.perfcake.scenario.ScenarioLoader;
 import org.xml.sax.SAXException;
 
 /**
@@ -37,6 +39,39 @@ import org.xml.sax.SAXException;
 public class ScenarioManager {
     public static final String SCHEMA_PATH = "perfcake-scenario-4.0.xsd";
     private static final Logger log = Logger.getLogger(ScenarioManager.class.getName());
+
+    public void runScenario(URL scenarioURL) throws ScenarioException, PerfCakeException {
+
+        if (scenarioURL == null) {
+            log.error("URL to scenario is null");
+            throw new IllegalArgumentException("URL to scenario is null.");
+        }
+
+        org.perfcake.scenario.Scenario scenario = ScenarioLoader.load(scenarioURL.toExternalForm());
+
+        try {
+            scenario.init();
+            scenario.run();
+        } catch (PerfCakeException e) {
+            log.error("Error during scenario execution.", e);
+            throw new ScenarioException("Error during scenario execution.", e);
+        }
+
+        try {
+            scenario.close();
+        } catch (PerfCakeException e) {
+            log.error("Error during finishing scenario.", e);
+            throw new ScenarioException("Error during finishing scenario.", e);
+        }
+    }
+
+    public void stopScenario(org.perfcake.scenario.Scenario scenario) {
+        if (scenario != null) {
+            scenario.stop();
+        } else {
+            log.warn("Trying to stop null scenario");
+        }
+    }
 
     public void createXML(Scenario scenarioModel, OutputStream out) throws ScenarioException, ScenarioManagerException {
         if (scenarioModel == null) {
@@ -84,7 +119,7 @@ public class ScenarioManager {
 
             Schema schema = schemaFactory.newSchema(schemaUrl);
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            
+
             unmarshaller.setSchema(schema);
             scenario = (Scenario) unmarshaller.unmarshal(scenarioURL);
         } catch (JAXBException ex) {
@@ -96,9 +131,9 @@ public class ScenarioManager {
             log.error(message, ex);
             throw new ScenarioException(message, ex);
         }
-        
+
         ModelMap.getDefault().createModelAndAddEntry(scenario);
-        
+
         return (ScenarioModel) ModelMap.getDefault().getPC4NBModelFor(scenario);
     }
 }

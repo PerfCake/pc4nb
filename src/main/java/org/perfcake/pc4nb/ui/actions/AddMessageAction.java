@@ -17,6 +17,7 @@ package org.perfcake.pc4nb.ui.actions;
 
 import java.util.List;
 import java.util.Properties;
+import javax.swing.JOptionPane;
 import org.openide.WizardDescriptor;
 import org.perfcake.model.Header;
 import org.perfcake.model.Property;
@@ -43,24 +44,14 @@ public final class AddMessageAction extends AbstractPC4NBAction {
     @Override
     public void doAction(WizardDescriptor wiz) {
         Message message = new Message();
-        message.setUri((String) wiz.getProperty("message-uri"));
         message.setMultiplicity(wiz.getProperty("message-multiplicity").toString());
-        message.setContent((String) wiz.getProperty("message-content"));
-
-        List<Property> properties = (List<Property>) wiz.getProperty("message-properties");
-        Properties defaultValues = (new ComponentPropertiesScanner()).getPropertiesOfComponent(org.perfcake.message.Message.class);
-
-        for (Property property : properties) {
-            String propertyName = property.getName();
-            String propertyValue = property.getValue();
-
-            if (!propertyValue.equals(defaultValues.get(propertyName))) {
-                Property newProperty = new Property();
-                newProperty.setName(propertyName);
-                newProperty.setValue(propertyValue);
-
-                message.getProperty().add(newProperty);
-            }
+        String uri = (String) wiz.getProperty("message-uri");
+        String content = (String) wiz.getProperty("message-content");
+        
+        if (content != null && !content.isEmpty()) {
+            message.setContent(content);
+        } else {
+            message.setUri(uri);
         }
 
         List<Header> headers = (List<Header>) wiz.getProperty("message-headers");

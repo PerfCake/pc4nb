@@ -16,11 +16,10 @@
 package org.perfcake.pc4nb.ui;
 
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.JMenuItem;
@@ -56,11 +55,13 @@ public class ReportingView extends PC4NBView {
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D graphics = (Graphics2D) g;
-        graphics.setColor(getColor());
-        
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(ReportingModel.PROPERTY_REPORTERS)) {
+            recomputeHeightAndRedraw();
+        }
+    }
+
+    private void drawChildren() {
         ReportingModel model = (ReportingModel) getModel();
 
         if (model != null && model.getReporting() != null) {
@@ -73,8 +74,8 @@ public class ReportingView extends PC4NBView {
 
             for (Reporter reporter : reporters) {
                 ReporterView newReporter = new ReporterView(currentX, currentY, reporter.getClazz());
-                newReporter.setModel(ModelMap.getDefault().getPC4NBModelFor(reporter));
                 this.add(newReporter);
+                newReporter.setModel(ModelMap.getDefault().getPC4NBModelFor(reporter));
 
                 if (currentX + 2 * (SECOND_LEVEL_RECTANGLE_WIDTH + INSET) > getWidth()) {
                     currentX = INSET;
@@ -87,8 +88,8 @@ public class ReportingView extends PC4NBView {
     }
 
     @Override
-    public void recomputeHeight() {
-        super.recomputeHeight();
+    public void recomputeHeightAndRedraw() {
+        super.recomputeHeightAndRedraw();
         ReportingModel model = (ReportingModel) getModel();
 
         if (model != null && model.getReporting() != null) {
@@ -96,6 +97,10 @@ public class ReportingView extends PC4NBView {
             int columns = (int) ((getWidth() - INSET) / (SECOND_LEVEL_RECTANGLE_WIDTH + INSET));
             this.setHeight((int) (TOP_INDENT + (Math.ceil((double) reporters.size() / (double) columns) * (PERFCAKE_RECTANGLE_HEIGHT + INSET))));
         }
+
+        drawChildren();
+        revalidate();
+        repaint();
     }
 
     private final class ReporterTansferHandler extends TransferHandler {
@@ -117,7 +122,7 @@ public class ReportingView extends PC4NBView {
             }
         }
     }
-    
+
     private class AddReporterListener implements ActionListener {
 
         @Override

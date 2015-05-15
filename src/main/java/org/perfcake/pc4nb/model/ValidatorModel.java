@@ -42,6 +42,7 @@ public class ValidatorModel extends PC4NBModel implements Transferable {
             throw new IllegalArgumentException("Validator must not be null.");
         }
         this.validator = validator;
+        ModelMap.getDefault().addEntry(validator, this);
     }
 
     public Validator getValidator() {
@@ -67,13 +68,11 @@ public class ValidatorModel extends PC4NBModel implements Transferable {
     public void addProperty(int index, Property property) {
         getValidator().getProperty().add(index, property);
         getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
-        ModelMap.getDefault().createModelAndAddEntry(property);
     }
 
     public void removeProperty(Property property) {
         if (getValidator().getProperty().remove(property)) {
             getListeners().firePropertyChange(PROPERTY_PROPERTIES, property, null);
-            ModelMap.getDefault().removeEntry(property);
         }
     }
 

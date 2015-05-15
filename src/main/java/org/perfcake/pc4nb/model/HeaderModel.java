@@ -34,6 +34,7 @@ public class HeaderModel extends PC4NBModel {
 		}
                 
 		this.header = header;
+                ModelMap.getDefault().addEntry(header, this);
 	}
 
 	public Header getHeader() {

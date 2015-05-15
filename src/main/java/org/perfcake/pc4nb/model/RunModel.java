@@ -32,6 +32,7 @@ public class RunModel extends PC4NBModel {
 			throw new IllegalArgumentException("Run must not be null");
 		}
 		this.run = run;
+                ModelMap.getDefault().addEntry(run, this);
 	}
 
 	public Run getRun(){

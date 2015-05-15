@@ -20,9 +20,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
-import org.perfcake.pc4nb.model.PC4NBModel;
 import static org.perfcake.pc4nb.ui.SizeConstraints.PERFCAKE_RECTANGLE_HEIGHT;
 
 /**
@@ -33,7 +31,6 @@ public class PC4NBView extends AbstractPC4NBView implements PropertyChangeListen
     public static final double CORNER_ARC = 10;
     public static final int TOP_INDENT = 50;
 
-    private PC4NBModel model = null;
     private String header = "";
 
     public PC4NBView(int x, int y, int width) {
@@ -54,7 +51,9 @@ public class PC4NBView extends AbstractPC4NBView implements PropertyChangeListen
     }
 
     public void setHeader(String header) {
-        this.header = header;
+        if (header != null) {
+            this.header = header;
+        }
     }
 
     public void setX(int x) {
@@ -73,14 +72,16 @@ public class PC4NBView extends AbstractPC4NBView implements PropertyChangeListen
         this.setBounds((int) getLocation().getX(), (int) getLocation().getY(), (int) getSize().getWidth(), height);
     }
 
-    public void recomputeHeight() {
+    public void recomputeHeightAndRedraw() {
         //this.setBounds((int) getLocation().getX(), (int) getLocation().getY(), (int) getSize().getWidth(), PERFCAKE_RECTANGLE_HEIGHT);
     }
 
     public void printHeader(Graphics2D graphics, String text) {
-        int stringLen = (int) graphics.getFontMetrics().getStringBounds(text, graphics).getWidth();
-        double start = getWidth() / 2 - stringLen / 2;
-        graphics.drawString(text, (float) start, 20.0f);
+        if (graphics.getFontMetrics() != null) {
+            int stringLen = (int) graphics.getFontMetrics().getStringBounds(text, graphics).getWidth();
+            double start = getWidth() / 2 - stringLen / 2;
+            graphics.drawString(text, (float) start, 20.0f);
+        }
     }
 
     @Override

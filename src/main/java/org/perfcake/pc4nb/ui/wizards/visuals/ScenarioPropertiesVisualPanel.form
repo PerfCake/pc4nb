@@ -20,9 +20,16 @@
               <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="scenarioPropertiesLabel" min="-2" max="-2" attributes="0"/>
-                  <Component id="jScrollPane1" min="-2" pref="640" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="jScrollPane1" min="-2" pref="532" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="addPropertyButton" min="-2" pref="114" max="-2" attributes="0"/>
+                          <Component id="deletePropertyButton" min="-2" pref="114" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
               </Group>
-              <EmptySpace pref="69" max="32767" attributes="0"/>
+              <EmptySpace pref="35" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -31,8 +38,18 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
               <Component id="scenarioPropertiesLabel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-              <Component id="jScrollPane1" min="-2" pref="272" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
+                      <Component id="jScrollPane1" min="-2" pref="272" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="90" max="-2" attributes="0"/>
+                      <Component id="addPropertyButton" min="-2" pref="34" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                      <Component id="deletePropertyButton" min="-2" pref="34" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
               <EmptySpace pref="116" max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -49,7 +66,7 @@
         <Component class="javax.swing.JTable" name="propertiesTable">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="getPropertiesTableModel()" type="code"/>
+              <Connection code="propertiesTableModel" type="code"/>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
               <TableColumnModel selectionModel="0"/>
@@ -58,6 +75,10 @@
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private MetaPropertiesTableModel propertiesTableModel;"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="propertiesTableModel = new MetaPropertiesTableModel();"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>
@@ -67,6 +88,26 @@
           <ResourceString bundle="org/perfcake/pc4nb/ui/wizards/visuals/Bundle.properties" key="ScenarioPropertiesVisualPanel.scenarioPropertiesLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="addPropertyButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="org/perfcake/pc4nb/ui/wizards/visuals/Bundle.properties" key="ScenarioPropertiesVisualPanel.addPropertyButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addPropertyButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="deletePropertyButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="org/perfcake/pc4nb/ui/wizards/visuals/Bundle.properties" key="ScenarioPropertiesVisualPanel.deletePropertyButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deletePropertyButtonActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

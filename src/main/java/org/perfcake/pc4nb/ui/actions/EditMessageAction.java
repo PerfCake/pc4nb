@@ -19,10 +19,8 @@ import java.util.List;
 import java.util.Properties;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
-import org.perfcake.model.Header;
 import org.perfcake.model.Property;
 import org.perfcake.pc4nb.model.MessageModel;
-import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.ui.wizards.MessageWizardPanel;
 import static org.perfcake.pc4nb.ui.wizards.visuals.MessageVisualPanel.MESSAGE_PACKAGE;
@@ -50,36 +48,26 @@ public class EditMessageAction extends AbstractPC4NBAction {
     @Override
 
     public void doAction(WizardDescriptor wiz) {
-        messageModel.setUri((String) wiz.getProperty("message-uri"));
         messageModel.setMultiplicity((String) wiz.getProperty("message-multiplicity"));
+        String uri = (String) wiz.getProperty("message-uri");
+        String content = (String) wiz.getProperty("message-content");
 
-        List<Property> properties = (List<Property>) wiz.getProperty("message-properties");
-
-        Properties defaultValues = new Properties();
-
-        try {
-            defaultValues = (new ComponentPropertiesScanner()).getPropertiesOfComponent(Class.forName(MESSAGE_PACKAGE + ".Message"));
-        } catch (ClassNotFoundException ex) {
-            Exceptions.printStackTrace(ex);
+        if (content != null && !content.isEmpty()) {
+            messageModel.setContent(content);
+        } else {
+            messageModel.setUri(uri);
         }
         
         List<Property> messageProperties = messageModel.getProperty();
-        
+
         for (int i = messageProperties.size() - 1; i >= 0; i--) {
             messageModel.removeProperty(messageProperties.get(i));
         }
+        
+        List<Property> properties = (List<Property>) wiz.getProperty("message-properties");
 
         for (Property property : properties) {
-            String propertyName = property.getName();
-            String propertyValue = property.getValue();
-
-            if (!propertyValue.equals(defaultValues.get(propertyName))) {
-                Property newProperty = new Property();
-                newProperty.setName(propertyName);
-                newProperty.setValue(propertyValue);
-
-                messageModel.addProperty(newProperty);
-            }
+            messageModel.addProperty(property);
         }
 
         // validator refs

@@ -18,10 +18,12 @@ package org.perfcake.pc4nb.ui.wizards;
 import org.perfcake.pc4nb.ui.wizards.visuals.GeneratorVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
+import org.openide.util.ChangeSupport;
 import org.openide.util.HelpCtx;
 
 public class GeneratorWizardPanel implements WizardDescriptor.Panel<WizardDescriptor> {
-
+    ChangeSupport listeners = new ChangeSupport(this);
+    
     /**
      * The visual component that displays this panel. If you need to access the
      * component from this class, just use getComponent().
@@ -60,10 +62,12 @@ public class GeneratorWizardPanel implements WizardDescriptor.Panel<WizardDescri
 
     @Override
     public void addChangeListener(ChangeListener l) {
+        listeners.addChangeListener(l);
     }
 
     @Override
     public void removeChangeListener(ChangeListener l) {
+        listeners.removeChangeListener(l);
     }
 
     @Override
@@ -74,7 +78,7 @@ public class GeneratorWizardPanel implements WizardDescriptor.Panel<WizardDescri
     @Override
     public void storeSettings(WizardDescriptor wiz) {
         GeneratorVisualPanel component = getComponent();
-        
+
         wiz.putProperty("generator-type", component.getGeneratorSelection().getSelectedItem());
         wiz.putProperty("run-type", component.getPeriodTypeSelection().getSelectedItem());
         wiz.putProperty("run-value", component.getPeriodValueSpinner().getValue());

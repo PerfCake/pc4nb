@@ -29,6 +29,10 @@ public class MessagesModel extends PC4NBModel {
 
     public MessagesModel(Messages messages) {
         this.messages = messages;
+        
+        if (messages != null) {
+            ModelMap.getDefault().addEntry(messages, this);
+        }
     }
 
     public Messages getMessages() {
@@ -41,7 +45,6 @@ public class MessagesModel extends PC4NBModel {
         }
         
         addMessage(getMessages().getMessage().size(), message);
-        ModelMap.getDefault().createModelAndAddEntry(message);
     }
 
     public void addMessage(int index, Message message) {
@@ -51,13 +54,11 @@ public class MessagesModel extends PC4NBModel {
         
         getMessages().getMessage().add(index, message);
         getListeners().firePropertyChange(PROPERTY_MESSAGE, null, message);
-        ModelMap.getDefault().createModelAndAddEntry(message);
     }
 
     public void removeMessage(Message message) {
         if (getMessages().getMessage().remove(message)) {
             getListeners().firePropertyChange(PROPERTY_MESSAGE, message, null);
-            ModelMap.getDefault().removeEntry(message);
         }
         
         if (getMessages().getMessage().isEmpty()) {

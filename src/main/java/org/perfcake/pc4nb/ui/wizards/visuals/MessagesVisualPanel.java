@@ -36,7 +36,6 @@ public final class MessagesVisualPanel extends AbstractPC4NBView {
 
     public MessagesVisualPanel() {
         setModel(new MessagesModel(new Messages()));
-        ModelMap.getDefault().addEntry(((MessagesModel) getModel()).getMessages(), getModel());
         initComponents();
 
         addMessageButton.addActionListener(new AddMessageListener());

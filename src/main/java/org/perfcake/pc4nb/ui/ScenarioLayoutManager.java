@@ -67,24 +67,24 @@ public class ScenarioLayoutManager {
         generator.setWidth(getWidth() - 2 * INSET);
         generator.setX(INSET);
         generator.setY(INSET);
-        generator.recomputeHeight();
+        generator.recomputeHeightAndRedraw();
 
         sender.setWidth(generator.getWidth());
         sender.setY(generator.getY() + generator.getHeight() + INSET);
-        sender.recomputeHeight();
+        sender.recomputeHeightAndRedraw();
 
         messages.setWidth((getWidth() - 3 * INSET) / 2);
         messages.setY(sender.getY() + sender.getHeight() + INSET);
-        messages.recomputeHeight();
+        messages.recomputeHeightAndRedraw();
         
         validation.setWidth(messages.getWidth());
         validation.setY(messages.getY() + messages.getHeight() + INSET);
-        validation.recomputeHeight();
+        validation.recomputeHeightAndRedraw();
 
         reporting.setWidth(messages.getWidth());
         reporting.setX(messages.getX() + messages.getWidth() + INSET);
         reporting.setY(messages.getY());
-        reporting.recomputeHeight();
+        reporting.recomputeHeightAndRedraw();
         
         int difference = reporting.getHeight() - (messages.getHeight() + validation.getHeight() + INSET);
 
@@ -96,6 +96,6 @@ public class ScenarioLayoutManager {
 
         properties.setWidth(generator.getWidth());
         properties.setY(validation.getY() + validation.getHeight() + INSET);
-        properties.recomputeHeight();
+        properties.recomputeHeightAndRedraw();
     }
 }

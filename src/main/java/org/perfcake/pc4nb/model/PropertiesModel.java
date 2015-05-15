@@ -21,7 +21,6 @@ package org.perfcake.pc4nb.model;
 import java.util.List;
 
 import org.perfcake.model.Property;
-import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Properties;
 
 public class PropertiesModel extends PC4NBModel {
@@ -31,44 +30,51 @@ public class PropertiesModel extends PC4NBModel {
     private Properties properties;
 
     public PropertiesModel(Properties properties) {
-        if (properties == null) {
-            throw new IllegalArgumentException("Properties must not be null");
-        }
-
         this.properties = properties;
+
+        if (properties != null) {
+            ModelMap.getDefault().addEntry(properties, this);
+        }
     }
 
     public Properties getProperties() {
         return properties;
     }
 
-    public void addProperty(Property Property) {
-        addProperty(getProperties().getProperty().size(), Property);
+    public void addProperty(Property property) {
+        if (getProperties() == null) {
+            createProperties();
+        }
+        
+        getProperties().getProperty().add(property);
+        getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
     }
 
     public void addProperty(int index, Property property) {
         if (getProperties() == null) {
             createProperties();
         }
-        
+
         getProperties().getProperty().add(index, property);
         getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
-        ModelMap.getDefault().createModelAndAddEntry(property);
     }
 
     public void removeProperty(Property property) {
         if (getProperties().getProperty().remove(property)) {
             getListeners().firePropertyChange(PROPERTY_PROPERTIES, property, null);
-            ModelMap.getDefault().removeEntry(property);
         }
-        
+
         if (getProperties().getProperty().isEmpty()) {
             removeProperties();
         }
     }
 
     public List<Property> getProperty() {
-        return getProperties().getProperty();
+        if (getProperties() == null) {
+            return null;
+        } else {
+            return getProperties().getProperty();
+        }
     }
 
     private void createProperties() {

@@ -215,7 +215,7 @@ public final class ReportingVisualPanel extends AbstractPC4NBView {
                 toRemove.add(reporter);
             }
 
-            DeleteReportersAction action = new DeleteReportersAction(getModel(), toRemove);
+            DeleteReportersAction action = new DeleteReportersAction((ReportingModel) getModel(), toRemove);
             action.execute();
         }
     }

@@ -206,6 +206,10 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
 
         org.openide.awt.Mnemonics.setLocalizedText(periodValueLabel, org.openide.util.NbBundle.getMessage(GeneratorVisualPanel.class, "GeneratorVisualPanel.periodValueLabel.text")); // NOI18N
 
+        periodValueSpinner.setValue(1);
+
+        threadsSpinner.setValue(1);
+
         org.openide.awt.Mnemonics.setLocalizedText(threadsLabel, org.openide.util.NbBundle.getMessage(GeneratorVisualPanel.class, "GeneratorVisualPanel.threadsLabel.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

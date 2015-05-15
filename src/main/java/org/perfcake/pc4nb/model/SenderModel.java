@@ -16,63 +16,79 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.perfcake.pc4nb.model;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.List;
 
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Sender;
 
-public class SenderModel extends PC4NBModel {
+public class SenderModel extends PC4NBModel implements Transferable {
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(SenderModel.class, "sender");
 
-	public static final String PROPERTY_CLASS = "sender-class";
-	public static final String PROPERTY_PROPERTIES= "sender-property";
-	
-	private Sender sender;
-	
-	public SenderModel(Sender sender){
-		if (sender == null){
-			throw new IllegalArgumentException("Sender must not be null");
-		}
-		this.sender = sender;
-	}
-	
-	/**
-	 * This method should not be used for modifying Sender (in a way getSender().setClass()))
-	 * since these changes would not fire PropertyChange getListeners() which implies that
-	 * the GEF View will not be updated according to these changes. Use set methods of this class instead.
-	 * 
-	 * @return PerfCake model of Sender
-	 */
-	public Sender getSender() {
-		return sender;
-	}
 
-	public void setClazz(String clazz){
-		String oldClazz = getSender().getClazz();
-		getSender().setClazz(clazz);
-		getListeners().firePropertyChange(PROPERTY_CLASS, oldClazz, clazz);
-	}
-	
-	public void addProperty(Property Property){
-		addProperty(getSender().getProperty().size(), Property);
-	}
-	
-	public void addProperty(int index, Property property){
-		getSender().getProperty().add(index, property);
-		getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
-                ModelMap.getDefault().createModelAndAddEntry(property);
-	}
-	
-	public void removeProperty(Property property){
-		if (getSender().getProperty().remove(property)){
-			getListeners().firePropertyChange(PROPERTY_PROPERTIES, property, null);
-                        ModelMap.getDefault().removeEntry(property);
-		}
-	}
-	
-	public List<Property> getProperty(){
-		return getSender().getProperty();
-	}
+    public static final String PROPERTY_CLASS = "sender-class";
+    public static final String PROPERTY_PROPERTIES = "sender-property";
+
+    private Sender sender;
+
+    public SenderModel(Sender sender) {
+        if (sender == null) {
+            throw new IllegalArgumentException("Sender must not be null");
+        }
+        this.sender = sender;
+        ModelMap.getDefault().addEntry(sender, this);
+    }
+
+    public Sender getSender() {
+        return sender;
+    }
+
+    public void setClazz(String clazz) {
+        String oldClazz = getSender().getClazz();
+        getSender().setClazz(clazz);
+        getListeners().firePropertyChange(PROPERTY_CLASS, oldClazz, clazz);
+    }
+
+    public void addProperty(Property Property) {
+        addProperty(getSender().getProperty().size(), Property);
+    }
+
+    public void addProperty(int index, Property property) {
+        getSender().getProperty().add(index, property);
+        getListeners().firePropertyChange(PROPERTY_PROPERTIES, null, property);
+    }
+
+    public void removeProperty(Property property) {
+        if (getSender().getProperty().remove(property)) {
+            getListeners().firePropertyChange(PROPERTY_PROPERTIES, property, null);
+        }
+    }
+
+    public List<Property> getProperty() {
+        return getSender().getProperty();
+    }
+
+    @Override
+    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+        if (flavor == DATA_FLAVOR) {
+            return this;
+        } else {
+            throw new UnsupportedFlavorException(flavor);
+        }
+    }
+
+    @Override
+    public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[]{DATA_FLAVOR};
+    }
+
+    @Override
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+        return flavor == DATA_FLAVOR;
+    }
 }

@@ -33,6 +33,10 @@ public class ReportingModel extends PC4NBModel {
 
     public ReportingModel(Reporting reporting) {
         this.reporting = reporting;
+        
+        if (reporting != null) {
+            ModelMap.getDefault().addEntry(reporting, this);
+        }
     }
 
     public Reporting getReporting() {
@@ -53,7 +57,6 @@ public class ReportingModel extends PC4NBModel {
         }
         
         getReporting().getReporter().add(index, reporter);
-        ModelMap.getDefault().createModelAndAddEntry(reporter);
         getListeners().firePropertyChange(PROPERTY_REPORTERS, null, reporter);
     }
 

@@ -16,45 +16,62 @@
 package org.perfcake.pc4nb.ui;
 
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.util.List;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import org.perfcake.model.Property;
+import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.PropertiesModel;
+import org.perfcake.pc4nb.model.PropertyModel;
 import static org.perfcake.pc4nb.ui.SizeConstraints.INSET;
 import static org.perfcake.pc4nb.ui.SizeConstraints.PERFCAKE_RECTANGLE_HEIGHT;
 import static org.perfcake.pc4nb.ui.SizeConstraints.SECOND_LEVEL_RECTANGLE_WIDTH;
+import org.perfcake.pc4nb.ui.actions.EditScenarioPropertiesAction;
 
 /**
  *
  * @author Andrej Halaj
  */
 public class PropertiesView extends PC4NBView {
+    private JMenuItem editProperties = new JMenuItem("Edit Properties");
+    private JPopupMenu menu = new JPopupMenu();
 
     public PropertiesView(int x, int y, int width) {
         super(x, y, width);
         setColor(Color.GRAY);
         setHeader("Properties");
+
+        editProperties.addActionListener(new EditScenarioPropertiesListener());
+
+        menu.add(editProperties);
+        this.setComponentPopupMenu(menu);
     }
-    
-     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D graphics = (Graphics2D) g;
-        graphics.setColor(Color.GRAY);
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(PropertiesModel.PROPERTY_PROPERTIES)) {
+            recomputeHeightAndRedraw();
+        }
+    }
+
+    private void drawChildren() {
         PropertiesModel model = (PropertiesModel) getModel();
 
-        if (model != null && model.getProperties()!= null) {
+        if (model != null && model.getProperties() != null) {
             List<Property> properties = model.getProperties().getProperty();
 
             int currentX = INSET;
             int currentY = TOP_INDENT;
-            
+
             this.removeAll();
 
             for (Property property : properties) {
-                SecondLevelView newMessage = new SecondLevelView(currentX, currentY, property.getName());
-                this.add(newMessage);
+                PropertyView newProperty = new PropertyView(currentX, currentY, property.getName());
+                newProperty.setModel(ModelMap.getDefault().getPC4NBModelFor(properties));
+                this.add(newProperty);
 
                 if (currentX + 2 * (SECOND_LEVEL_RECTANGLE_WIDTH + INSET) > getWidth()) {
                     currentX = INSET;
@@ -67,14 +84,27 @@ public class PropertiesView extends PC4NBView {
     }
 
     @Override
-    public void recomputeHeight() {
-        super.recomputeHeight();
+    public void recomputeHeightAndRedraw() {
+        super.recomputeHeightAndRedraw();
         PropertiesModel model = (PropertiesModel) getModel();
 
-        if (model != null && model.getProperties()!= null) {
+        if (model != null && model.getProperties() != null) {
             List<Property> properties = model.getProperties().getProperty();
             int columns = (int) ((getWidth() - INSET) / (SECOND_LEVEL_RECTANGLE_WIDTH + INSET));
             this.setHeight((int) (TOP_INDENT + (Math.ceil((double) properties.size() / (double) columns) * (PERFCAKE_RECTANGLE_HEIGHT + INSET))));
+        }
+
+        drawChildren();
+        revalidate();
+        repaint();
+    }
+
+    private class EditScenarioPropertiesListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            EditScenarioPropertiesAction action = new EditScenarioPropertiesAction((PropertiesModel) getModel());
+            action.execute();
         }
     }
 }

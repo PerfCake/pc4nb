@@ -288,13 +288,33 @@ public final class DestinationVisualPanel extends VisualPanelWithProperties {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getSource() instanceof DestinationModel) {
-            try {
-                listProperties((String) destinationSelection.getSelectedItem());
-            } catch (ClassNotFoundException | NoSuchFieldException ex) {
-                Exceptions.printStackTrace(ex);
-            }
+        DestinationModel model = (DestinationModel) getModel();
+        List<Period> periodsList = model.getDestination().getPeriod();
+        int targetIndex;
+
+        switch (evt.getPropertyName()) {
+            case DestinationModel.PROPERTY_PERIOD:
+                if (evt.getNewValue() != null) {
+                    targetIndex = periodsList.indexOf(evt.getNewValue());
+                    periodsTableModel.insertRow(targetIndex, (Period) evt.getNewValue());
+                } else if (evt.getOldValue() != null) {
+                    targetIndex = periodsTableModel.getPeriods().indexOf(evt.getOldValue());
+                    periodsTableModel.removeRow(targetIndex);
+                } else {
+                    // error
+                }
+                break;
+            case DestinationModel.PROPERTY_CLASS:
+            case DestinationModel.PROPERTY_ENABLED:
+                PeriodModel periodModel = (PeriodModel) evt.getSource();
+                Period period = periodModel.getPeriod();
+                targetIndex = periodsTableModel.getPeriods().indexOf(period);
+                periodsTableModel.updateRow(targetIndex, period);
+                break;
+            default:
+                break;
         }
+
     }
     
     private class AddPeriodListener implements ActionListener {
