@@ -42,12 +42,7 @@ import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Generator;
 import org.perfcake.model.Scenario.Generator.Run;
 import org.perfcake.model.Scenario.Sender;
-import org.perfcake.pc4nb.model.GeneratorModel;
-import org.perfcake.pc4nb.model.MessagesModel;
-import org.perfcake.pc4nb.model.ModelMap;
-import org.perfcake.pc4nb.model.ReportingModel;
-import org.perfcake.pc4nb.model.ScenarioModel;
-import org.perfcake.pc4nb.model.SenderModel;
+import org.perfcake.pc4nb.model.*;
 import org.perfcake.pc4nb.model.ValidationModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.scenario.ScenarioException;
@@ -107,8 +102,6 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
         if (finished) {
             ScenarioManager manager = new ScenarioManager();
             prepareScenario();
-
-            ModelMap.getDefault().addEntry(scenarioModel.getScenario(), scenarioModel);
 
             Project project = (Project) wizard.getProperty("scenario-project");
             URI scenarioPath = Utilities.toURI(new File(project.getProjectDirectory().getPath() + File.separator + "scenarios"

@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.border.LineBorder;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.PropertyModel;
 
@@ -33,9 +34,9 @@ public class PropertyView extends SecondLevelView {
 
     public PropertyView(int x, int y, String header) {
         super(x, y, header);
-
-        setColor(Color.GRAY);
-
+        setDefaultBorder(new LineBorder(Color.GRAY, 1, true));
+        setBorder(getDefaultBorder());
+        setHeader("Property");
         menu.add(deleteComponent);
 
         deleteComponent.addActionListener(new DeletePropertyListener());

@@ -19,11 +19,15 @@ import java.awt.Color;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
+import javafx.scene.input.KeyCode;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
+import javax.swing.border.LineBorder;
 import org.perfcake.pc4nb.model.GeneratorModel;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.ui.actions.EditGeneratorAction;
@@ -39,7 +43,8 @@ public class GeneratorView extends PC4NBView {
 
     public GeneratorView(int x, int y, int width) {
         super(x, y, width);
-        setColor(Color.RED);
+        setDefaultBorder(new LineBorder(Color.RED, 1, true));
+        setBorder(getDefaultBorder());
         setHeader("Generator");
 
         editComponent.addActionListener(new EditGeneratorListener());
@@ -48,6 +53,15 @@ public class GeneratorView extends PC4NBView {
         this.setComponentPopupMenu(menu);
         
         setTransferHandler(transferHandler);
+        
+        addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (hasFocus() && e.getKeyCode() == KeyCode.DELETE.ordinal()) {
+                }
+            }
+        });
     }
 
     @Override

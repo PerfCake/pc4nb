@@ -19,8 +19,13 @@ import java.util.List;
 import java.util.Properties;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
+import org.perfcake.model.Header;
 import org.perfcake.model.Property;
+import org.perfcake.model.Scenario;
+import org.perfcake.model.Scenario.Messages.Message;
+import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
 import org.perfcake.pc4nb.model.MessageModel;
+import org.perfcake.pc4nb.model.MessagesModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.ui.wizards.MessageWizardPanel;
 import static org.perfcake.pc4nb.ui.wizards.visuals.MessageVisualPanel.MESSAGE_PACKAGE;
@@ -48,28 +53,26 @@ public class EditMessageAction extends AbstractPC4NBAction {
     @Override
 
     public void doAction(WizardDescriptor wiz) {
-        messageModel.setMultiplicity((String) wiz.getProperty("message-multiplicity"));
+        messageModel.setMultiplicity(wiz.getProperty("message-multiplicity").toString());
         String uri = (String) wiz.getProperty("message-uri");
         String content = (String) wiz.getProperty("message-content");
-
+        
         if (content != null && !content.isEmpty()) {
             messageModel.setContent(content);
         } else {
             messageModel.setUri(uri);
         }
-        
-        List<Property> messageProperties = messageModel.getProperty();
 
-        for (int i = messageProperties.size() - 1; i >= 0; i--) {
-            messageModel.removeProperty(messageProperties.get(i));
+        List<Header> headers = (List<Header>) wiz.getProperty("message-headers");
+
+        for (Header header : headers) {
+            messageModel.addHeader(header);
         }
         
-        List<Property> properties = (List<Property>) wiz.getProperty("message-properties");
-
-        for (Property property : properties) {
-            messageModel.addProperty(property);
+        List<ValidatorRef> validatorRefs = (List<ValidatorRef>) wiz.getProperty("message-validators");
+        
+        for (ValidatorRef validatorRef : validatorRefs) {
+            
         }
-
-        // validator refs
     }
 }

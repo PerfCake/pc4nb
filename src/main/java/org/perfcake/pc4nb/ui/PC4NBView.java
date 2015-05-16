@@ -18,8 +18,14 @@ package org.perfcake.pc4nb.ui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import static org.perfcake.pc4nb.ui.SizeConstraints.PERFCAKE_RECTANGLE_HEIGHT;
 
@@ -32,18 +38,51 @@ public class PC4NBView extends AbstractPC4NBView implements PropertyChangeListen
     public static final int TOP_INDENT = 50;
 
     private String header = "";
+    private Border defaultBorder = new LineBorder(Color.BLACK, 1, true);
+    private Border selectedBorder = new LineBorder(Color.BLACK, 2, true);
 
     public PC4NBView(int x, int y, int width) {
         this.setBounds(x, y, width, PERFCAKE_RECTANGLE_HEIGHT);
-        this.setBorder(new LineBorder(Color.BLACK, 1, true));
+        setFocusable(true);
+        setBorder(defaultBorder);
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent event) {
+                if (SwingUtilities.isLeftMouseButton(event)) {
+                    requestFocusInWindow();
+                }
+            }
+        });
+
+        addFocusListener(new FocusListener() {
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                setBorder(selectedBorder);
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                setBorder(defaultBorder);
+            }
+        });
     }
 
-    public Color getColor() {
-        return ((LineBorder) this.getBorder()).getLineColor();
+    public Border getDefaultBorder() {
+        return defaultBorder;
     }
 
-    public void setColor(Color color) {
-        this.setBorder(new LineBorder(color, 1, true));
+    public void setDefaultBorder(Border defaultBorder) {
+        this.defaultBorder = defaultBorder;
+    }
+
+    public Border getSelectedBorder() {
+        return selectedBorder;
+    }
+
+    public void setSelectedBorder(Border selectedBorder) {
+        this.selectedBorder = selectedBorder;
     }
 
     public String getHeader() {

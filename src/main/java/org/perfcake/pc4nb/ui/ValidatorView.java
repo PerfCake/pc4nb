@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.border.LineBorder;
 import org.perfcake.model.Scenario.Validation.Validator;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.ValidatorModel;
@@ -37,7 +38,8 @@ public class ValidatorView extends SecondLevelView {
 
     public ValidatorView(int x, int y, String header) {
         super(x, y, header);
-        setColor(Color.MAGENTA);
+        setDefaultBorder(new LineBorder(Color.MAGENTA, 1, true));
+        setBorder(getDefaultBorder());
 
         editComponent.addActionListener(new EditValidatorListener());
         menu.add(editComponent);

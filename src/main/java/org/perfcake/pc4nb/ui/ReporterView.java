@@ -23,11 +23,11 @@ import java.io.IOException;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
+import javax.swing.border.LineBorder;
 import org.perfcake.model.Scenario.Reporting.Reporter;
 import org.perfcake.pc4nb.model.DestinationModel;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.ReporterModel;
-import org.perfcake.pc4nb.model.ReportingModel;
 import org.perfcake.pc4nb.ui.actions.DeleteReportersAction;
 import org.perfcake.pc4nb.ui.actions.EditReporterAction;
 
@@ -39,7 +39,8 @@ public class ReporterView extends SecondLevelView {
 
     public ReporterView(int x, int y, String header) {
         super(x, y, header);
-        setColor(Color.RED);
+        setDefaultBorder(new LineBorder(Color.BLUE, 1, true));
+        setBorder(getDefaultBorder());
 
         menu.add(editComponent);
         editComponent.addActionListener(new EditReporterListener());

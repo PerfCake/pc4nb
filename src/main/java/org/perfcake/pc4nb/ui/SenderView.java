@@ -24,6 +24,7 @@ import java.io.IOException;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
+import javax.swing.border.LineBorder;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.SenderModel;
 import org.perfcake.pc4nb.ui.actions.EditSenderAction;
@@ -39,8 +40,9 @@ public class SenderView extends PC4NBView {
 
     public SenderView(int x, int y, int width) {
         super(x, y, width);
-        setColor(Color.GREEN);
-        setHeader("Generator");
+        setDefaultBorder(new LineBorder(Color.GREEN, 1, true));
+        setBorder(getDefaultBorder());
+        setHeader("Sender");
 
         editComponent.addActionListener(new EditSenderListener());
 

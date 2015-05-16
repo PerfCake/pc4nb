@@ -21,11 +21,12 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.border.LineBorder;
 import org.perfcake.model.Property;
 import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.PropertiesModel;
-import org.perfcake.pc4nb.model.PropertyModel;
 import static org.perfcake.pc4nb.ui.SizeConstraints.INSET;
 import static org.perfcake.pc4nb.ui.SizeConstraints.PERFCAKE_RECTANGLE_HEIGHT;
 import static org.perfcake.pc4nb.ui.SizeConstraints.SECOND_LEVEL_RECTANGLE_WIDTH;
@@ -41,8 +42,10 @@ public class PropertiesView extends PC4NBView {
 
     public PropertiesView(int x, int y, int width) {
         super(x, y, width);
-        setColor(Color.GRAY);
+        setDefaultBorder(new LineBorder(Color.GRAY, 1, true));
+        setBorder(getDefaultBorder());
         setHeader("Properties");
+        setLayout(new WrapLayout(WrapLayout.LEFT, 10, 10));
 
         editProperties.addActionListener(new EditScenarioPropertiesListener());
 
@@ -97,6 +100,7 @@ public class PropertiesView extends PC4NBView {
         drawChildren();
         revalidate();
         repaint();
+
     }
 
     private class EditScenarioPropertiesListener implements ActionListener {

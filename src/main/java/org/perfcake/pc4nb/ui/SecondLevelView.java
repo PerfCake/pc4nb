@@ -16,6 +16,7 @@
 package org.perfcake.pc4nb.ui;
 
 import java.awt.Color;
+import javax.swing.border.LineBorder;
 import static org.perfcake.pc4nb.ui.SizeConstraints.SECOND_LEVEL_RECTANGLE_WIDTH;
 
 /**
@@ -26,7 +27,8 @@ public class SecondLevelView extends PC4NBView {
 
     public SecondLevelView(int x, int y, String header) {
         super(x, y, SECOND_LEVEL_RECTANGLE_WIDTH);
-        setColor(Color.PINK);
+        setDefaultBorder(new LineBorder(Color.PINK, 1, true));
+        setBorder(getDefaultBorder());
         setHeader(header);
     }
 }

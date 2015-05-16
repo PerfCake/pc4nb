@@ -167,6 +167,11 @@
             <artifactId>log4j-1.2-api</artifactId>
             <version>2.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-xml-jaxb-api</artifactId>
+            <version>RELEASE80</version>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

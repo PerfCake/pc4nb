@@ -25,6 +25,7 @@ import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
+import javax.swing.border.LineBorder;
 import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Messages.Message;
 import org.perfcake.pc4nb.model.MessageModel;
@@ -46,7 +47,8 @@ public class MessagesView extends PC4NBView {
 
     public MessagesView(int x, int y, int width) {
         super(x, y, width);
-        setColor(Color.ORANGE);
+        setDefaultBorder(new LineBorder(Color.ORANGE, 1, true));
+        setBorder(getDefaultBorder());
         setHeader("Messages");
 
         addComponent.addActionListener(new AddMessageListener());

@@ -26,6 +26,7 @@ import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
+import javax.swing.border.LineBorder;
 import org.perfcake.model.Scenario.Validation.Validator;
 import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.ValidationModel;
@@ -46,7 +47,8 @@ public class ValidationView extends PC4NBView {
 
     public ValidationView(int x, int y, int width) {
         super(x, y, width);
-        setColor(Color.MAGENTA);
+        setDefaultBorder(new LineBorder(Color.MAGENTA, 1, true));
+        setBorder(getDefaultBorder());
         setHeader("Validation");
 
         addComponent.addActionListener(new AddValidatorListener());

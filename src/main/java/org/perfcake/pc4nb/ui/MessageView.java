@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.border.LineBorder;
 import org.perfcake.model.Scenario.Messages.Message;
 import org.perfcake.pc4nb.model.MessageModel;
 import org.perfcake.pc4nb.model.PC4NBModel;
@@ -37,7 +38,8 @@ public class MessageView extends SecondLevelView {
 
     public MessageView(int x, int y, String header) {
         super(x, y, header);
-        setColor(Color.ORANGE);
+        setDefaultBorder(new LineBorder(Color.ORANGE, 1, true));
+        setBorder(getDefaultBorder());
         
         editComponent.addActionListener(new EditMessageListener());
         menu.add(editComponent);

@@ -25,6 +25,7 @@ import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
+import javax.swing.border.LineBorder;
 import org.perfcake.model.Scenario.Reporting.Reporter;
 import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.ReporterModel;
@@ -44,11 +45,11 @@ public class ReportingView extends PC4NBView {
 
     public ReportingView(int x, int y, int width) {
         super(x, y, width);
-        setColor(Color.RED);
+        setDefaultBorder(new LineBorder(Color.BLUE, 1, true));
+        setBorder(getDefaultBorder());
         setHeader("Reporting");
-
+        
         addComponent.addActionListener(new AddReporterListener());
-
         menu.add(addComponent);
         this.setComponentPopupMenu(menu);
         setTransferHandler(transferHandler);
@@ -101,6 +102,7 @@ public class ReportingView extends PC4NBView {
         drawChildren();
         revalidate();
         repaint();
+
     }
 
     private final class ReporterTansferHandler extends TransferHandler {
