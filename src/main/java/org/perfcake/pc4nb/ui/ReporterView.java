@@ -19,9 +19,15 @@ import java.awt.Color;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
 import org.perfcake.model.Scenario.Reporting.Reporter;
@@ -37,8 +43,10 @@ public class ReporterView extends SecondLevelView {
     private JPopupMenu menu = new JPopupMenu();
     private TransferHandler transferHandler = new DestinationTransferHandler();
 
-    public ReporterView(int x, int y, String header) {
-        super(x, y, header);
+    public ReporterView(PC4NBModel model) {
+        super(model);
+        setHeader(resolveAndGetHeader());
+
         setDefaultBorder(new LineBorder(Color.BLUE, 1, true));
         setBorder(getDefaultBorder());
 
@@ -50,37 +58,80 @@ public class ReporterView extends SecondLevelView {
 
         setComponentPopupMenu(menu);
         setTransferHandler(transferHandler);
+
+        addKeyListener(new ReporterKeyAdapter());
+        addMouseListener(new ReporterMouseListener());
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(ReporterModel.PROPERTY_CLASS)) {
+            setHeader(resolveAndGetHeader());
+            revalidate();
+            repaint();
+        }
     }
 
     @Override
     public void setModel(PC4NBModel model) {
         super.setModel(model);
 
+        setHeader(resolveAndGetHeader());
+    }
+
+    private String resolveAndGetHeader() {
         ReporterModel reporterModel = (ReporterModel) getModel();
-        setHeader(reporterModel.getReporter().getClazz());
+
+        return reporterModel.getReporter().getClazz();
+    }
+
+    private class ReporterKeyAdapter extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (isFocusOwner() && e.getKeyCode() == KeyEvent.VK_DELETE) {
+                runDeleteWizard();
+            }
+        }
+    }
+
+    private class ReporterMouseListener extends MouseAdapter {
+        @Override
+        public void mousePressed(MouseEvent event) {
+            if (SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2) {
+                runEditWizard();
+            }
+        }
     }
 
     private class EditReporterListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            EditReporterAction action = new EditReporterAction((ReporterModel) getModel());
-            action.execute();
+            runEditWizard();
         }
     }
 
     private class DeleteReporterListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            ReportingView reportingView = (ReportingView) getParent();
-            Reporter reporter = ((ReporterModel) getModel()).getReporter();
-
-            if (reportingView != null) {
-                DeleteReportersAction action = new DeleteReportersAction(reportingView.getModel(), reporter);
-                action.execute();
-            }
+            runDeleteWizard();
         }
     }
-    
+
+    private void runEditWizard() {
+        EditReporterAction action = new EditReporterAction((ReporterModel) getModel());
+        action.execute();
+    }
+
+    private void runDeleteWizard() {
+        ReportingView reportingView = (ReportingView) getParent().getParent();
+        Reporter reporter = ((ReporterModel) getModel()).getReporter();
+
+        if (reportingView != null) {
+            DeleteReportersAction action = new DeleteReportersAction(reportingView.getModel(), reporter);
+            action.execute();
+        }
+    }
+
     private final class DestinationTransferHandler extends TransferHandler {
 
         @Override

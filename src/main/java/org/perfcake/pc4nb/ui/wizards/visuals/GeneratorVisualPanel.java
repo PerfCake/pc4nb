@@ -73,6 +73,8 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
         } catch (ClassNotFoundException | NoSuchFieldException ex) {
             System.err.println("Class not found " + ex.getMessage());
         }
+        
+        propertiesTable.setDefaultRenderer(String.class, new PropertiesTableCellRenderer());
     }
 
     @Override
@@ -163,9 +165,9 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
         propertiesTable = new javax.swing.JTable();
         periodTypeSelection = new javax.swing.JComboBox();
         generatorTypeLabel = new javax.swing.JLabel();
-        periodTypeLabel = new javax.swing.JLabel();
+        durationTypeLabel = new javax.swing.JLabel();
         propertiesLabel = new javax.swing.JLabel();
-        periodValueLabel = new javax.swing.JLabel();
+        durationValueLabel = new javax.swing.JLabel();
         periodValueSpinner = new javax.swing.JSpinner();
         threadsSpinner = new javax.swing.JSpinner();
         threadsLabel = new javax.swing.JLabel();
@@ -200,11 +202,11 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
 
         org.openide.awt.Mnemonics.setLocalizedText(generatorTypeLabel, org.openide.util.NbBundle.getMessage(GeneratorVisualPanel.class, "GeneratorVisualPanel.generatorTypeLabel.text")); // NOI18N
 
-        org.openide.awt.Mnemonics.setLocalizedText(periodTypeLabel, org.openide.util.NbBundle.getMessage(GeneratorVisualPanel.class, "GeneratorVisualPanel.periodTypeLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(durationTypeLabel, org.openide.util.NbBundle.getMessage(GeneratorVisualPanel.class, "GeneratorVisualPanel.durationTypeLabel.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(propertiesLabel, org.openide.util.NbBundle.getMessage(GeneratorVisualPanel.class, "GeneratorVisualPanel.propertiesLabel.text")); // NOI18N
 
-        org.openide.awt.Mnemonics.setLocalizedText(periodValueLabel, org.openide.util.NbBundle.getMessage(GeneratorVisualPanel.class, "GeneratorVisualPanel.periodValueLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(durationValueLabel, org.openide.util.NbBundle.getMessage(GeneratorVisualPanel.class, "GeneratorVisualPanel.durationValueLabel.text")); // NOI18N
 
         periodValueSpinner.setValue(1);
 
@@ -221,9 +223,9 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(threadsLabel)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(periodValueLabel)
+                        .addComponent(durationValueLabel)
                         .addComponent(propertiesLabel)
-                        .addComponent(periodTypeLabel)
+                        .addComponent(durationTypeLabel)
                         .addComponent(generatorTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(periodTypeSelection, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(generatorSelection, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -244,11 +246,11 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(threadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(periodTypeLabel)
+                .addComponent(durationTypeLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(periodTypeSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(periodValueLabel)
+                .addComponent(durationValueLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(periodValueSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -260,12 +262,12 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel durationTypeLabel;
+    private javax.swing.JLabel durationValueLabel;
     private javax.swing.JComboBox generatorSelection;
     private javax.swing.JLabel generatorTypeLabel;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JLabel periodTypeLabel;
     private javax.swing.JComboBox periodTypeSelection;
-    private javax.swing.JLabel periodValueLabel;
     private javax.swing.JSpinner periodValueSpinner;
     private javax.swing.JLabel propertiesLabel;
     private javax.swing.JTable propertiesTable;

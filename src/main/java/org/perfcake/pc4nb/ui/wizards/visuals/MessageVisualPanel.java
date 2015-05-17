@@ -29,16 +29,21 @@ import org.perfcake.model.Header;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Messages.Message;
+import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
 import org.perfcake.pc4nb.model.HeaderModel;
 import org.perfcake.pc4nb.model.MessageModel;
 import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.PC4NBModel;
+import org.perfcake.pc4nb.model.ReportingModel;
 import org.perfcake.pc4nb.ui.AbstractPC4NBView;
 import org.perfcake.pc4nb.ui.actions.AddHeaderAction;
+import org.perfcake.pc4nb.ui.actions.AddValidatorRefsAction;
 import org.perfcake.pc4nb.ui.actions.DeleteHeaderAction;
+import org.perfcake.pc4nb.ui.actions.DeleteValidatorRefsAction;
 import org.perfcake.pc4nb.ui.actions.EditHeaderAction;
 import org.perfcake.pc4nb.ui.tableModel.HeadersTableModel;
 import org.perfcake.pc4nb.ui.tableModel.MetaPropertiesTableModel;
+import org.perfcake.pc4nb.ui.tableModel.ValidatorRefsTableModel;
 
 public final class MessageVisualPanel extends AbstractPC4NBView implements DocumentListener {
     public static final String MESSAGE_PACKAGE = "org.perfcake.message";
@@ -50,9 +55,12 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
         addHeaderButton.addActionListener(new AddHeaderListener());
         editHeaderButton.addActionListener(new EditHeaderListener());
         deleteHeaderButton.addActionListener(new DeleteHeaderListener());
-        
+
         contentTextField.getDocument().addDocumentListener(this);
         uriTextField.getDocument().addDocumentListener(this);
+
+        attachValidatorButton.addActionListener(new AddValidatorRefsListener());
+        detachValidatorButton.addActionListener(new DeleteValidatorRefsListener());
     }
 
     @Override
@@ -104,6 +112,10 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
         return propertiesModel.getProperties();
     }
 
+    public ValidatorRefsTableModel getValidatorRefsTableModel() {
+        return validatorRefsTableModel;
+    }
+
     @Override
     public void setModel(PC4NBModel model) {
         super.setModel(model);
@@ -112,16 +124,16 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
 
         String messageUri = message.getUri();
         uriTextField.setText(messageUri);
-        
-        int messageMultiplicity = 1; 
+
+        int messageMultiplicity = 1;
         if (message.getMultiplicity() != null) {
             messageMultiplicity = Integer.parseInt(message.getMultiplicity());
         }
         multiplicitySpinner.setValue(messageMultiplicity);
-        
+
         String messageContent = message.getContent();
         contentTextField.setText(messageContent);
-        
+
         for (Property property : message.getProperty()) {
             int index = propertiesModel.getRowCount();
             propertiesModel.addRow();
@@ -131,6 +143,10 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
 
         for (Header header : message.getHeader()) {
             headersTableModel.addRow(header);
+        }
+        
+        for (ValidatorRef validatorRef : message.getValidatorRef()) {
+            validatorRefsTableModel.addRow(validatorRef);
         }
     }
 
@@ -152,8 +168,6 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
         headersTable = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         propertiesTable = new javax.swing.JTable();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        attachedValidatorsTable = new javax.swing.JTable();
         addHeaderButton = new javax.swing.JButton();
         deleteHeaderButton = new javax.swing.JButton();
         editHeaderButton = new javax.swing.JButton();
@@ -164,6 +178,8 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
         detachValidatorButton = new javax.swing.JButton();
         addPropertyRow = new javax.swing.JButton();
         deleteProperties = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        validatorRefsTable = new javax.swing.JTable();
 
         org.openide.awt.Mnemonics.setLocalizedText(uriLabel, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.uriLabel.text")); // NOI18N
 
@@ -183,19 +199,6 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
         propertiesTable.setModel(propertiesModel);
         jScrollPane2.setViewportView(propertiesTable);
 
-        attachedValidatorsTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane3.setViewportView(attachedValidatorsTable);
-
         org.openide.awt.Mnemonics.setLocalizedText(addHeaderButton, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.addHeaderButton.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(deleteHeaderButton, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.deleteHeaderButton.text")); // NOI18N
@@ -209,18 +212,8 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
         org.openide.awt.Mnemonics.setLocalizedText(attachedValidatorsLabel, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.attachedValidatorsLabel.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(attachValidatorButton, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.attachValidatorButton.text")); // NOI18N
-        attachValidatorButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                attachValidatorButtonActionPerformed(evt);
-            }
-        });
 
         org.openide.awt.Mnemonics.setLocalizedText(detachValidatorButton, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.detachValidatorButton.text")); // NOI18N
-        detachValidatorButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                detachValidatorButtonActionPerformed(evt);
-            }
-        });
 
         org.openide.awt.Mnemonics.setLocalizedText(addPropertyRow, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.addPropertyRow.text")); // NOI18N
         addPropertyRow.addActionListener(new java.awt.event.ActionListener() {
@@ -235,6 +228,10 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
                 deletePropertiesActionPerformed(evt);
             }
         });
+
+        validatorRefsTableModel = new ValidatorRefsTableModel();
+        validatorRefsTable.setModel(validatorRefsTableModel);
+        jScrollPane4.setViewportView(validatorRefsTable);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -260,9 +257,9 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
                             .addComponent(contentTextField)))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 645, Short.MAX_VALUE)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 645, Short.MAX_VALUE))
+                            .addComponent(jScrollPane4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(deleteHeaderButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -313,25 +310,18 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
                         .addComponent(deleteProperties, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addComponent(attachedValidatorsLabel)
-                .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
+                        .addGap(22, 22, 22)
                         .addComponent(attachValidatorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(detachValidatorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(detachValidatorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void attachValidatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attachValidatorButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_attachValidatorButtonActionPerformed
-
-    private void detachValidatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detachValidatorButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_detachValidatorButtonActionPerformed
 
     private void addPropertyRowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPropertyRowActionPerformed
         propertiesModel.addRow();
@@ -339,7 +329,7 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
 
     private void deletePropertiesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletePropertiesActionPerformed
         int[] selectedRows = propertiesTable.getSelectedRows();
-        
+
         for (int i = selectedRows.length - 1; i >= 0; i--) {
             propertiesModel.removeRow(selectedRows[i]);
         }
@@ -350,7 +340,6 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
     private javax.swing.JButton addPropertyRow;
     private javax.swing.JButton attachValidatorButton;
     private javax.swing.JLabel attachedValidatorsLabel;
-    private javax.swing.JTable attachedValidatorsTable;
     private javax.swing.JLabel contentLabel;
     private javax.swing.JTextField contentTextField;
     private javax.swing.JButton deleteHeaderButton;
@@ -362,7 +351,7 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
     private HeadersTableModel headersTableModel;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JLabel multiplicityLabel;
     private javax.swing.JSpinner multiplicitySpinner;
     private javax.swing.JLabel propertiesLabel;
@@ -370,21 +359,36 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
     private MetaPropertiesTableModel propertiesModel;
     private javax.swing.JLabel uriLabel;
     private javax.swing.JTextField uriTextField;
+    private javax.swing.JTable validatorRefsTable;
+    private ValidatorRefsTableModel validatorRefsTableModel;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(MessageModel.PROPERTY_HEADERS)) {
-            MessageModel model = (MessageModel) getModel();
-            List<Header> headersList = model.getMessage().getHeader();
-            int targetIndex;
+        MessageModel model = (MessageModel) getModel();
+        int targetIndex;
 
+        if (evt.getPropertyName().equals(MessageModel.PROPERTY_HEADERS)) {
+            List<Header> headersList = model.getMessage().getHeader();
+            
             if (evt.getNewValue() != null) {
                 targetIndex = headersList.indexOf(evt.getNewValue());
                 headersTableModel.insertRow(targetIndex, (Header) evt.getNewValue());
             } else if (evt.getOldValue() != null) {
                 targetIndex = headersTableModel.getHeaders().indexOf(evt.getOldValue());
                 headersTableModel.removeRow(targetIndex);
+            } else {
+                // error
+            }
+        } else if (evt.getPropertyName().equals(MessageModel.PROPERTY_VALIDATOR_REFS)) {
+            List<ValidatorRef> validatorRefs = model.getMessage().getValidatorRef();
+            
+            if (evt.getNewValue() != null) {
+                targetIndex = validatorRefs.indexOf(evt.getNewValue());
+                validatorRefsTableModel.insertRow(targetIndex, (ValidatorRef) evt.getNewValue());
+            } else if (evt.getOldValue() != null) {
+                targetIndex = validatorRefsTableModel.getValidatorRefs().indexOf(evt.getOldValue());
+                validatorRefsTableModel.removeRow(targetIndex);
             } else {
                 // error
             }
@@ -409,6 +413,32 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
     public void changedUpdate(DocumentEvent e) {
         if (e.getDocument() == uriTextField.getDocument() || e.getDocument() == contentTextField.getDocument()) {
             firePropertyChange("prop-content-uri", 0, 1);
+        }
+    }
+
+    private  class DeleteValidatorRefsListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int[] selectedRows = MessageVisualPanel.this.validatorRefsTable.getSelectedRows();
+            MessageModel messageModel = (MessageModel) MessageVisualPanel.this.getModel();
+            List<ValidatorRef> toRemove = new ArrayList<>();
+
+            for (int i = 0; i < selectedRows.length; i++) {
+                ValidatorRef validatorRef = messageModel.getMessage().getValidatorRef().get(selectedRows[i]);
+                toRemove.add(validatorRef);
+            }
+
+            DeleteValidatorRefsAction action = new DeleteValidatorRefsAction((MessageModel) getModel(), toRemove);
+            action.execute();
+        }
+    }
+
+    private class AddValidatorRefsListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            AddValidatorRefsAction action = new AddValidatorRefsAction(ModelMap.getDefault().getValidationModel(), (MessageModel) getModel());
+            action.execute();
         }
     }
 

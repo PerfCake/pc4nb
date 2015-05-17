@@ -21,9 +21,9 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="threadsLabel" min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="periodValueLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="durationValueLabel" min="-2" max="-2" attributes="0"/>
                       <Component id="propertiesLabel" min="-2" max="-2" attributes="0"/>
-                      <Component id="periodTypeLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="durationTypeLabel" min="-2" max="-2" attributes="0"/>
                       <Component id="generatorTypeLabel" min="-2" pref="106" max="-2" attributes="0"/>
                       <Component id="periodTypeSelection" alignment="0" max="32767" attributes="0"/>
                       <Component id="generatorSelection" alignment="0" max="32767" attributes="0"/>
@@ -48,11 +48,11 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="threadsSpinner" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="periodTypeLabel" min="-2" max="-2" attributes="0"/>
+              <Component id="durationTypeLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
               <Component id="periodTypeSelection" min="-2" pref="32" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="periodValueLabel" min="-2" max="-2" attributes="0"/>
+              <Component id="durationValueLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="periodValueSpinner" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -100,10 +100,10 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="periodTypeLabel">
+    <Component class="javax.swing.JLabel" name="durationTypeLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/perfcake/pc4nb/ui/wizards/visuals/Bundle.properties" key="GeneratorVisualPanel.periodTypeLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/perfcake/pc4nb/ui/wizards/visuals/Bundle.properties" key="GeneratorVisualPanel.durationTypeLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -114,10 +114,10 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="periodValueLabel">
+    <Component class="javax.swing.JLabel" name="durationValueLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/perfcake/pc4nb/ui/wizards/visuals/Bundle.properties" key="GeneratorVisualPanel.periodValueLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="org/perfcake/pc4nb/ui/wizards/visuals/Bundle.properties" key="GeneratorVisualPanel.durationValueLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>

@@ -16,37 +16,32 @@
 package org.perfcake.pc4nb.ui;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
-import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
 import org.perfcake.model.Scenario.Validation.Validator;
 import org.perfcake.pc4nb.model.ModelMap;
+import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.ValidationModel;
 import org.perfcake.pc4nb.model.ValidatorModel;
-import static org.perfcake.pc4nb.ui.SizeConstraints.INSET;
-import static org.perfcake.pc4nb.ui.SizeConstraints.PERFCAKE_RECTANGLE_HEIGHT;
-import static org.perfcake.pc4nb.ui.SizeConstraints.SECOND_LEVEL_RECTANGLE_WIDTH;
 import org.perfcake.pc4nb.ui.actions.AddValidatorAction;
 
 /**
  *
  * @author Andrej Halaj
  */
-public class ValidationView extends PC4NBView {
+public final class ValidationView extends PC4NBView {
     private JMenuItem addComponent = new JMenuItem("Add new validator");
     private JPopupMenu menu = new JPopupMenu();
     private TransferHandler transferHandler = new ValidatorTransferHandler();
 
-    public ValidationView(int x, int y, int width) {
-        super(x, y, width);
+    public ValidationView() {
         setDefaultBorder(new LineBorder(Color.MAGENTA, 1, true));
         setBorder(getDefaultBorder());
         setHeader("Validation");
@@ -57,52 +52,32 @@ public class ValidationView extends PC4NBView {
         this.setComponentPopupMenu(menu);
         setTransferHandler(transferHandler);
     }
+    
+    @Override
+    public void setModel(PC4NBModel model) {
+        super.setModel(model);
+        
+        drawChildren();
+    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(ValidationModel.PROPERTY_VALIDATORS)) {
-            recomputeHeightAndRedraw();
+            drawChildren();
         }
     }
 
-    protected void drawChildren() {
+    public void drawChildren() {
+        removeAll();
+
         ValidationModel model = (ValidationModel) getModel();
 
-        this.removeAll();
-
         if (model != null && model.getValidation() != null) {
-            List<Validator> validators = model.getValidation().getValidator();
-
-            int currentX = INSET;
-            int currentY = TOP_INDENT;
-
-            for (Validator validator : validators) {
-                ValidatorView newValidator = new ValidatorView(currentX, currentY, validator.getClazz());
-                newValidator.setModel(ModelMap.getDefault().getPC4NBModelFor(validator));
-                this.add(newValidator);
-
-                if (currentX + 2 * (SECOND_LEVEL_RECTANGLE_WIDTH + INSET) > getWidth()) {
-                    currentX = INSET;
-                    currentY += PERFCAKE_RECTANGLE_HEIGHT + INSET;
-                } else {
-                    currentX += SECOND_LEVEL_RECTANGLE_WIDTH + INSET;
-                }
+            for (Validator validator : model.getValidation().getValidator()) {
+                add(new ValidatorView(ModelMap.getDefault().getPC4NBModelFor(validator)));
             }
         }
-    }
-
-    @Override
-    public void recomputeHeightAndRedraw() {
-        super.recomputeHeightAndRedraw();
-        ValidationModel model = (ValidationModel) getModel();
-
-        if (model != null && model.getValidation() != null) {
-            List<Validator> validators = model.getValidation().getValidator();
-            int columns = (int) ((getWidth() - INSET) / (SECOND_LEVEL_RECTANGLE_WIDTH + INSET));
-            this.setHeight((int) (TOP_INDENT + (Math.ceil((double) validators.size() / (double) columns) * (PERFCAKE_RECTANGLE_HEIGHT + INSET))));
-        }
-
-        drawChildren();
+        
         revalidate();
         repaint();
     }

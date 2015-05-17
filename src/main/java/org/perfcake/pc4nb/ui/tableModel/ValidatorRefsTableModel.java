@@ -36,7 +36,7 @@ public class ValidatorRefsTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 2;
+        return 1;
     }
     
     public void addRow(ValidatorRef validatorRef) {
@@ -73,6 +73,16 @@ public class ValidatorRefsTableModel extends AbstractTableModel {
                 return validatorRef.getId();
             default:
                 return null;
+        }
+    }
+    
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        switch (columnIndex) {
+            case 0:
+                return Integer.class;
+            default:
+                throw new IllegalArgumentException("columnIndex");
         }
     }
     

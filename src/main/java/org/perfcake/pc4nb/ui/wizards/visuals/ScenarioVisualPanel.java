@@ -39,7 +39,7 @@ public final class ScenarioVisualPanel extends AbstractPC4NBView {
 
     @Override
     public String getName() {
-        return "Step #7";
+        return "Scenario Name and Project";
     }
 
     public JTextField getScenarioNameTextField() {

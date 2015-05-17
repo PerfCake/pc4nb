@@ -18,8 +18,14 @@ package org.perfcake.pc4nb.ui;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import org.perfcake.model.Scenario.Validation.Validator;
 import org.perfcake.pc4nb.model.PC4NBModel;
@@ -36,8 +42,10 @@ public class ValidatorView extends SecondLevelView {
     private JMenuItem deleteComponent = new JMenuItem("Delete validator");
     private JPopupMenu menu = new JPopupMenu();
 
-    public ValidatorView(int x, int y, String header) {
-        super(x, y, header);
+    public ValidatorView(PC4NBModel model) {
+        super(model);
+        setHeader(resolveAndGetHeader());
+
         setDefaultBorder(new LineBorder(Color.MAGENTA, 1, true));
         setBorder(getDefaultBorder());
 
@@ -48,22 +56,55 @@ public class ValidatorView extends SecondLevelView {
         menu.add(deleteComponent);
 
         this.setComponentPopupMenu(menu);
+        addMouseListener(new ValidatorMouseAdapter());
+        addKeyListener(new ValidatorKeyAdapter());
     }
 
     @Override
     public void setModel(PC4NBModel model) {
         super.setModel(model);
 
+        setHeader(resolveAndGetHeader());
+    }
+
+    private String resolveAndGetHeader() {
         ValidatorModel validatorModel = (ValidatorModel) getModel();
-        setHeader(validatorModel.getValidator().getClazz());
+
+        return validatorModel.getValidator().getClazz();
+    }
+    
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(ValidatorModel.PROPERTY_CLASS)) {
+            setHeader(resolveAndGetHeader());
+            revalidate();
+            repaint();
+        }
+    }
+
+    private class ValidatorKeyAdapter extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (isFocusOwner() && e.getKeyCode() == KeyEvent.VK_DELETE) {
+                runDeleteWizard();
+            }
+        }
+    }
+
+    private class ValidatorMouseAdapter extends MouseAdapter {
+        @Override
+        public void mousePressed(MouseEvent event) {
+            if (SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2) {
+                runEditWizard();
+            }
+        }
     }
 
     private class EditValidatorListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            EditValidatorAction action = new EditValidatorAction((ValidatorModel) getModel());
-            action.execute();
+            runEditWizard();
         }
     }
 
@@ -71,13 +112,22 @@ public class ValidatorView extends SecondLevelView {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            ValidationView validationView = (ValidationView) getParent();
-            Validator validator = ((ValidatorModel) getModel()).getValidator();
+            runDeleteWizard();
+        }
+    }
 
-            if (validationView != null) {
-                DeleteValidatorAction action = new DeleteValidatorAction(validationView.getModel(), validator);
-                action.execute();
-            }
+    private void runEditWizard() {
+        EditValidatorAction action = new EditValidatorAction((ValidatorModel) getModel());
+        action.execute();
+    }
+
+    private void runDeleteWizard() {
+        ValidationView validationView = (ValidationView) getParent().getParent();
+        Validator validator = ((ValidatorModel) getModel()).getValidator();
+
+        if (validationView != null) {
+            DeleteValidatorAction action = new DeleteValidatorAction(validationView.getModel(), validator);
+            action.execute();
         }
     }
 }

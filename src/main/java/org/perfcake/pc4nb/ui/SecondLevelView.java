@@ -16,7 +16,9 @@
 package org.perfcake.pc4nb.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import javax.swing.border.LineBorder;
+import org.perfcake.pc4nb.model.PC4NBModel;
 import static org.perfcake.pc4nb.ui.SizeConstraints.SECOND_LEVEL_RECTANGLE_WIDTH;
 
 /**
@@ -25,10 +27,28 @@ import static org.perfcake.pc4nb.ui.SizeConstraints.SECOND_LEVEL_RECTANGLE_WIDTH
  */
 public class SecondLevelView extends PC4NBView {
 
-    public SecondLevelView(int x, int y, String header) {
-        super(x, y, SECOND_LEVEL_RECTANGLE_WIDTH);
+    public SecondLevelView(PC4NBModel model) {
+        setModel(model);
         setDefaultBorder(new LineBorder(Color.PINK, 1, true));
         setBorder(getDefaultBorder());
-        setHeader(header);
+        setHeader("Property");
+        setPreferredSize(new Dimension(SECOND_LEVEL_RECTANGLE_WIDTH, 50));
+        setMinimumSize(new Dimension(SECOND_LEVEL_RECTANGLE_WIDTH, 50));
+    }
+    
+    @Override
+    public Dimension getPreferredSize() {
+        Dimension size = super.getPreferredSize();
+        size.width = SECOND_LEVEL_RECTANGLE_WIDTH;
+        
+        return size;
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        Dimension size = super.getPreferredSize();
+        size.width = SECOND_LEVEL_RECTANGLE_WIDTH;
+        
+        return size;
     }
 }

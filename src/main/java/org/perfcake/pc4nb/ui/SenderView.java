@@ -19,10 +19,13 @@ import java.awt.Color;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
 import org.perfcake.pc4nb.model.PC4NBModel;
@@ -38,11 +41,11 @@ public class SenderView extends PC4NBView {
     private JPopupMenu menu = new JPopupMenu();
     TransferHandler transferHandler = new SenderTransferHandler();
 
-    public SenderView(int x, int y, int width) {
-        super(x, y, width);
+    public SenderView() {
+        setHeader("Sender");
+        
         setDefaultBorder(new LineBorder(Color.GREEN, 1, true));
         setBorder(getDefaultBorder());
-        setHeader("Sender");
 
         editComponent.addActionListener(new EditSenderListener());
 
@@ -50,23 +53,42 @@ public class SenderView extends PC4NBView {
         this.setComponentPopupMenu(menu);
         
         setTransferHandler(transferHandler);
+        addMouseListener(new SenderMouseListener());
     }
 
     @Override
     public void setModel(PC4NBModel model) {
         super.setModel(model);
 
-        SenderModel senderModel = (SenderModel) model;
-        setHeader(senderModel.getSender().getClazz());
+        setHeader(resolveAndGetHeader());
     }
     
+    private String resolveAndGetHeader() {
+        SenderModel senderModel = (SenderModel) getModel();
+        
+        return senderModel.getSender().getClazz();
+    }
+    
+    private class SenderMouseListener extends MouseAdapter {
+        @Override
+        public void mousePressed(MouseEvent event) {
+            if (SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2) {
+                runEditWizard();
+            }
+        }
+    }
+
     private class EditSenderListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            EditSenderAction action = new EditSenderAction((SenderModel) getModel());
-            action.execute();
+            runEditWizard();
         }
+    }
+
+    private void runEditWizard() {
+        EditSenderAction action = new EditSenderAction((SenderModel) getModel());
+        action.execute();
     }
     
     @Override

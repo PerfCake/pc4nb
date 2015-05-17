@@ -15,58 +15,79 @@
  */
 package org.perfcake.pc4nb.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
-import static org.perfcake.pc4nb.ui.SizeConstraints.PERFCAKE_RECTANGLE_HEIGHT;
+import static org.perfcake.pc4nb.ui.SizeConstraints.TOP_LEVEL_RECTANGLE_WIDTH;
 
 /**
  *
  * @author Andrej Halaj
  */
-public class PC4NBView extends AbstractPC4NBView implements PropertyChangeListener {
-    public static final double CORNER_ARC = 10;
+public class PC4NBView extends AbstractPC4NBView implements PropertyChangeListener, FocusListener {
     public static final int TOP_INDENT = 50;
 
-    private String header = "";
     private Border defaultBorder = new LineBorder(Color.BLACK, 1, true);
     private Border selectedBorder = new LineBorder(Color.BLACK, 2, true);
+    private JPanel headerPanel = new JPanel();
+    private JPanel contentPanel = new JPanel();
+    
+    private JLabel header = new JLabel("Header");
 
-    public PC4NBView(int x, int y, int width) {
-        this.setBounds(x, y, width, PERFCAKE_RECTANGLE_HEIGHT);
+    public PC4NBView() {
         setFocusable(true);
         setBorder(defaultBorder);
 
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent event) {
-                if (SwingUtilities.isLeftMouseButton(event)) {
-                    requestFocusInWindow();
-                }
-            }
-        });
+        setLayout(new BorderLayout());
+        headerPanel.add(header);
+        add(headerPanel, BorderLayout.NORTH);
+        contentPanel.setLayout(new WrapLayout(WrapLayout.LEFT, 10, 10));
+        add(contentPanel, BorderLayout.CENTER);
 
-        addFocusListener(new FocusListener() {
+        addMouseListener(new SelectedMouseAdapter());
+        addFocusListener(this);
+    }
 
-            @Override
-            public void focusGained(FocusEvent e) {
-                setBorder(selectedBorder);
-            }
+    @Override
+    public Dimension getPreferredSize() {
+        Dimension size = super.getPreferredSize();
+        size.width = TOP_LEVEL_RECTANGLE_WIDTH;
+        
+        return size;
+    }
 
-            @Override
-            public void focusLost(FocusEvent e) {
-                setBorder(defaultBorder);
-            }
-        });
+    @Override
+    public Dimension getMinimumSize() {
+        Dimension size = super.getPreferredSize();
+        size.width = TOP_LEVEL_RECTANGLE_WIDTH;
+        
+        return size;
+    }
+
+    public void setHeader(String header) {
+        this.header.setText(header);
+    }
+
+    @Override
+    public Component add(Component comp) {
+        return contentPanel.add(comp);
+    }
+
+    @Override
+    public void removeAll() {
+        contentPanel.removeAll();
     }
 
     public Border getDefaultBorder() {
@@ -85,55 +106,27 @@ public class PC4NBView extends AbstractPC4NBView implements PropertyChangeListen
         this.selectedBorder = selectedBorder;
     }
 
-    public String getHeader() {
-        return header;
-    }
-
-    public void setHeader(String header) {
-        if (header != null) {
-            this.header = header;
-        }
-    }
-
-    public void setX(int x) {
-        this.setBounds(x, (int) getLocation().getY(), (int) getSize().getWidth(), PERFCAKE_RECTANGLE_HEIGHT);
-    }
-
-    public void setY(int y) {
-        this.setBounds((int) getLocation().getX(), y, (int) getSize().getWidth(), PERFCAKE_RECTANGLE_HEIGHT);
-    }
-
-    public void setWidth(int width) {
-        this.setBounds((int) getLocation().getX(), (int) getLocation().getY(), width, (int) getSize().getHeight());
-    }
-
-    public void setHeight(int height) {
-        this.setBounds((int) getLocation().getX(), (int) getLocation().getY(), (int) getSize().getWidth(), height);
-    }
-
-    public void recomputeHeightAndRedraw() {
-        //this.setBounds((int) getLocation().getX(), (int) getLocation().getY(), (int) getSize().getWidth(), PERFCAKE_RECTANGLE_HEIGHT);
-    }
-
-    public void printHeader(Graphics2D graphics, String text) {
-        if (graphics.getFontMetrics() != null) {
-            int stringLen = (int) graphics.getFontMetrics().getStringBounds(text, graphics).getWidth();
-            double start = getWidth() / 2 - stringLen / 2;
-            graphics.drawString(text, (float) start, 20.0f);
-        }
-    }
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         return;
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g); //To change body of generated methods, choose Tools | Templates.
+    public void focusGained(FocusEvent e) {
+        setBorder(selectedBorder);
+    }
 
-        Graphics2D g2d = (Graphics2D) g;
+    @Override
+    public void focusLost(FocusEvent e) {
+        setBorder(defaultBorder);
+    }
 
-        printHeader(g2d, getHeader());
+    private class SelectedMouseAdapter extends MouseAdapter {
+        @Override
+        public void mousePressed(MouseEvent event) {
+            if (SwingUtilities.isLeftMouseButton(event) || SwingUtilities.isRightMouseButton(event)) {
+                requestFocusInWindow();
+            }
+        }
     }
 }

@@ -82,6 +82,38 @@ public class MessagesTableModel extends AbstractTableModel {
     }
 
     @Override
+    public void setValueAt(Object value, int rowIndex, int columnIndex) {
+        Message message = messages.get(rowIndex);
+        switch (columnIndex) {
+            case 0:
+                if (message.getContent() != null && !message.getContent().isEmpty()) {
+                    message.setContent((String) value);
+                } else {
+                    message.setUri((String) value);
+                }
+                break;
+            case 1:
+                message.setMultiplicity((String) value);
+                break;
+            default:
+                throw new IllegalArgumentException("columnIndex");
+        }
+        fireTableCellUpdated(rowIndex, columnIndex);
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        switch (columnIndex) {
+            case 0:
+            case 1:
+                return true;
+            case 2:
+            default:
+                return false;
+        }
+    }
+
+    @Override
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:

@@ -37,19 +37,6 @@ public class ReportersTableModel extends AbstractTableModel {
     public int getColumnCount() {
         return 2;
     }
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        Reporter reporter = reporters.get(rowIndex);
-        
-        if (columnIndex == 0) {
-            return reporter.isEnabled();
-        } else if (columnIndex == 1) {
-            return reporter.getClazz();
-        } else {
-            return null;
-        }
-    }
     
     public void addRow(Reporter reporter) {
         reporters.add(reporter);
@@ -66,20 +53,49 @@ public class ReportersTableModel extends AbstractTableModel {
         fireTableRowsUpdated(index, index);
     }
 
-    @Override
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (rowIndex <= getRowCount() && columnIndex <= getColumnCount()) {
-            if (columnIndex == 0) {
-                reporters.get(rowIndex).setEnabled((Boolean) aValue);
-            } else {
-                reporters.get(rowIndex).setClazz((String) aValue);
-            }
-        }
-    }
-
     public void removeRow(int rowNum) {
         reporters.remove(rowNum);
         fireTableRowsDeleted(rowNum, rowNum);
+    }
+    
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        Reporter reporter = reporters.get(rowIndex);
+        
+        if (columnIndex == 0) {
+            return reporter.isEnabled();
+        } else if (columnIndex == 1) {
+            return reporter.getClazz();
+        } else {
+            return null;
+        }
+    }
+    
+    @Override
+    public void setValueAt(Object value, int rowIndex, int columnIndex) {
+        Reporter reporter = reporters.get(rowIndex);
+        switch (columnIndex) {
+            case 0:
+                reporter.setEnabled((Boolean) value);
+                break;
+            case 1:
+                reporter.setClazz((String) value);
+                break;
+            default:
+                throw new IllegalArgumentException("columnIndex");
+        }
+        fireTableCellUpdated(rowIndex, columnIndex);
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        switch (columnIndex) {
+            case 0:
+            case 1:
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override

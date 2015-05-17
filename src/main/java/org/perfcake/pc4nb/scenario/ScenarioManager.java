@@ -40,14 +40,15 @@ public class ScenarioManager {
     public static final String SCHEMA_PATH = "perfcake-scenario-4.0.xsd";
     private static final Logger log = Logger.getLogger(ScenarioManager.class.getName());
 
-    public void runScenario(URL scenarioURL) throws ScenarioException, PerfCakeException {
+    public void runScenario(String scenarioPath) throws ScenarioException, PerfCakeException {
 
-        if (scenarioURL == null) {
-            log.error("URL to scenario is null");
-            throw new IllegalArgumentException("URL to scenario is null.");
+        if (scenarioPath == null) {
+            String message = "Path to scenario is null";
+            log.error(message);
+            throw new IllegalArgumentException(message);
         }
 
-        org.perfcake.scenario.Scenario scenario = ScenarioLoader.load(scenarioURL.toExternalForm());
+        org.perfcake.scenario.Scenario scenario = ScenarioLoader.load(scenarioPath);
 
         try {
             scenario.init();

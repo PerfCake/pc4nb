@@ -21,35 +21,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
-import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
-import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Messages.Message;
 import org.perfcake.pc4nb.model.MessageModel;
 import org.perfcake.pc4nb.model.MessagesModel;
 import org.perfcake.pc4nb.model.ModelMap;
-import static org.perfcake.pc4nb.ui.SizeConstraints.INSET;
-import static org.perfcake.pc4nb.ui.SizeConstraints.PERFCAKE_RECTANGLE_HEIGHT;
-import static org.perfcake.pc4nb.ui.SizeConstraints.SECOND_LEVEL_RECTANGLE_WIDTH;
+import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.ui.actions.AddMessageAction;
 
 /**
  *
  * @author Andrej Halaj
  */
-public class MessagesView extends PC4NBView {
+public final class MessagesView extends PC4NBView {
     private JMenuItem addComponent = new JMenuItem("Add new message");
     private JPopupMenu menu = new JPopupMenu();
     private TransferHandler transferHandler = new MessageTransferHandler();
 
-    public MessagesView(int x, int y, int width) {
-        super(x, y, width);
+    public MessagesView() {
+        setHeader("Messages");
+        
         setDefaultBorder(new LineBorder(Color.ORANGE, 1, true));
         setBorder(getDefaultBorder());
-        setHeader("Messages");
 
         addComponent.addActionListener(new AddMessageListener());
 
@@ -57,58 +53,32 @@ public class MessagesView extends PC4NBView {
         this.setComponentPopupMenu(menu);
         setTransferHandler(transferHandler);
     }
+    
+    @Override
+    public void setModel(PC4NBModel model) {
+        super.setModel(model);
+        
+        drawChildren();
+    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(MessagesModel.PROPERTY_MESSAGE)) {
-            recomputeHeightAndRedraw();
+            drawChildren();
         }
     }
 
-    private void drawChildren() {
+    public void drawChildren() {
+        removeAll();
+
         MessagesModel model = (MessagesModel) getModel();
 
-        this.removeAll();
-
         if (model != null && model.getMessages() != null) {
-            List<Message> messages = model.getMessages().getMessage();
-
-            int currentX = INSET;
-            int currentY = TOP_INDENT;
-
-            for (Message message : messages) {
-                MessageView newMessage;
-                if (message.getContent() == null || message.getContent().isEmpty()) {
-                    newMessage = new MessageView(currentX, currentY, message.getUri());
-                } else {
-                    newMessage = new MessageView(currentX, currentY, message.getContent());
-                }
-                
-                newMessage.setModel(ModelMap.getDefault().getPC4NBModelFor(message));
-                this.add(newMessage);
-
-                if (currentX + 2 * (SECOND_LEVEL_RECTANGLE_WIDTH + INSET) > getWidth()) {
-                    currentX = INSET;
-                    currentY += PERFCAKE_RECTANGLE_HEIGHT + INSET;
-                } else {
-                    currentX += SECOND_LEVEL_RECTANGLE_WIDTH + INSET;
-                }
+            for (Message message : model.getMessages().getMessage()) {
+                add(new MessageView(ModelMap.getDefault().getPC4NBModelFor(message)));
             }
         }
-    }
-
-    @Override
-    public void recomputeHeightAndRedraw() {
-        super.recomputeHeightAndRedraw();
-        MessagesModel model = (MessagesModel) getModel();
-
-        if (model != null && model.getMessages() != null) {
-            List<Scenario.Messages.Message> messages = model.getMessages().getMessage();
-            int columns = (int) ((getWidth() - INSET) / (SECOND_LEVEL_RECTANGLE_WIDTH + INSET));
-            this.setHeight((int) (TOP_INDENT + (Math.ceil((double) messages.size() / (double) columns) * (PERFCAKE_RECTANGLE_HEIGHT + INSET))));
-        }
-
-        drawChildren();
+        
         revalidate();
         repaint();
     }

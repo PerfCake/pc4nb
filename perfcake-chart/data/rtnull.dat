@@ -1,0 +1,1 @@
+drawChart(rtnull, 'chart_rtnull_div', [0, 1, 2], 1, 'Time', 'Response Time [ms]', 'Response Time');

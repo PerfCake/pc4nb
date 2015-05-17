@@ -16,19 +16,11 @@
 package org.perfcake.pc4nb.ui.actions;
 
 import java.util.List;
-import java.util.Properties;
 import org.openide.WizardDescriptor;
-import org.openide.util.Exceptions;
 import org.perfcake.model.Header;
-import org.perfcake.model.Property;
-import org.perfcake.model.Scenario;
-import org.perfcake.model.Scenario.Messages.Message;
 import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
 import org.perfcake.pc4nb.model.MessageModel;
-import org.perfcake.pc4nb.model.MessagesModel;
-import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.ui.wizards.MessageWizardPanel;
-import static org.perfcake.pc4nb.ui.wizards.visuals.MessageVisualPanel.MESSAGE_PACKAGE;
 
 /**
  *
@@ -56,8 +48,12 @@ public class EditMessageAction extends AbstractPC4NBAction {
         messageModel.setMultiplicity(wiz.getProperty("message-multiplicity").toString());
         String uri = (String) wiz.getProperty("message-uri");
         String content = (String) wiz.getProperty("message-content");
-        
+
         if (content != null && !content.isEmpty()) {
+            if (uri != null && !uri.isEmpty()) {
+                messageModel.setUri(null);
+            }
+            
             messageModel.setContent(content);
         } else {
             messageModel.setUri(uri);
@@ -68,11 +64,11 @@ public class EditMessageAction extends AbstractPC4NBAction {
         for (Header header : headers) {
             messageModel.addHeader(header);
         }
-        
+
         List<ValidatorRef> validatorRefs = (List<ValidatorRef>) wiz.getProperty("message-validators");
-        
+
         for (ValidatorRef validatorRef : validatorRefs) {
-            
+            messageModel.getMessage().getValidatorRef().add(validatorRef);
         }
     }
 }

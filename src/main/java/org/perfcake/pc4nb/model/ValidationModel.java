@@ -1,14 +1,11 @@
 /*
- * PerfClispe
- * 
- *
- * Copyright (c) 2014 Jakub Knetl
+ * Copyright 2015 Andrej Halaj.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,12 +67,20 @@ public class ValidationModel extends PC4NBModel {
     }
 
     public void setEnabled(boolean enabled) {
+        if (getValidation() == null) {
+            createValidation();
+        }
+        
         boolean oldEnabled = getValidation().isEnabled();
         getValidation().setEnabled(enabled);
         getListeners().firePropertyChange(PROPERTY_ENABLED, oldEnabled, enabled);
     }
 
     public void setFastForward(boolean fastForward) {
+        if (getValidation() == null) {
+            createValidation();
+        }
+        
         boolean oldFastForward = getValidation().isFastForward();
         getValidation().setFastForward(fastForward);
         getListeners().firePropertyChange(PROPERTY_FAST_FORWARD, oldFastForward, fastForward);

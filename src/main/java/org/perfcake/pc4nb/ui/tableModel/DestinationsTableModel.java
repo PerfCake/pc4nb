@@ -78,6 +78,33 @@ public class DestinationsTableModel extends AbstractTableModel {
     }
 
     @Override
+    public void setValueAt(Object value, int rowIndex, int columnIndex) {
+        Destination destination = destinations.get(rowIndex);
+        switch (columnIndex) {
+            case 0:
+                destination.setEnabled((Boolean) value);
+                break;
+            case 1:
+                destination.setClazz((String) value);
+                break;
+            default:
+                throw new IllegalArgumentException("columnIndex");
+        }
+        fireTableCellUpdated(rowIndex, columnIndex);
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        switch (columnIndex) {
+            case 0:
+            case 1:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:

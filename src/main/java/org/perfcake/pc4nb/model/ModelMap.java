@@ -40,6 +40,7 @@ public class ModelMap {
 
     private static ModelMap instance = new ModelMap();
     private Map<Object, PC4NBModel> modelMap = new HashMap<>();
+    private ValidationModel validationModel = new ValidationModel(null);
 
     private ModelMap() {
     }
@@ -48,7 +49,15 @@ public class ModelMap {
         return instance;
     }
 
+    public ValidationModel getValidationModel() {
+        return validationModel;
+    }
+
     public void addEntry(Object perfCakeModel, PC4NBModel pc4nbModel) {
+        if (pc4nbModel instanceof ValidationModel) {
+            validationModel = (ValidationModel) pc4nbModel;
+        }
+        
         if (perfCakeModel != null) {
             modelMap.put(perfCakeModel, pc4nbModel);
         }
@@ -98,7 +107,8 @@ public class ModelMap {
         } else if (perfCakeModel instanceof Reporting) {
             model = new ReportingModel((Reporting) perfCakeModel);
         } else if (perfCakeModel instanceof Validation) {
-            model = new ValidationModel((Validation) perfCakeModel);
+            validationModel = new ValidationModel((Validation) perfCakeModel);
+            model = validationModel;
         } else if (perfCakeModel instanceof Messages) {
             model = new MessagesModel((Messages) perfCakeModel);
         } else {

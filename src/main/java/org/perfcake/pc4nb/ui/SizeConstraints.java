@@ -24,9 +24,9 @@ public class SizeConstraints {
 
     public static final int INSET = 10;
 
-    public static final int TOP_LEVEL_RECTANGLE_WIDHT = 370;
+    public static final int TOP_LEVEL_RECTANGLE_WIDTH = 200;
 
-    public static final int SECOND_LEVEL_RECTANGLE_WIDTH = 150;
+    public static final int SECOND_LEVEL_RECTANGLE_WIDTH = 180;
 
     public static final int THIRD_LEVEL_RECTANGLE_WIDTH = 80;
 

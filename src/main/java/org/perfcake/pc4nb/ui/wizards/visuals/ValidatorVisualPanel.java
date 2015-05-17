@@ -31,7 +31,6 @@ import org.openide.util.Exceptions;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Validation.Validator;
-import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.ValidatorModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
@@ -70,6 +69,8 @@ public final class ValidatorVisualPanel extends VisualPanelWithProperties {
         } catch (ClassNotFoundException | NoSuchFieldException ex) {
             System.err.println("Class not found " + ex.getMessage());
         }
+        
+        propertiesTable.setDefaultRenderer(String.class, new PropertiesTableCellRenderer());
     }
 
     @Override

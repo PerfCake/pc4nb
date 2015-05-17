@@ -19,6 +19,7 @@ import org.perfcake.pc4nb.ui.wizards.visuals.ValidationVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
+import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.ValidationModel;
 
 public class ValidationWizardPanel implements WizardDescriptor.Panel<WizardDescriptor> {
@@ -28,6 +29,14 @@ public class ValidationWizardPanel implements WizardDescriptor.Panel<WizardDescr
      * component from this class, just use getComponent().
      */
     private ValidationVisualPanel component;
+    private boolean isValidatorRefsPanel = false;
+
+    public ValidationWizardPanel() {
+    }
+
+    public ValidationWizardPanel(boolean isValidatorRefsPanel) {
+        this.isValidatorRefsPanel = isValidatorRefsPanel;
+    }
 
     // Get the visual component for the panel. In this template, the component
     // is kept separate. This can be more efficient: if the wizard is created
@@ -69,7 +78,11 @@ public class ValidationWizardPanel implements WizardDescriptor.Panel<WizardDescr
 
     @Override
     public void readSettings(WizardDescriptor wiz) {
-        // use wiz.getProperty to retrieve previous panel state
+        if (isValidatorRefsPanel) {
+            wiz.putProperty(WizardDescriptor.PROP_WARNING_MESSAGE, "Select validators and press Finish.");
+        } else {
+            wiz.putProperty(WizardDescriptor.PROP_WARNING_MESSAGE, null);
+        }
     }
 
     @Override
@@ -77,7 +90,8 @@ public class ValidationWizardPanel implements WizardDescriptor.Panel<WizardDescr
         ValidationModel validationModel = (ValidationModel) getComponent().getModel();
         validationModel.setEnabled(getComponent().isValidationEnabled());
         validationModel.setFastForward(getComponent().isFastForward());
-        
+
         wiz.putProperty("validation-model", validationModel);
+        ModelMap.getDefault().addEntry(validationModel.getValidation(), validationModel);
     }
 }

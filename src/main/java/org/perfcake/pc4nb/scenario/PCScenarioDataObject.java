@@ -5,11 +5,7 @@
  */
 package org.perfcake.pc4nb.scenario;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.text.MultiViewEditorElement;
 import org.openide.awt.ActionID;
@@ -23,9 +19,7 @@ import org.openide.loaders.MultiDataObject;
 import org.openide.loaders.MultiFileLoader;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
-import org.perfcake.pc4nb.model.ScenarioModel;
 
 @Messages({
     "LBL_PCScenario_LOADER=Files of PCScenario"
@@ -94,6 +88,10 @@ import org.perfcake.pc4nb.model.ScenarioModel;
     )
 })
 public class PCScenarioDataObject extends MultiDataObject {
+    private ScenarioRunWorker run;
+    private boolean running = false;
+    private String scenarioName = "";
+
     public PCScenarioDataObject(FileObject pf, MultiFileLoader loader) throws DataObjectExistsException, IOException {
         super(pf, loader);
         registerEditor("text/pcscenario+xml", true);
@@ -115,6 +113,29 @@ public class PCScenarioDataObject extends MultiDataObject {
     @Messages("LBL_PCScenario_EDITOR=Source")
     public static MultiViewEditorElement createEditor(Lookup lkp) {
         return new MultiViewEditorElement(lkp);
+    }
 
+    public ScenarioRunWorker getRun() {
+        return run;
+    }
+
+    public String getScenarioName() {
+        return scenarioName;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
+
+    public void createNewRun() {
+        if (!isRunning()) {
+            String scenarioPath = this.getPrimaryFile().getPath();
+            scenarioName = this.getPrimaryFile().getName();
+            run = new ScenarioRunWorker(scenarioPath, this);
+        }
     }
 }

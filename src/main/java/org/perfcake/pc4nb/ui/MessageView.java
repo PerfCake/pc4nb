@@ -18,8 +18,14 @@ package org.perfcake.pc4nb.ui;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import org.perfcake.model.Scenario.Messages.Message;
 import org.perfcake.pc4nb.model.MessageModel;
@@ -36,11 +42,13 @@ public class MessageView extends SecondLevelView {
     private JMenuItem deleteComponent = new JMenuItem("Delete message");
     private JPopupMenu menu = new JPopupMenu();
 
-    public MessageView(int x, int y, String header) {
-        super(x, y, header);
+    public MessageView(PC4NBModel model) {
+        super(model);
+        setHeader(resolveAndGetHeader());
+
         setDefaultBorder(new LineBorder(Color.ORANGE, 1, true));
         setBorder(getDefaultBorder());
-        
+
         editComponent.addActionListener(new EditMessageListener());
         menu.add(editComponent);
 
@@ -48,22 +56,62 @@ public class MessageView extends SecondLevelView {
         menu.add(deleteComponent);
 
         this.setComponentPopupMenu(menu);
+        addMouseListener(new MessageMouseListener());
+        addKeyListener(new MessageKeyAdapter());
     }
-    
-     @Override
+
+    @Override
     public void setModel(PC4NBModel model) {
         super.setModel(model);
 
-        MessageModel messagemodel = (MessageModel) getModel();
-        setHeader(messagemodel.getMessage().getUri());
+        setHeader(resolveAndGetHeader());
+    }
+
+    private String resolveAndGetHeader() {
+        MessageModel messageModel = (MessageModel) getModel();
+
+        String uri = messageModel.getMessage().getUri();
+        String content = messageModel.getMessage().getContent();
+
+        if (content != null) {
+            return content;
+        } else {
+            return uri;
+        }
+    }
+    
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(MessageModel.PROPERTY_CONTENT) || evt.getPropertyName().equals(MessageModel.PROPERTY_URI)) {
+            setHeader(resolveAndGetHeader());
+            revalidate();
+            repaint();
+        }
+    }
+
+    private class MessageMouseListener extends MouseAdapter {
+        @Override
+        public void mousePressed(MouseEvent event) {
+            if (SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2) {
+                runEditWizard();
+            }
+        }
+    }
+
+    private class MessageKeyAdapter extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (isFocusOwner() && e.getKeyCode() == KeyEvent.VK_DELETE) {
+                runDeleteWizard();
+            }
+        }
     }
 
     private class EditMessageListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            EditMessageAction action = new EditMessageAction((MessageModel) getModel());
-            action.execute();
+            runEditWizard();
         }
     }
 
@@ -71,13 +119,22 @@ public class MessageView extends SecondLevelView {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            MessagesView messagesView = (MessagesView) getParent();
-            Message message = ((MessageModel) getModel()).getMessage();
+            runDeleteWizard();
+        }
+    }
 
-            if (messagesView != null) {
-                DeleteMessageAction action = new DeleteMessageAction(messagesView.getModel(), message);
-                action.execute();
-            }
+    private void runEditWizard() {
+        EditMessageAction action = new EditMessageAction((MessageModel) getModel());
+        action.execute();
+    }
+
+    private void runDeleteWizard() {
+        MessagesView messagesView = (MessagesView) getParent().getParent();
+        Message message = ((MessageModel) getModel()).getMessage();
+
+        if (messagesView != null) {
+            DeleteMessageAction action = new DeleteMessageAction(messagesView.getModel(), message);
+            action.execute();
         }
     }
 }

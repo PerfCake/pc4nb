@@ -38,6 +38,18 @@ public class MetaPropertiesTableModel extends AbstractTableModel {
                 throw new IllegalArgumentException("columnIndex");
         }
     }
+    
+    @Override
+    public String getColumnName(int column) {
+        switch (column) {
+            case 0:
+                return "Name";
+            case 1:
+                return "Value";
+            default:
+                throw new IllegalArgumentException("column");
+        }
+    }
 
     public void addRow() {
         Property newProperty = new Property();

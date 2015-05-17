@@ -76,6 +76,33 @@ public class ValidatorsTableModel extends AbstractTableModel {
                 throw new IllegalArgumentException("columnIndex");
         }
     }
+    
+    @Override
+    public void setValueAt(Object value, int rowIndex, int columnIndex) {
+        Validator validator = validators.get(rowIndex);
+        switch (columnIndex) {
+            case 0:
+                validator.setId((String) value);
+                break;
+            case 1:
+                validator.setClazz((String) value);
+                break;
+            default:
+                throw new IllegalArgumentException("columnIndex");
+        }
+        fireTableCellUpdated(rowIndex, columnIndex);
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        switch (columnIndex) {
+            case 0:
+            case 1:
+                return true;
+            default:
+                return false;
+        }
+    }
 
     @Override
     public String getColumnName(int columnIndex) {

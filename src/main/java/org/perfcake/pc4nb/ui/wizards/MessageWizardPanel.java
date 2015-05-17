@@ -17,14 +17,11 @@ package org.perfcake.pc4nb.ui.wizards;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.List;
 import org.perfcake.pc4nb.ui.wizards.visuals.MessageVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 import org.openide.util.ChangeSupport;
 import org.openide.util.HelpCtx;
-import org.perfcake.model.Header;
 
 public class MessageWizardPanel implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
     ChangeSupport listeners = new ChangeSupport(this);
@@ -85,10 +82,7 @@ public class MessageWizardPanel implements WizardDescriptor.Panel<WizardDescript
         String content = getComponent().getContentTextField().getText();
         isValid = notNullNotEmpty(content) || notNullNotEmpty(uri);
     }
-
-    public MessageWizardPanel() {
-    }
-
+    
     @Override
     public void storeSettings(WizardDescriptor wiz) {
         MessageVisualPanel component = getComponent();
@@ -96,17 +90,8 @@ public class MessageWizardPanel implements WizardDescriptor.Panel<WizardDescript
         wizardDescriptor.putProperty("message-content", component.getContentTextField().getText());
         wizardDescriptor.putProperty("message-multiplicity", component.getMultiplicitySpinner().getValue().toString());
         wizardDescriptor.putProperty("message-properties", component.getProperties());
-
-        List<Header> headers = new ArrayList<>();
-
-        for (int i = 0; i < component.getHeadersTableModel().getRowCount(); i++) {
-            Header header = new Header();
-            header.setName((String) component.getHeadersTableModel().getValueAt(i, 0));
-            header.setValue((String) component.getHeadersTableModel().getValueAt(i, 1));
-            headers.add(header);
-        }
-
-        wiz.putProperty("message-headers", headers);
+        wizardDescriptor.putProperty("message-headers", component.getHeadersTableModel().getHeaders());
+        wizardDescriptor.putProperty("message-validators", component.getValidatorRefsTableModel().getValidatorRefs());
     }
     
     @Override

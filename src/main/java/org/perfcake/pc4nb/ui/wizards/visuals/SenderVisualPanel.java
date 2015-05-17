@@ -67,6 +67,8 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
         } catch (ClassNotFoundException | NoSuchFieldException ex) {
             System.err.println("Class not found " + ex.getMessage());
         }
+        
+        propertiesTable.setDefaultRenderer(String.class, new PropertiesTableCellRenderer());
     }
 
     @Override

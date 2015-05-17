@@ -16,6 +16,7 @@
 package org.perfcake.pc4nb.ui.tableModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import org.perfcake.model.Property;
@@ -25,8 +26,8 @@ import org.perfcake.model.Property;
  * @author Andrej Halaj
  */
 public class PropertiesTableModel extends AbstractTableModel {
-
     List<Property> properties = new ArrayList<>();
+    List<Property> defaultValues = new ArrayList<>();
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
@@ -39,6 +40,18 @@ public class PropertiesTableModel extends AbstractTableModel {
         }
     }
 
+    @Override
+    public String getColumnName(int column) {
+        switch (column) {
+            case 0:
+                return "Name";
+            case 1:
+                return "Value";
+            default:
+                throw new IllegalArgumentException("column");
+        }
+    }
+
     public void addRow(Property property) {
         int lastRow = properties.size();
         insertRow(lastRow, property);
@@ -46,17 +59,18 @@ public class PropertiesTableModel extends AbstractTableModel {
 
     public void insertRow(int index, Property property) {
         properties.add(index, property);
+        
+        Property defaultValue = new Property();
+        defaultValue.setName(property.getName());
+        defaultValue.setValue(property.getValue());
+        defaultValues.add(index, defaultValue);
+        
         fireTableRowsInserted(index, index);
     }
-
+    
     public void updateRow(int index, Property property) {
         properties.set(index, property);
         fireTableRowsUpdated(index, index);
-    }
-
-    public void removeRow(int rowNum) {
-        properties.remove(rowNum);
-        fireTableRowsDeleted(rowNum, rowNum);
     }
 
     @Override
@@ -67,6 +81,14 @@ public class PropertiesTableModel extends AbstractTableModel {
     @Override
     public int getColumnCount() {
         return 2;
+    }
+
+    public List<Property> getProperties() {
+        return Collections.unmodifiableList(properties);
+    }
+
+    public List<Property> getDefaultValues() {
+        return Collections.unmodifiableList(defaultValues);
     }
 
     @Override
@@ -87,9 +109,6 @@ public class PropertiesTableModel extends AbstractTableModel {
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
         Property property = properties.get(rowIndex);
         switch (columnIndex) {
-            case 0:
-                property.setName((String) value);
-                break;
             case 1:
                 property.setValue((String) value);
                 break;

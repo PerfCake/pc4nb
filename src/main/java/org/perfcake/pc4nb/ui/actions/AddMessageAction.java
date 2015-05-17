@@ -16,15 +16,12 @@
 package org.perfcake.pc4nb.ui.actions;
 
 import java.util.List;
-import java.util.Properties;
-import javax.swing.JOptionPane;
 import org.openide.WizardDescriptor;
 import org.perfcake.model.Header;
-import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Messages.Message;
+import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
 import org.perfcake.pc4nb.model.MessagesModel;
 import org.perfcake.pc4nb.model.PC4NBModel;
-import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.ui.wizards.MessageWizardPanel;
 
 public final class AddMessageAction extends AbstractPC4NBAction {
@@ -58,6 +55,12 @@ public final class AddMessageAction extends AbstractPC4NBAction {
 
         for (Header header : headers) {
             message.getHeader().add(header);
+        }
+        
+        List<ValidatorRef> validatorRefs = (List<ValidatorRef>) wiz.getProperty("message-validators");
+        
+        for (ValidatorRef validatorRef : validatorRefs) {
+            message.getValidatorRef().add(validatorRef);
         }
 
         MessagesModel messagesModel = (MessagesModel) to;

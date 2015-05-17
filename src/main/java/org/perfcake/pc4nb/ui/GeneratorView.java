@@ -19,13 +19,13 @@ import java.awt.Color;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
-import javafx.scene.input.KeyCode;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
 import org.perfcake.pc4nb.model.GeneratorModel;
@@ -41,8 +41,7 @@ public class GeneratorView extends PC4NBView {
     private JPopupMenu menu = new JPopupMenu();
     TransferHandler transferHandler = new GeneratorTransferHandler();
 
-    public GeneratorView(int x, int y, int width) {
-        super(x, y, width);
+    public GeneratorView() {
         setDefaultBorder(new LineBorder(Color.RED, 1, true));
         setBorder(getDefaultBorder());
         setHeader("Generator");
@@ -51,17 +50,9 @@ public class GeneratorView extends PC4NBView {
 
         menu.add(editComponent);
         this.setComponentPopupMenu(menu);
-        
-        setTransferHandler(transferHandler);
-        
-        addKeyListener(new KeyAdapter() {
 
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (hasFocus() && e.getKeyCode() == KeyCode.DELETE.ordinal()) {
-                }
-            }
-        });
+        setTransferHandler(transferHandler);
+        addMouseListener(new GeneratorMouseListener());
     }
 
     @Override
@@ -72,23 +63,36 @@ public class GeneratorView extends PC4NBView {
         setHeader(generatorModel.getGenerator().getClazz());
     }
 
+    private class GeneratorMouseListener extends MouseAdapter {
+        @Override
+        public void mousePressed(MouseEvent event) {
+            if (SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2) {
+                runEditWizard();
+            }
+        }
+    }
+
     private class EditGeneratorListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            EditGeneratorAction action = new EditGeneratorAction((GeneratorModel) getModel());
-            action.execute();
+            runEditWizard();
         }
+    }
+
+    private void runEditWizard() {
+        EditGeneratorAction action = new EditGeneratorAction((GeneratorModel) getModel());
+        action.execute();
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(GeneratorModel.PROPERTY_CLASS))  {
+        if (evt.getPropertyName().equals(GeneratorModel.PROPERTY_CLASS)) {
             GeneratorModel generatorModel = (GeneratorModel) evt.getSource();
             setHeader(generatorModel.getGenerator().getClazz());
         }
     }
-    
+
     private final class GeneratorTransferHandler extends TransferHandler {
 
         @Override

@@ -20,11 +20,11 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JCheckBox;
 import javax.swing.JTable;
 import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Validation.Validator;
 import org.perfcake.pc4nb.model.ModelMap;
+import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.ValidationModel;
 import org.perfcake.pc4nb.model.ValidatorModel;
 import org.perfcake.pc4nb.ui.AbstractPC4NBView;
@@ -41,7 +41,7 @@ public final class ValidationVisualPanel extends AbstractPC4NBView {
     public ValidationVisualPanel() {
         initComponents();
         setModel(new ValidationModel(new Scenario.Validation()));
-        
+
         addValidatorButton.addActionListener(new AddValidatorListener());
         editValidatorButton.addActionListener(new EditValidatorListener());
         deleteValidatorButton.addActionListener(new DeleteValidatorListener());
@@ -59,13 +59,29 @@ public final class ValidationVisualPanel extends AbstractPC4NBView {
     public ValidatorsTableModel getValidatorsTableModel() {
         return validatorsTableModel;
     }
-    
+
     public boolean isValidationEnabled() {
         return enabledCheckBox.isSelected();
     }
 
     public boolean isFastForward() {
         return fastForwardCheckBox.isSelected();
+    }
+
+    @Override
+    public void setModel(PC4NBModel model) {
+        super.setModel(model);
+
+        ValidationModel validationModel = (ValidationModel) model;
+
+        if (validationModel.getValidation() != null) {
+            enabledCheckBox.setSelected(validationModel.getValidation().isEnabled());
+            fastForwardCheckBox.setSelected(validationModel.getValidation().isFastForward());
+
+            for (Validator validator : validationModel.getValidation().getValidator()) {
+                validatorsTableModel.addRow(validator);
+            }
+        }
     }
 
     /**
@@ -187,7 +203,7 @@ public final class ValidationVisualPanel extends AbstractPC4NBView {
             }
         }
     }
-    
+
     private class AddValidatorListener implements ActionListener {
 
         @Override
@@ -195,9 +211,9 @@ public final class ValidationVisualPanel extends AbstractPC4NBView {
             AddValidatorAction action = new AddValidatorAction(getModel());
             action.execute();
         }
-        
-    } 
-    
+
+    }
+
     private class EditValidatorListener implements ActionListener {
 
         @Override

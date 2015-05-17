@@ -9,14 +9,9 @@ import org.perfcake.pc4nb.model.SenderModel;
 import org.perfcake.pc4nb.model.GeneratorModel;
 import org.perfcake.pc4nb.model.ReportingModel;
 import org.perfcake.pc4nb.model.ValidationModel;
-import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.ScenarioModel;
 import org.perfcake.pc4nb.model.MessagesModel;
 import org.perfcake.pc4nb.ui.AbstractPC4NBView;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.beans.PropertyChangeEvent;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -28,6 +23,7 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import net.miginfocom.swing.MigLayout;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
@@ -47,16 +43,10 @@ import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
 import org.perfcake.model.Scenario;
-import org.perfcake.model.Scenario.Properties;
-import org.perfcake.model.Scenario.Reporting;
-import org.perfcake.model.Scenario.Sender;
-import org.perfcake.model.Scenario.Validation;
 import org.perfcake.pc4nb.model.PropertiesModel;
 import org.perfcake.pc4nb.ui.palette.PC4NBPaletteActions;
 import org.perfcake.pc4nb.ui.palette.PerfCakeComponentCategoryNodeContainer;
-import org.perfcake.pc4nb.ui.ComponentCategory;
-import static org.perfcake.pc4nb.ui.ComponentCategory.*;
-import org.perfcake.pc4nb.ui.ScenarioLayoutManager;
+import org.perfcake.pc4nb.ui.*;
 
 @MultiViewElement.Registration(
         displayName = "#LBL_PCScenario_VISUAL",
@@ -74,30 +64,25 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
     private MultiViewElementCallback callback;
     private PaletteController paletteController = null;
     JScrollPane scrollPane = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-    ScenarioLayoutManager scenarioLayout = new ScenarioLayoutManager();
+    GeneratorView generatorView = new GeneratorView();
+    SenderView senderView = new SenderView();
+    ReportingView reportingView = new ReportingView();
+    ValidationView validationView = new ValidationView();
+    MessagesView messagesView = new MessagesView();
+    PropertiesView propertiesView = new PropertiesView();
 
     public PCScenarioVisualElement(Lookup lkp) throws IOException {
         obj = lkp.lookup(PCScenarioDataObject.class);
         assert obj != null;
+
         initComponents();
-
-        this.setLayout(null);
-
         initPalette();
-
-        this.add(scenarioLayout.getView(GENERATOR));
-        this.add(scenarioLayout.getView(SENDER));
-        this.add(scenarioLayout.getView(MESSAGES));
-        this.add(scenarioLayout.getView(VALIDATION));
-        this.add(scenarioLayout.getView(REPORTING));
-        this.add(scenarioLayout.getView(ComponentCategory.PROPERTIES));
-
-        refreshScenarioView();
+        refreshUI();
 
         obj.getPrimaryFile().addFileChangeListener(new FileChangeAdapter() {
             @Override
             public void fileChanged(FileEvent fe) {
-                refreshScenarioView();
+                refreshUI();
             }
         });
     }
@@ -125,68 +110,6 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
         PaletteActions actions = new PC4NBPaletteActions();
 
         paletteController = PaletteFactory.createPalette(palette, actions);
-    }
-
-    public void refreshScenarioView() {
-        try {
-            URL scenarioUrl = obj.getPrimaryFile().toURL();
-
-            ScenarioManager manager = new ScenarioManager();
-            ScenarioModel scenarioModel = manager.createModel(scenarioUrl);
-            Scenario scenario = scenarioModel.getScenario();
-            this.setModel(scenarioModel);
-
-            GeneratorModel generatorModel = (GeneratorModel) ModelMap.getDefault().getPC4NBModelFor(scenario.getGenerator());
-            scenarioLayout.getView(GENERATOR).setModel(generatorModel);
-
-            Sender sender = scenario.getSender();
-            SenderModel senderModel = (SenderModel) ModelMap.getDefault().getPC4NBModelFor(sender);
-            scenarioLayout.getView(SENDER).setModel(senderModel);
-
-            Scenario.Messages messages = scenario.getMessages();
-            MessagesModel messagesModel;
-            if (messages == null) {
-                messagesModel = new MessagesModel(null);
-            } else {
-                messagesModel = (MessagesModel) ModelMap.getDefault().getPC4NBModelFor(messages);
-            }
-            scenarioLayout.getView(MESSAGES).setModel(messagesModel);
-
-            Reporting reporting = scenario.getReporting();
-            ReportingModel reportingModel;
-            if (reporting == null) {
-                reportingModel = new ReportingModel(null);
-            } else {
-                reportingModel = (ReportingModel) ModelMap.getDefault().getPC4NBModelFor(reporting);
-            }
-            scenarioLayout.getView(REPORTING).setModel(reportingModel);
-
-            Validation validation = scenario.getValidation();
-            ValidationModel validationModel;
-            if (validation == null) {
-                validationModel = new ValidationModel(null);
-            } else {
-                validationModel = (ValidationModel) ModelMap.getDefault().getPC4NBModelFor(validation);
-            }
-            scenarioLayout.getView(VALIDATION).setModel(validationModel);
-            
-            Properties properties = scenario.getProperties();
-            PropertiesModel propertiesModel;
-            if (properties == null) {
-                propertiesModel = new PropertiesModel(null);
-            } else {
-                propertiesModel = (PropertiesModel) ModelMap.getDefault().getPC4NBModelFor(properties);
-            }
-            scenarioLayout.getView(ComponentCategory.PROPERTIES).setModel(propertiesModel);
-
-            scenarioLayout.recomputeChildren();
-            //getVisualRepresentation().addMouseListener((MouseListener) scenarioLayout.getView(REPORTING));
-
-            this.revalidate();
-            this.repaint();
-        } catch (ScenarioException ex) {
-            Exceptions.printStackTrace(ex);
-        }
     }
 
     @Override
@@ -234,14 +157,14 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
         ScenarioManager manager = new ScenarioManager();
 
         URI scenarioPath = obj.getPrimaryFile().toURI();
-        
+
         ScenarioModel scenarioModel = (ScenarioModel) getModel();
-        scenarioModel.setGenerator(((GeneratorModel) scenarioLayout.getView(GENERATOR).getModel()).getGenerator());
-        scenarioModel.setSender(((SenderModel) scenarioLayout.getView(SENDER).getModel()).getSender());
-        scenarioModel.setMessages(((MessagesModel) scenarioLayout.getView(MESSAGES).getModel()).getMessages());
-        scenarioModel.setReporting(((ReportingModel) scenarioLayout.getView(REPORTING).getModel()).getReporting());
-        scenarioModel.setValidation(((ValidationModel) scenarioLayout.getView(VALIDATION).getModel()).getValidation());
-        scenarioModel.setProperties(((PropertiesModel) scenarioLayout.getView(ComponentCategory.PROPERTIES).getModel()).getProperties());
+        scenarioModel.setGenerator(((GeneratorModel) generatorView.getModel()).getGenerator());
+        scenarioModel.setSender(((SenderModel) senderView.getModel()).getSender());
+        scenarioModel.setMessages(((MessagesModel) messagesView.getModel()).getMessages());
+        scenarioModel.setReporting(((ReportingModel) reportingView.getModel()).getReporting());
+        scenarioModel.setValidation(((ValidationModel) validationView.getModel()).getValidation());
+        scenarioModel.setProperties(((PropertiesModel) propertiesView.getModel()).getProperties());
 
         try {
             OutputStream os = new FileOutputStream(Utilities.toFile(scenarioPath));
@@ -259,16 +182,6 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
     }
 
     @Override
-    public Dimension getMinimumSize() {
-        return new Dimension(200, 100);
-    }
-
-    @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(1280, 800);
-    }
-
-    @Override
     public void setMultiViewCallback(MultiViewElementCallback callback) {
         this.callback = callback;
     }
@@ -278,16 +191,55 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
         return CloseOperationState.STATE_OK;
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        return;
+    private void refreshUI() {
+        MigLayout layout = new MigLayout("fillx", "[center]20[center]", "[center]20[center]20[center]");
+        this.setLayout(layout);
+
+        URL scenarioUrl = obj.getPrimaryFile().toURL();
+
+        ScenarioManager manager = new ScenarioManager();
+        try {
+            ScenarioModel scenarioModel = manager.createModel(scenarioUrl);
+
+            Scenario scenario = scenarioModel.getScenario();
+            this.setModel(scenarioModel);
+
+            GeneratorModel generatorModel = new GeneratorModel(scenario.getGenerator());
+            generatorView.setModel(generatorModel);
+
+            SenderModel senderModel = new SenderModel(scenario.getSender());
+            senderView.setModel(senderModel);
+
+            ReportingModel reportingModel = new ReportingModel(scenario.getReporting());
+            reportingView.setModel(reportingModel);
+
+            ValidationModel validationModel = new ValidationModel(scenario.getValidation());
+            validationView.setModel(validationModel);
+
+            MessagesModel messagesModel = new MessagesModel(scenario.getMessages());
+            messagesView.setModel(messagesModel);
+
+            PropertiesModel propertiesModel = new PropertiesModel(scenario.getProperties());
+            propertiesView.setModel(propertiesModel);
+
+            add(generatorView, "span 2, wrap, growx 150");
+            add(senderView, " span 2, wrap, growx 150");
+            add(messagesView, "growx 150, growy 150");
+            add(reportingView, "span 1 2, wrap, growx 150, growy 200");
+            add(validationView, "wrap, growx 150, growy 150");
+            add(propertiesView, "span 2, growx 150");
+
+            revalidate();
+            repaint();
+        } catch (ScenarioException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        scrollPane.setViewportView(this);
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
-
-        scenarioLayout.setWidth(scrollPane.getViewport().getWidth());
+    public void propertyChange(PropertyChangeEvent evt) {
+        return;
     }
 }

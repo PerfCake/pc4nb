@@ -47,15 +47,35 @@ public abstract class VisualPanelWithProperties extends AbstractPC4NBView {
     }
 
     public final void putToComponentPropertiesMap(String component, Properties properties) throws ClassNotFoundException {
-        PropertiesTableModel tableModel = new PropertiesTableModel();
+        PropertiesTableModel tableModel;
 
-        for (Iterator<Object> it = properties.keySet().iterator(); it.hasNext();) {
-            String name = (String) it.next();
+        if (componentPropertiesMap.containsKey(component)) {
+            tableModel = componentPropertiesMap.get(component);
 
-            Property property = new Property();
-            property.setName(name);
-            property.setValue((String) properties.get(name));
-            tableModel.addRow(property);
+            int index = -1;
+            
+            for (Iterator<Object> it = properties.keySet().iterator(); it.hasNext();) {
+                String name = (String) it.next();
+
+                Property property = new Property();
+                property.setName(name);
+                property.setValue((String) properties.get(name));
+
+                tableModel.updateRow(++index, property);
+
+            }
+        } else {
+            tableModel = new PropertiesTableModel();
+
+            for (Iterator<Object> it = properties.keySet().iterator(); it.hasNext();) {
+                String name = (String) it.next();
+
+                Property property = new Property();
+                property.setName(name);
+                property.setValue((String) properties.get(name));
+
+                tableModel.addRow(property);
+            }
         }
 
         componentPropertiesMap.put(component, tableModel);
