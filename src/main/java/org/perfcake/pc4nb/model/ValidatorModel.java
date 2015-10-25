@@ -24,7 +24,7 @@ import java.util.List;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Validation.Validator;
 
-public class ValidatorModel extends PC4NBModel implements Transferable {
+public final class ValidatorModel extends PC4NBModel implements Transferable {
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(ValidatorModel.class, "validator");
 
     public static final String PROPERTY_CLASS = "validator-class";

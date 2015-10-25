@@ -17,7 +17,7 @@ package org.perfcake.pc4nb.model;
 
 import org.perfcake.model.Header;
 
-public class HeaderModel extends PC4NBModel {
+public final class HeaderModel extends PC4NBModel {
 
 	public static final String PROPERTY_NAME = "header-name";
 	public static final String PROPERTY_VALUE = "header-value";

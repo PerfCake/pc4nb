@@ -17,7 +17,7 @@ package org.perfcake.pc4nb.model;
 
 import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
 
-public class ValidatorRefModel extends PC4NBModel {
+public final class ValidatorRefModel extends PC4NBModel {
 
     public static final String PROPERTY_ID = "validatorRef-id";
 

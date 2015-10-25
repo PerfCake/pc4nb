@@ -17,7 +17,7 @@ package org.perfcake.pc4nb.model;
 
 import org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period;
 
-public class PeriodModel extends PC4NBModel {
+public final class PeriodModel extends PC4NBModel {
 
     public static final String PROPERTY_TYPE = "period-type";
     public static final String PROPERTY_VALUE = "period-value";

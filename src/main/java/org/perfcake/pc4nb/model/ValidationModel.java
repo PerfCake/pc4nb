@@ -18,7 +18,7 @@ package org.perfcake.pc4nb.model;
 import org.perfcake.model.Scenario.Validation;
 import org.perfcake.model.Scenario.Validation.Validator;
 
-public class ValidationModel extends PC4NBModel {
+public final class ValidationModel extends PC4NBModel {
 
     public static final String PROPERTY_VALIDATORS = "validation-validators";
     public static final String PROPERTY_ENABLED = "validation-enabled";

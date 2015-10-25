@@ -25,7 +25,7 @@ import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Reporting.Reporter.Destination;
 import org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period;
 
-public class DestinationModel extends PC4NBModel implements Transferable {
+public final class DestinationModel extends PC4NBModel implements Transferable {
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(DestinationModel.class, "destination");
 
     public static final String PROPERTY_PERIOD = "destination-period";
@@ -43,15 +43,6 @@ public class DestinationModel extends PC4NBModel implements Transferable {
         ModelMap.getDefault().addEntry(destination, this);
     }
 
-    /**
-     * This method should not be used for modifying Destination (in a way
-     * getDestination().setClass())) since these changes would not fire
-     * PropertyChange getListeners() which implies that the GEF View will not be
-     * updated according to these changes. Use set methods of this class
-     * instead.
-     *
-     * @return PerfCake model of Destination
-     */
     public Destination getDestination() {
         return destination;
     }

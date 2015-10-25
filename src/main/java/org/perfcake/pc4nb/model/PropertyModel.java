@@ -17,7 +17,7 @@ package org.perfcake.pc4nb.model;
 
 import org.perfcake.model.Property;
 
-public class PropertyModel extends PC4NBModel {
+public final class PropertyModel extends PC4NBModel {
 
     public static final String PROPERTY_NAME = "property-name";
     public static final String PROPERTY_VALUE = "property-value";

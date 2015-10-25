@@ -25,7 +25,7 @@ import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Reporting.Reporter;
 import org.perfcake.model.Scenario.Reporting.Reporter.Destination;
 
-public class ReporterModel extends PC4NBModel implements Transferable {
+public final class ReporterModel extends PC4NBModel implements Transferable {
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(ReporterModel.class, "reporter");
 
     public static final String PROPERTY_CLASS = "reporter-class";

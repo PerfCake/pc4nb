@@ -26,7 +26,7 @@ import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Messages.Message;
 import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
 
-public class MessageModel extends PC4NBModel implements Transferable {
+public final class MessageModel extends PC4NBModel implements Transferable {
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(MessageModel.class, "message");
 	
     public static final String PROPERTY_HEADERS = "message-header";

@@ -25,7 +25,7 @@ import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Generator;
 import org.perfcake.model.Scenario.Generator.Run;
 
-public class GeneratorModel extends PC4NBModel implements Transferable {
+public final class GeneratorModel extends PC4NBModel implements Transferable {
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(GeneratorModel.class, "generator");
 
     public final static String PROPERTY_CLASS = "generator-class";

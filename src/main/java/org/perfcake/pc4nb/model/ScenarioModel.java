@@ -17,7 +17,7 @@ package org.perfcake.pc4nb.model;
 
 import org.perfcake.model.Scenario;
 
-public class ScenarioModel extends PC4NBModel {
+public final class ScenarioModel extends PC4NBModel {
 
     public static final String PROPERTY_GENERATOR = "scenario-generator";
     public static final String PROPERTY_SENDER = "scenario-sender";

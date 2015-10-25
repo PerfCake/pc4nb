@@ -21,7 +21,7 @@ import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Reporting;
 import org.perfcake.model.Scenario.Reporting.Reporter;
 
-public class ReportingModel extends PC4NBModel {
+public final class ReportingModel extends PC4NBModel {
 
     public static final String PROPERTY_PROPERTIES = "reporting-property";
     public static final String PROPERTY_REPORTERS = "reporting-reporter";

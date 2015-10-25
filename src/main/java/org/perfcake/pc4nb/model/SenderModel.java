@@ -24,7 +24,7 @@ import java.util.List;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Sender;
 
-public class SenderModel extends PC4NBModel implements Transferable {
+public final class SenderModel extends PC4NBModel implements Transferable {
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(SenderModel.class, "sender");
 
 

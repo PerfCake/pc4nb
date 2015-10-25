@@ -18,7 +18,7 @@ package org.perfcake.pc4nb.model;
 import org.perfcake.model.Scenario.Messages;
 import org.perfcake.model.Scenario.Messages.Message;
 
-public class MessagesModel extends PC4NBModel {
+public final class MessagesModel extends PC4NBModel {
 
     public static final String PROPERTY_MESSAGE = "messages-message";
 

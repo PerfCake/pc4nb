@@ -20,7 +20,7 @@ import java.util.List;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Properties;
 
-public class PropertiesModel extends PC4NBModel {
+public final class PropertiesModel extends PC4NBModel {
 
     public static final String PROPERTY_PROPERTIES = "properties-property";
 
