@@ -23,20 +23,26 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
+import org.perfcake.model.Scenario.Generator.Run;
 import org.perfcake.pc4nb.model.GeneratorModel;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.ui.actions.EditGeneratorAction;
+
+import static org.perfcake.pc4nb.model.GeneratorModel.PROPERTY_CLASS;
+import static org.perfcake.pc4nb.model.GeneratorModel.PROPERTY_RUN;
 
 /**
  *
  * @author Andrej Halaj
  */
 public class GeneratorView extends PC4NBView {
+    private JLabel runLabel = new JLabel("");
     private JMenuItem editComponent = new JMenuItem("Edit generator");
     private JPopupMenu menu = new JPopupMenu();
     TransferHandler transferHandler = new GeneratorTransferHandler();
@@ -53,14 +59,35 @@ public class GeneratorView extends PC4NBView {
 
         setTransferHandler(transferHandler);
         addMouseListener(new GeneratorMouseListener());
+        
+        runLabel.setForeground(Color.RED);
+        add(runLabel);
     }
 
     @Override
     public void setModel(PC4NBModel model) {
         super.setModel(model);
 
-        GeneratorModel generatorModel = (GeneratorModel) model;
-        setHeader(generatorModel.getGenerator().getClazz());
+        setHeader(resolveAndGetHeader());
+        setRunLabel(resolveAndGetRun());
+    }
+    
+    private void setRunLabel(String newLabel) {
+        runLabel.setText(newLabel);
+    }
+    
+    private String resolveAndGetHeader() {
+        GeneratorModel generatorModel = (GeneratorModel) getModel();
+        
+        return generatorModel.getGenerator().getClazz();
+    }
+    
+    private String resolveAndGetRun() {
+        GeneratorModel generatorModel = (GeneratorModel) getModel();
+        Run run = generatorModel.getGenerator().getRun();
+        
+        String runType = run.getType().charAt(0) + run.getType().substring(1).toLowerCase();
+        return runType + ": " + run.getValue();
     }
 
     private class GeneratorMouseListener extends MouseAdapter {
@@ -87,9 +114,15 @@ public class GeneratorView extends PC4NBView {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(GeneratorModel.PROPERTY_CLASS)) {
-            GeneratorModel generatorModel = (GeneratorModel) evt.getSource();
-            setHeader(generatorModel.getGenerator().getClazz());
+        switch (evt.getPropertyName()) {
+            case PROPERTY_CLASS:
+                setHeader(resolveAndGetHeader());
+                break;
+            case PROPERTY_RUN:
+                setRunLabel(resolveAndGetRun());
+                break;
+            default:
+                break;
         }
     }
 

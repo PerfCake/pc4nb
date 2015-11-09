@@ -16,7 +16,7 @@ public class PerfCakeProjectFactory implements ProjectFactory {
     public static final String MESSAGES_DIR = "messages";
 
     //Specifies when a project is a project, i.e.,
-    //if "customer.txt" is present in a folder:
+    //if messages dir and scenario dir are present in a folder:
     @Override
     public boolean isProject(FileObject projectDirectory) {
         return containsScenariosDir(projectDirectory)
@@ -31,19 +31,7 @@ public class PerfCakeProjectFactory implements ProjectFactory {
 
     @Override
     public void saveProject(final Project project) throws IOException, ClassCastException {
-        // leave unimplemented for the moment
-    }
-
-    private boolean containsPerfcakeScenario(FileObject projectDirectory) {
-        List<FileObject> files = Arrays.asList(projectDirectory.getFileObject(SCENARIOS_DIR).getChildren());
-
-        for (FileObject file : files) {
-            if (file.getMIMEType().equals("text/pcscenario+xml")) {
-                return true;
-            }
-        }
-
-        return false;
+        // unimplemented
     }
 
     private boolean containsScenariosDir(FileObject projectDirectory) {
@@ -53,5 +41,4 @@ public class PerfCakeProjectFactory implements ProjectFactory {
     private boolean containsMessagesDir(FileObject projectDirectory) {
         return projectDirectory.getFileObject(MESSAGES_DIR) != null;
     }
-
 }

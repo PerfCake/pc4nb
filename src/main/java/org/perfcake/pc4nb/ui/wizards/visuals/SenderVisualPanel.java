@@ -189,6 +189,5 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
