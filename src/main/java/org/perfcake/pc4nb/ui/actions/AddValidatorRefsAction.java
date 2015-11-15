@@ -54,9 +54,19 @@ public class AddValidatorRefsAction extends AbstractPC4NBAction {
         for (int i = 0; i < selectedRows.length; i++) {
             ValidatorRef validatorRef = new ValidatorRef();
             validatorRef.setId(validators.get(selectedRows[i]).getId());
-            ValidatorRefModel validatorRefModel = new ValidatorRefModel(validatorRef);
             
-            messageModel.addValidatorRef(validatorRefModel.getValidatorRef());
+            boolean contains = false;
+            for (ValidatorRef validatorRefer : messageModel.getMessage().getValidatorRef()) {
+                if (validatorRefer.getId().equals(validatorRef.getId())) {
+                    contains = true;
+                }
+            }
+            
+            
+            if (!contains) {
+                ValidatorRefModel validatorRefModel = new ValidatorRefModel(validatorRef);
+                messageModel.addValidatorRef(validatorRefModel.getValidatorRef());
+            }
         }
     }
 }

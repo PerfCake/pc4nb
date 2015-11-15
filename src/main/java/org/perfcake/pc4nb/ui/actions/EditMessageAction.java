@@ -18,6 +18,7 @@ package org.perfcake.pc4nb.ui.actions;
 import java.util.List;
 import org.openide.WizardDescriptor;
 import org.perfcake.model.Header;
+import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
 import org.perfcake.pc4nb.model.MessageModel;
 import org.perfcake.pc4nb.ui.wizards.MessageWizardPanel;
@@ -50,13 +51,31 @@ public class EditMessageAction extends AbstractPC4NBAction {
         String content = (String) wiz.getProperty("message-content");
 
         if (content != null && !content.isEmpty()) {
-            if (uri != null && !uri.isEmpty()) {
-                messageModel.setUri(null);
-            }
-            
+            messageModel.setUri(null);
             messageModel.setContent(content);
         } else {
+            messageModel.setContent(null);
             messageModel.setUri(uri);
+        }
+        
+        
+        List<Property> messageProperties = messageModel.getProperty();
+            
+        for (int i = messageProperties.size() - 1; i >= 0; i--) {
+            messageProperties.remove(messageProperties.get(i));
+        }
+        
+        List<Property> newProperties = (List<Property>) wiz.getProperty("message-properties");
+        
+        for (Property property : newProperties) {
+            String propertyName = property.getName();
+            String propertyValue = property.getValue();
+
+            Property newProperty = new Property();
+            newProperty.setName(propertyName);
+            newProperty.setValue(propertyValue);
+
+            messageModel.addProperty(newProperty);
         }
     }
 }
