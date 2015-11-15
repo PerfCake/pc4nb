@@ -58,17 +58,5 @@ public class EditMessageAction extends AbstractPC4NBAction {
         } else {
             messageModel.setUri(uri);
         }
-
-        List<Header> headers = (List<Header>) wiz.getProperty("message-headers");
-
-        for (Header header : headers) {
-            messageModel.addHeader(header);
-        }
-
-        List<ValidatorRef> validatorRefs = (List<ValidatorRef>) wiz.getProperty("message-validators");
-
-        for (ValidatorRef validatorRef : validatorRefs) {
-            messageModel.getMessage().getValidatorRef().add(validatorRef);
-        }
     }
 }

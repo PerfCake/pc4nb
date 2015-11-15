@@ -17,7 +17,6 @@ package org.perfcake.pc4nb.ui.actions;
 
 import java.util.List;
 import org.openide.WizardDescriptor;
-import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
 import org.perfcake.pc4nb.model.MessageModel;
 import org.perfcake.pc4nb.model.PC4NBModel;
