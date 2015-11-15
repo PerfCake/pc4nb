@@ -104,10 +104,6 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
         } catch (ClassNotFoundException | NoSuchFieldException ex) {
             Exceptions.printStackTrace(ex);
         }
-
-        for (Property property : senderModel.getProperty()) {
-            getPropertiesTableModel().addRow(property);
-        }
     }
 
     /**

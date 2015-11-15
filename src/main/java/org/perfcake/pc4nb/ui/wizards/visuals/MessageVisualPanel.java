@@ -34,7 +34,6 @@ import org.perfcake.pc4nb.model.HeaderModel;
 import org.perfcake.pc4nb.model.MessageModel;
 import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.PC4NBModel;
-import org.perfcake.pc4nb.model.ReportingModel;
 import org.perfcake.pc4nb.ui.AbstractPC4NBView;
 import org.perfcake.pc4nb.ui.actions.AddHeaderAction;
 import org.perfcake.pc4nb.ui.actions.AddValidatorRefsAction;

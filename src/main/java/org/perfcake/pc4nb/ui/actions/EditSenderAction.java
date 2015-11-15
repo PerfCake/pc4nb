@@ -20,12 +20,9 @@ import java.util.Properties;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
 import org.perfcake.model.Property;
-import org.perfcake.model.Scenario.Generator.Run;
 import org.perfcake.pc4nb.model.SenderModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
-import org.perfcake.pc4nb.ui.wizards.GeneratorWizardPanel;
 import org.perfcake.pc4nb.ui.wizards.SenderWizardPanel;
-import static org.perfcake.pc4nb.ui.wizards.visuals.GeneratorVisualPanel.GENERATOR_PACKAGE;
 import static org.perfcake.pc4nb.ui.wizards.visuals.SenderVisualPanel.SENDER_PACKAGE;
 
 /**

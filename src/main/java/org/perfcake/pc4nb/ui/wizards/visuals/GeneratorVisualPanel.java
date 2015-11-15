@@ -146,10 +146,6 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
                 periodValueSpinner.setValue(1000);
             }
         }
-
-        for (Property property : generatorModel.getProperty()) {
-            getPropertiesTableModel().addRow(property);
-        }
     }
 
     /**
