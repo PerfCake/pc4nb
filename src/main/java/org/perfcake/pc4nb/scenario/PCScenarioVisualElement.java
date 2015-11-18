@@ -54,7 +54,7 @@ import org.perfcake.pc4nb.ui.*;
         mimeType = "text/pcscenario+xml",
         persistenceType = TopComponent.PERSISTENCE_NEVER,
         preferredID = "PCScenarioVisual",
-        position = 2000
+        position = 1000
 )
 @Messages("LBL_PCScenario_VISUAL=Designer")
 public final class PCScenarioVisualElement extends AbstractPC4NBView implements MultiViewElement {

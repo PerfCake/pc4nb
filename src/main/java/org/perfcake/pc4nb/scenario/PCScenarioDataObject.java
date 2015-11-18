@@ -108,7 +108,7 @@ public class PCScenarioDataObject extends MultiDataObject {
             mimeType = "text/pcscenario+xml",
             persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED,
             preferredID = "PCScenario",
-            position = 1000
+            position = 2000
     )
     @Messages("LBL_PCScenario_EDITOR=Source")
     public static MultiViewEditorElement createEditor(Lookup lkp) {
