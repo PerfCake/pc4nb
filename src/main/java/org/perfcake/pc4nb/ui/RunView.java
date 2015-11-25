@@ -41,7 +41,7 @@ public class RunView extends PC4NBView {
     private JPopupMenu menu = new JPopupMenu();
 
     public RunView() {
-        setDefaultBorder(new LineBorder(Color.YELLOW, 1, true));
+        setDefaultBorder(new LineBorder(Color.GRAY, 1, true));
         setBorder(getDefaultBorder());
         setHeader("Run");
 
