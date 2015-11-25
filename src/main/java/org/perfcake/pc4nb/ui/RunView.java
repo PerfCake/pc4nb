@@ -16,45 +16,41 @@
 package org.perfcake.pc4nb.ui;
 
 import java.awt.Color;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
-import java.io.IOException;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
-import org.perfcake.pc4nb.model.GeneratorModel;
+import org.perfcake.model.Scenario.Run;
 import org.perfcake.pc4nb.model.PC4NBModel;
-import org.perfcake.pc4nb.ui.actions.EditGeneratorAction;
-
-import static org.perfcake.pc4nb.model.GeneratorModel.PROPERTY_CLASS;
+import org.perfcake.pc4nb.model.RunModel;
+import static org.perfcake.pc4nb.model.RunModel.PROPERTY_TYPE;
+import static org.perfcake.pc4nb.model.RunModel.PROPERTY_VALUE;
+import org.perfcake.pc4nb.ui.actions.EditRunAction;
 
 /**
  *
  * @author Andrej Halaj
  */
-public class GeneratorView extends PC4NBView {
-    private JMenuItem editComponent = new JMenuItem("Edit generator");
+public class RunView extends PC4NBView {
+    private JMenuItem editComponent = new JMenuItem("Edit run");
     private JPopupMenu menu = new JPopupMenu();
-    TransferHandler transferHandler = new GeneratorTransferHandler();
 
-    public GeneratorView() {
-        setDefaultBorder(new LineBorder(Color.RED, 1, true));
+    public RunView() {
+        setDefaultBorder(new LineBorder(Color.YELLOW, 1, true));
         setBorder(getDefaultBorder());
-        setHeader("Generator");
+        setHeader("Run");
 
-        editComponent.addActionListener(new EditGeneratorListener());
+        editComponent.addActionListener(new EditRunListener());
 
         menu.add(editComponent);
         this.setComponentPopupMenu(menu);
 
-        setTransferHandler(transferHandler);
-        addMouseListener(new GeneratorMouseListener());
+        addMouseListener(new RunMouseListener());
     }
 
     @Override
@@ -65,12 +61,13 @@ public class GeneratorView extends PC4NBView {
     }
     
     private String resolveAndGetHeader() {
-        GeneratorModel generatorModel = (GeneratorModel) getModel();
+        RunModel runModel = (RunModel) getModel();
+        Run run = runModel.getRun();
         
-        return generatorModel.getGenerator().getClazz();
+        return run.getType().toLowerCase() + ": " + run.getValue().toLowerCase();
     }
 
-    private class GeneratorMouseListener extends MouseAdapter {
+    private class RunMouseListener extends MouseAdapter {
         @Override
         public void mousePressed(MouseEvent event) {
             if (SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 2) {
@@ -79,7 +76,7 @@ public class GeneratorView extends PC4NBView {
         }
     }
 
-    private class EditGeneratorListener implements ActionListener {
+    private class EditRunListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -88,40 +85,19 @@ public class GeneratorView extends PC4NBView {
     }
 
     private void runEditWizard() {
-        EditGeneratorAction action = new EditGeneratorAction((GeneratorModel) getModel());
+        EditRunAction action = new EditRunAction((RunModel) getModel());
         action.execute();
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case PROPERTY_CLASS:
+            case PROPERTY_TYPE:
+            case PROPERTY_VALUE:
                 setHeader(resolveAndGetHeader());
                 break;
             default:
                 break;
-        }
-    }
-
-    private final class GeneratorTransferHandler extends TransferHandler {
-
-        @Override
-        public boolean canImport(TransferHandler.TransferSupport support) {
-            return support.isDataFlavorSupported(GeneratorModel.DATA_FLAVOR);
-        }
-
-        @Override
-        public boolean importData(TransferHandler.TransferSupport support) {
-            try {
-                GeneratorModel model = (GeneratorModel) support.getTransferable().getTransferData(GeneratorModel.DATA_FLAVOR);
-                setModel(model);
-                revalidate();
-                repaint();
-
-                return true;
-            } catch (UnsupportedFlavorException | IOException ex) {
-                return false;
-            }
         }
     }
 }

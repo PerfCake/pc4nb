@@ -40,7 +40,7 @@ import org.openide.util.Utilities;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Generator;
-import org.perfcake.model.Scenario.Generator.Run;
+import org.perfcake.model.Scenario.Run;
 import org.perfcake.model.Scenario.Sender;
 import org.perfcake.pc4nb.model.*;
 import org.perfcake.pc4nb.model.ValidationModel;
@@ -67,6 +67,7 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
         if (panels == null) {
             panels = new ArrayList<>();
             panels.add(new ScenarioWizardPanel());
+            panels.add(new RunWizardPanel());
             panels.add(new GeneratorWizardPanel());
             panels.add(new SenderWizardPanel());
             panels.add(new ReportingWizardPanel());
@@ -199,6 +200,7 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
     private void prepareScenario() {
         try {
             scenarioModel = new ScenarioModel(new Scenario());
+            prepareRun();
             prepareGenerator();
             prepareSender();
             prepareReporting();
@@ -209,6 +211,14 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
         }
 
     }
+    
+    private void prepareRun() {
+        RunModel runModel = new RunModel(new Run());
+        runModel.setType((String) wizard.getProperty("run-type"));
+        runModel.setValue((String) wizard.getProperty("run-value"));
+        
+        scenarioModel.setRun(runModel.getRun());
+    }
 
     private void prepareGenerator() throws ClassNotFoundException {
         GeneratorModel generatorModel = new GeneratorModel(new Generator());
@@ -218,10 +228,7 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
 
         ComponentPropertiesScanner propertiesScanner = new ComponentPropertiesScanner();
         Properties defaultProperties = propertiesScanner.getPropertiesOfComponent(Class.forName(GENERATOR_PACKAGE + "." + wizard.getProperty("generator-type")));
-
-        Run generatorRun = new Run();
-        generatorRun.setType((String) wizard.getProperty("run-type"));
-        generatorRun.setValue(wizard.getProperty("run-value").toString());
+        
         generatorModel.setThreads(wizard.getProperty("generator-threads").toString());
 
         for (Property property : properties) {
@@ -229,8 +236,6 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
                 generatorModel.addProperty(generatorModel.getProperty().size(), property);
             }
         }
-
-        generatorModel.setRun(generatorRun);
 
         scenarioModel.setGenerator(generatorModel.getGenerator());
     }

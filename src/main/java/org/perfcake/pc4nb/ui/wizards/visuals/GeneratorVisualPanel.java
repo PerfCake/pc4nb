@@ -18,10 +18,7 @@ package org.perfcake.pc4nb.ui.wizards.visuals;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
@@ -29,11 +26,9 @@ import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import org.openide.util.Exceptions;
-import org.perfcake.common.PeriodType;
-import org.perfcake.message.generator.AbstractMessageGenerator;
+import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
-import org.perfcake.model.Scenario.Generator.Run;
 import org.perfcake.pc4nb.model.GeneratorModel;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
@@ -47,11 +42,11 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
      */
     public GeneratorVisualPanel() {
         ComponentScanner scanner = new ComponentScanner();
-        Set<Class<? extends AbstractMessageGenerator>> subTypes = scanner.findComponentsOfType(AbstractMessageGenerator.class, GENERATOR_PACKAGE);
+        Set<Class<? extends MessageGenerator>> subTypes = scanner.findComponentsOfType(MessageGenerator.class, GENERATOR_PACKAGE);
 
         Set<String> components = new HashSet<>();
 
-        for (Class<? extends AbstractMessageGenerator> generator : subTypes) {
+        for (Class<? extends MessageGenerator> generator : subTypes) {
             components.add(generator.getSimpleName());
         }
 
@@ -84,14 +79,6 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
 
     public JComboBox getGeneratorSelection() {
         return generatorSelection;
-    }
-
-    public JComboBox getPeriodTypeSelection() {
-        return periodTypeSelection;
-    }
-
-    public JSpinner getPeriodValueSpinner() {
-        return periodValueSpinner;
     }
 
     public JSpinner getThreadsSpinner() {
@@ -134,18 +121,6 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
         } catch (ClassNotFoundException | NoSuchFieldException ex) {
             Exceptions.printStackTrace(ex);
         }
-
-        Run generatorRun = generatorModel.getGenerator().getRun();
-
-        if (generatorRun != null) {
-            periodTypeSelection.setSelectedItem(generatorRun.getType());
-
-            if (generatorRun.getValue() != null && !generatorRun.getValue().isEmpty()) {
-                periodValueSpinner.setValue(Integer.parseInt(generatorRun.getValue()));
-            } else {
-                periodValueSpinner.setValue(1000);
-            }
-        }
     }
 
     /**
@@ -159,14 +134,12 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
         generatorSelection = new javax.swing.JComboBox();
         jScrollPane2 = new javax.swing.JScrollPane();
         propertiesTable = new javax.swing.JTable();
-        periodTypeSelection = new javax.swing.JComboBox();
         generatorTypeLabel = new javax.swing.JLabel();
-        durationTypeLabel = new javax.swing.JLabel();
         propertiesLabel = new javax.swing.JLabel();
-        durationValueLabel = new javax.swing.JLabel();
-        periodValueSpinner = new javax.swing.JSpinner();
         threadsSpinner = new javax.swing.JSpinner();
         threadsLabel = new javax.swing.JLabel();
+
+        setPreferredSize(new java.awt.Dimension(600, 440));
 
         Set<String> componentNames = getComponentPropertiesModelMap().keySet();
         String[] componentNamesArray = new String[componentNames.size()];
@@ -185,26 +158,9 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
         propertiesTable.setModel(getPropertiesTableModel());
         jScrollPane2.setViewportView(propertiesTable);
 
-        List<PeriodType> periodTypes = Arrays.asList(PeriodType.values());
-        List<String> periodTypeNamesList = new ArrayList<>();
-
-        for (PeriodType periodType : periodTypes) {
-            periodTypeNamesList.add(periodType.name());
-        }
-
-        String[] periodTypeNames = new String[periodTypeNamesList.size()];
-        periodTypeNamesList.toArray(periodTypeNames);
-        periodTypeSelection.setModel(new javax.swing.DefaultComboBoxModel(periodTypeNames));
-
         org.openide.awt.Mnemonics.setLocalizedText(generatorTypeLabel, org.openide.util.NbBundle.getMessage(GeneratorVisualPanel.class, "GeneratorVisualPanel.generatorTypeLabel.text")); // NOI18N
 
-        org.openide.awt.Mnemonics.setLocalizedText(durationTypeLabel, org.openide.util.NbBundle.getMessage(GeneratorVisualPanel.class, "GeneratorVisualPanel.durationTypeLabel.text")); // NOI18N
-
         org.openide.awt.Mnemonics.setLocalizedText(propertiesLabel, org.openide.util.NbBundle.getMessage(GeneratorVisualPanel.class, "GeneratorVisualPanel.propertiesLabel.text")); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(durationValueLabel, org.openide.util.NbBundle.getMessage(GeneratorVisualPanel.class, "GeneratorVisualPanel.durationValueLabel.text")); // NOI18N
-
-        periodValueSpinner.setValue(1);
 
         threadsSpinner.setValue(1);
 
@@ -219,14 +175,10 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(threadsLabel)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(durationValueLabel)
                         .addComponent(propertiesLabel)
-                        .addComponent(durationTypeLabel)
                         .addComponent(generatorTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(periodTypeSelection, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(generatorSelection, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)
-                        .addComponent(periodValueSpinner)
                         .addComponent(threadsSpinner)))
                 .addContainerGap(69, Short.MAX_VALUE))
         );
@@ -242,29 +194,17 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(threadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(durationTypeLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(periodTypeSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(durationValueLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(periodValueSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
                 .addComponent(propertiesLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(60, 60, 60))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel durationTypeLabel;
-    private javax.swing.JLabel durationValueLabel;
     private javax.swing.JComboBox generatorSelection;
     private javax.swing.JLabel generatorTypeLabel;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JComboBox periodTypeSelection;
-    private javax.swing.JSpinner periodValueSpinner;
     private javax.swing.JLabel propertiesLabel;
     private javax.swing.JTable propertiesTable;
     private javax.swing.JLabel threadsLabel;
@@ -273,6 +213,5 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        return;
     }
 }

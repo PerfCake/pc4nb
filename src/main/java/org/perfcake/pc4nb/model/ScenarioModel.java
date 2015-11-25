@@ -19,6 +19,7 @@ import org.perfcake.model.Scenario;
 
 public final class ScenarioModel extends PC4NBModel {
 
+    public static final String PROPERTY_RUN = "scenario-run";
     public static final String PROPERTY_GENERATOR = "scenario-generator";
     public static final String PROPERTY_SENDER = "scenario-sender";
     public static final String PROPERTY_MESSAGES = "scenario-messages";
@@ -38,6 +39,12 @@ public final class ScenarioModel extends PC4NBModel {
 
     public Scenario getScenario() {
         return scenario;
+    }
+    
+    public void setRun(Scenario.Run run) {
+        Scenario.Run oldRun = getScenario().getRun();
+        getScenario().setRun(run);
+        getListeners().firePropertyChange(PROPERTY_RUN, oldRun, run);
     }
 
     public void setSender(Scenario.Sender sender) {

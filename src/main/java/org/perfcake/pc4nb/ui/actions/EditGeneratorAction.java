@@ -20,7 +20,6 @@ import java.util.Properties;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
 import org.perfcake.model.Property;
-import org.perfcake.model.Scenario.Generator.Run;
 import org.perfcake.pc4nb.model.GeneratorModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.ui.wizards.GeneratorWizardPanel;
@@ -48,14 +47,7 @@ public class EditGeneratorAction extends AbstractPC4NBAction {
     @Override
     public void doAction(WizardDescriptor wiz) {
         generatorModel.setClazz((String) wiz.getProperty("generator-type"));
-        generatorModel.getGenerator().getRun().setType((String) wiz.getProperty("generator-period"));
         generatorModel.setThreads(wiz.getProperty("generator-threads").toString());
-        
-        Run run = new Run();
-        run.setType((String) wiz.getProperty("run-type"));
-        run.setValue(wiz.getProperty("run-value").toString());
-        
-        generatorModel.setRun(run);
         
         List<Property> properties = (List<Property>) wiz.getProperty("generator-properties");
 

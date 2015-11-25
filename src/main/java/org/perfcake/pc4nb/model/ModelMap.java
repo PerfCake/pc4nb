@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.perfcake.model.*;
 import org.perfcake.model.Scenario.Generator;
-import org.perfcake.model.Scenario.Generator.Run;
+import org.perfcake.model.Scenario.Run;
 import org.perfcake.model.Scenario.Messages;
 import org.perfcake.model.Scenario.Messages.Message;
 import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;

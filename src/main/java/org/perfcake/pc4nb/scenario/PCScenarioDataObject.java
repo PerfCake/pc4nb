@@ -27,7 +27,7 @@ import org.openide.windows.TopComponent;
 @MIMEResolver.NamespaceRegistration(
         displayName = "#LBL_PCScenario_LOADER",
         mimeType = "text/pcscenario+xml",
-        elementNS = {"urn:perfcake:scenario:4.0"}
+        elementNS = {"urn:perfcake:scenario:5.0"}
 )
 @DataObject.Registration(
         mimeType = "text/pcscenario+xml",

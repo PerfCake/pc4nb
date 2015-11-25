@@ -44,6 +44,7 @@ import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4nb.model.PropertiesModel;
+import org.perfcake.pc4nb.model.RunModel;
 import org.perfcake.pc4nb.ui.palette.PC4NBPaletteActions;
 import org.perfcake.pc4nb.ui.palette.PerfCakeComponentCategoryNodeContainer;
 import org.perfcake.pc4nb.ui.*;
@@ -64,6 +65,7 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
     private MultiViewElementCallback callback;
     private PaletteController paletteController = null;
     JScrollPane scrollPane = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+    RunView runView = new RunView();
     GeneratorView generatorView = new GeneratorView();
     SenderView senderView = new SenderView();
     ReportingView reportingView = new ReportingView();
@@ -159,6 +161,7 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
         URI scenarioPath = obj.getPrimaryFile().toURI();
 
         ScenarioModel scenarioModel = (ScenarioModel) getModel();
+        scenarioModel.setRun(((RunModel) runView.getModel()).getRun());
         scenarioModel.setGenerator(((GeneratorModel) generatorView.getModel()).getGenerator());
         scenarioModel.setSender(((SenderModel) senderView.getModel()).getSender());
         scenarioModel.setMessages(((MessagesModel) messagesView.getModel()).getMessages());
@@ -170,9 +173,9 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
             OutputStream os = new FileOutputStream(Utilities.toFile(scenarioPath));
             manager.createXML(scenarioModel.getScenario(), os);
         } catch (ScenarioException | ScenarioManagerException ex) {
-            // error
+            ex.printStackTrace(System.out);
         } catch (FileNotFoundException ex) {
-            Exceptions.printStackTrace(ex);
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -203,6 +206,9 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
 
             Scenario scenario = scenarioModel.getScenario();
             this.setModel(scenarioModel);
+            
+            RunModel runModel = new RunModel(scenario.getRun());
+            runView.setModel(runModel);
 
             GeneratorModel generatorModel = new GeneratorModel(scenario.getGenerator());
             generatorView.setModel(generatorModel);
@@ -222,6 +228,7 @@ public final class PCScenarioVisualElement extends AbstractPC4NBView implements 
             PropertiesModel propertiesModel = new PropertiesModel(scenario.getProperties());
             propertiesView.setModel(propertiesModel);
 
+            add(runView, "span 2, wrap, growx 150");
             add(generatorView, "span 2, wrap, growx 150");
             add(senderView, " span 2, wrap, growx 150");
             add(messagesView, "growx 150, growy 150");

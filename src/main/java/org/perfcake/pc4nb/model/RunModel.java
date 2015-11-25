@@ -15,7 +15,7 @@
  */
 package org.perfcake.pc4nb.model;
 
-import org.perfcake.model.Scenario.Generator.Run;
+import org.perfcake.model.Scenario.Run;
 
 public final class RunModel extends PC4NBModel {
 	public static final String PROPERTY_TYPE = "run-type";

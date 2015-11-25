@@ -135,6 +135,5 @@ public final class ScenarioVisualPanel extends AbstractPC4NBView {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

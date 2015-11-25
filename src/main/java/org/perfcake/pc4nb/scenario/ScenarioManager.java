@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
  * @author Andrej Halaj
  */
 public class ScenarioManager {
-    public static final String SCHEMA_PATH = "perfcake-scenario-4.0.xsd";
+    public static final String SCHEMA_PATH = "perfcake-scenario-5.0.xsd";
     private static final Logger log = Logger.getLogger(ScenarioManager.class.getName());
 
     public void runScenario(String scenarioPath) throws ScenarioException, PerfCakeException {

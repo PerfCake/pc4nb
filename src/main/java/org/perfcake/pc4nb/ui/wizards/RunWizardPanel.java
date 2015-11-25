@@ -15,29 +15,27 @@
  */
 package org.perfcake.pc4nb.ui.wizards;
 
-import org.perfcake.pc4nb.ui.wizards.visuals.GeneratorVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
-import org.openide.util.ChangeSupport;
 import org.openide.util.HelpCtx;
+import org.perfcake.pc4nb.ui.wizards.visuals.RunVisualPanel;
 
-public class GeneratorWizardPanel implements WizardDescriptor.Panel<WizardDescriptor> {
-    ChangeSupport listeners = new ChangeSupport(this);
-    
+public class RunWizardPanel implements WizardDescriptor.Panel<WizardDescriptor> {
+
     /**
      * The visual component that displays this panel. If you need to access the
      * component from this class, just use getComponent().
      */
-    private GeneratorVisualPanel component;
+    private RunVisualPanel component;
 
     // Get the visual component for the panel. In this template, the component
     // is kept separate. This can be more efficient: if the wizard is created
     // but never displayed, or not all panels are displayed, it is better to
     // create only those which really need to be visible.
     @Override
-    public GeneratorVisualPanel getComponent() {
+    public RunVisualPanel getComponent() {
         if (component == null) {
-            component = new GeneratorVisualPanel();
+            component = new RunVisualPanel();
         }
         return component;
     }
@@ -62,12 +60,10 @@ public class GeneratorWizardPanel implements WizardDescriptor.Panel<WizardDescri
 
     @Override
     public void addChangeListener(ChangeListener l) {
-        listeners.addChangeListener(l);
     }
 
     @Override
     public void removeChangeListener(ChangeListener l) {
-        listeners.removeChangeListener(l);
     }
 
     @Override
@@ -77,8 +73,8 @@ public class GeneratorWizardPanel implements WizardDescriptor.Panel<WizardDescri
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        wiz.putProperty("generator-type", component.getGeneratorSelection().getSelectedItem());
-        wiz.putProperty("generator-threads", component.getThreadsSpinner().getValue());
-        wiz.putProperty("generator-properties", component.getProperties());
+        wiz.putProperty("run-type", getComponent().getRunTypeComboBox().getSelectedItem().toString());
+        wiz.putProperty("run-value", getComponent().getRunValueSpinner().getValue().toString());
     }
+
 }

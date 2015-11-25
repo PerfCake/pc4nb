@@ -65,6 +65,7 @@ public class ScenarioRunWorker extends SwingWorker<Void, String> {
         } catch (ScenarioException | PerfCakeException ex) {
             String message = "Cannot run scenario";
             log.error(message, ex);
+            ex.printStackTrace(System.out);
             System.err.println(message);
         }
         return null;

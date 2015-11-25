@@ -23,14 +23,12 @@ import java.util.List;
 
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Generator;
-import org.perfcake.model.Scenario.Generator.Run;
 
 public final class GeneratorModel extends PC4NBModel implements Transferable {
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(GeneratorModel.class, "generator");
 
     public final static String PROPERTY_CLASS = "generator-class";
     public final static String PROPERTY_THREADS = "generator-threads";
-    public final static String PROPERTY_RUN = "generator-run";
     public final static String PROPERTY_PROPERTY = "generator-property";
 
     private Generator generator;
@@ -57,12 +55,6 @@ public final class GeneratorModel extends PC4NBModel implements Transferable {
         String oldValue = getGenerator().getClazz();
         getGenerator().setClazz(value);
         getListeners().firePropertyChange(PROPERTY_CLASS, oldValue, value);
-    }
-
-    public void setRun(Run value) {
-        Run oldValue = getGenerator().getRun();
-        getGenerator().setRun(value);
-        getListeners().firePropertyChange(PROPERTY_RUN, oldValue, value);
     }
 
     public void addProperty(Property newProperty) {
