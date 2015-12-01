@@ -24,6 +24,7 @@ import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import org.openide.util.Exceptions;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.model.Property;
@@ -40,7 +41,6 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
      * Creates new form ScenarioVisualPanel2
      */
     public SenderVisualPanel() {
-        setModel(new SenderModel(new Scenario.Sender()));
         ComponentScanner scanner = new ComponentScanner();
         Set<Class<? extends MessageSender>> subTypes = scanner.findComponentsOfType(MessageSender.class, SENDER_PACKAGE);
 
@@ -61,6 +61,7 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
         }
         
         initComponents();
+        setModel(new SenderModel(new Scenario.Sender()));
         
         try {
             listProperties((String) senderSelection.getSelectedItem());
@@ -80,11 +81,19 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
         return senderSelection;
     }
     
+    public JTextField getTargetTextField() {
+        return targetTextField;
+    }
+    
     @Override
     public void setModel(PC4NBModel model) {
         super.setModel(model);
 
         SenderModel senderModel = (SenderModel) model;
+        
+        String target = senderModel.getTarget();
+        targetTextField.setText(target);
+        
         String senderClazz = senderModel.getSender().getClazz();
 
         Properties properties = new Properties();
@@ -119,6 +128,8 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
         jScrollPane1 = new javax.swing.JScrollPane();
         propertiesTable = new javax.swing.JTable();
         propertiesLabel = new javax.swing.JLabel();
+        targetLabel = new javax.swing.JLabel();
+        targetTextField = new javax.swing.JTextField();
 
         Set<String> componentNames = getComponentPropertiesModelMap().keySet();
         String[] componentNamesArray = new String[componentNames.size()];
@@ -142,17 +153,23 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
 
         org.openide.awt.Mnemonics.setLocalizedText(propertiesLabel, org.openide.util.NbBundle.getMessage(SenderVisualPanel.class, "SenderVisualPanel.propertiesLabel.text")); // NOI18N
 
+        org.openide.awt.Mnemonics.setLocalizedText(targetLabel, org.openide.util.NbBundle.getMessage(SenderVisualPanel.class, "SenderVisualPanel.targetLabel.text")); // NOI18N
+
+        targetTextField.setText(org.openide.util.NbBundle.getMessage(SenderVisualPanel.class, "SenderVisualPanel.targetTextField.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(63, 63, 63)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(targetLabel)
                     .addComponent(propertiesLabel)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(senderTypeLabel)
-                    .addComponent(senderSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 458, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(senderSelection, 0, 458, Short.MAX_VALUE)
+                    .addComponent(targetTextField))
                 .addContainerGap(65, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -162,11 +179,15 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
                 .addComponent(senderTypeLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(senderSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(22, 22, 22)
+                .addGap(18, 18, 18)
+                .addComponent(targetLabel)
+                .addGap(18, 18, 18)
+                .addComponent(targetTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(propertiesLabel)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(35, Short.MAX_VALUE))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -176,6 +197,8 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
     private javax.swing.JTable propertiesTable;
     private javax.swing.JComboBox senderSelection;
     private javax.swing.JLabel senderTypeLabel;
+    private javax.swing.JLabel targetLabel;
+    private javax.swing.JTextField targetTextField;
     // End of variables declaration//GEN-END:variables
 
     @Override

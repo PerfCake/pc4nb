@@ -44,7 +44,7 @@ public class ComponentPropertiesScanner {
     Class baseClass = null;
 
     public Properties getPropertiesOfComponent(Class component) {
-        baseClass = getBaseClass(component);
+        getBaseClass(component);
         allComponentMethods = getAllMethodsOfComponent(component);
         allComponentFieldNames = getAllFieldNamesOfComponent(component);
         componentObject = null;
@@ -62,13 +62,15 @@ public class ComponentPropertiesScanner {
             properties.remove("threads");
             properties.remove("monitoringPeriod");
         }
+        
+        if (MessageSender.class.isAssignableFrom(component)) {
+            properties.remove("target");
+        }
 
         return properties;
     }
     
-    private Class getBaseClass(Class component) {
-        Class baseClass;
-        
+    private void getBaseClass(Class component) {
         if (Reporter.class.isAssignableFrom(component)) {
             baseClass = Reporter.class;
         } else if (MessageValidator.class.isAssignableFrom(component)) {
@@ -85,8 +87,6 @@ public class ComponentPropertiesScanner {
             baseClass = null;
             // throw exception, log
         }
-        
-        return baseClass;
     }
 
     private Set<Method> getAllMethodsOfComponent(Class component) {

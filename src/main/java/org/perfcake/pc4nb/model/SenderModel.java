@@ -27,8 +27,8 @@ import org.perfcake.model.Scenario.Sender;
 public final class SenderModel extends PC4NBModel implements Transferable {
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(SenderModel.class, "sender");
 
-
     public static final String PROPERTY_CLASS = "sender-class";
+    public static final String PROPERTY_TARGET = "sender-target";
     public static final String PROPERTY_PROPERTIES = "sender-property";
 
     private Sender sender;
@@ -49,6 +49,16 @@ public final class SenderModel extends PC4NBModel implements Transferable {
         String oldClazz = getSender().getClazz();
         getSender().setClazz(clazz);
         getListeners().firePropertyChange(PROPERTY_CLASS, oldClazz, clazz);
+    }
+    
+    public void setTarget(String target) {
+        String oldTarget = getSender().getTarget();
+        getSender().setTarget(target);
+        getListeners().firePropertyChange(PROPERTY_TARGET, oldTarget, target);
+    }
+    
+    public String getTarget() {
+        return getSender().getTarget();
     }
 
     public void addProperty(Property Property) {

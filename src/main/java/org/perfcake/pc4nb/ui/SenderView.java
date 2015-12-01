@@ -31,13 +31,13 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
-import org.perfcake.model.Property;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.SenderModel;
 import org.perfcake.pc4nb.ui.actions.EditSenderAction;
 
 import static org.perfcake.pc4nb.model.SenderModel.PROPERTY_CLASS;
 import static org.perfcake.pc4nb.model.SenderModel.PROPERTY_PROPERTIES;
+import static org.perfcake.pc4nb.model.SenderModel.PROPERTY_TARGET;
 
 
 /**
@@ -88,15 +88,7 @@ public class SenderView extends PC4NBView {
     
     private String resolveAndGetTarget() {
         SenderModel senderModel = (SenderModel) getModel();
-        List<Property> senderProperties = senderModel.getSender().getProperty();
-        String target = "null";
-        
-        for (Property senderProperty : senderProperties) {
-            if (senderProperty.getName().equals("target")) {
-                target = senderProperty.getValue();
-                break;
-            }
-        }
+        String target = senderModel.getTarget();
         
         return target;
     }
@@ -129,9 +121,10 @@ public class SenderView extends PC4NBView {
             case PROPERTY_CLASS:
                 setHeader(resolveAndGetHeader());
                 break;
-            case PROPERTY_PROPERTIES:
+            case PROPERTY_TARGET:
                 setTargetLabel(resolveAndGetTarget());
                 break;
+            case PROPERTY_PROPERTIES:
             default:
                 break;
         }

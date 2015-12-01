@@ -47,6 +47,7 @@ public class EditSenderAction extends AbstractPC4NBAction {
     @Override
     public void doAction(WizardDescriptor wiz) {
         senderModel.setClazz((String) wiz.getProperty("sender-type"));
+        senderModel.setTarget((String) wiz.getProperty("sender-target"));
         
         List<Property> properties = (List<Property>) wiz.getProperty("sender-properties");
 

@@ -18,11 +18,13 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="63" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="targetLabel" min="-2" max="-2" attributes="0"/>
                   <Component id="propertiesLabel" min="-2" max="-2" attributes="0"/>
                   <Component id="jScrollPane1" min="-2" pref="452" max="-2" attributes="0"/>
                   <Component id="senderTypeLabel" min="-2" max="-2" attributes="0"/>
-                  <Component id="senderSelection" min="-2" pref="458" max="-2" attributes="0"/>
+                  <Component id="senderSelection" pref="458" max="32767" attributes="0"/>
+                  <Component id="targetTextField" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace pref="65" max="32767" attributes="0"/>
           </Group>
@@ -35,11 +37,15 @@
               <Component id="senderTypeLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="senderSelection" min="-2" pref="32" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="targetLabel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="targetTextField" min="-2" pref="34" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="propertiesLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="162" max="-2" attributes="0"/>
-              <EmptySpace pref="35" max="32767" attributes="0"/>
+              <EmptySpace pref="32" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -80,6 +86,20 @@
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="org/perfcake/pc4nb/ui/wizards/visuals/Bundle.properties" key="SenderVisualPanel.propertiesLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="targetLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="org/perfcake/pc4nb/ui/wizards/visuals/Bundle.properties" key="SenderVisualPanel.targetLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="targetTextField">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="org/perfcake/pc4nb/ui/wizards/visuals/Bundle.properties" key="SenderVisualPanel.targetTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>

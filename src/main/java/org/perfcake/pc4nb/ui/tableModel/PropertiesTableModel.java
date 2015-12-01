@@ -26,8 +26,8 @@ import org.perfcake.model.Property;
  * @author Andrej Halaj
  */
 public class PropertiesTableModel extends AbstractTableModel {
-    List<Property> properties = new ArrayList<>();
-    List<Property> defaultValues = new ArrayList<>();
+    private List<Property> properties = new ArrayList<>();
+    private List<Property> defaultValues = new ArrayList<>();
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {

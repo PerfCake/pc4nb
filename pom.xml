@@ -111,7 +111,7 @@
         <dependency>
             <groupId>org.perfcake</groupId>
             <artifactId>perfcake</artifactId>
-            <version>5.0</version>
+            <version>${perfcake.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -181,7 +181,7 @@
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <perfcake.version>5.0</perfcake.version>
+        <perfcake.version>5.1</perfcake.version>
     </properties>
     <description>Graphical PerfCake scenario editor for NetBeans</description>
 </project>
