@@ -25,6 +25,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import org.openide.util.Exceptions;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.model.Property;
@@ -34,7 +36,7 @@ import org.perfcake.pc4nb.model.SenderModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.reflect.ComponentScanner;
 
-public final class SenderVisualPanel extends VisualPanelWithProperties {
+public final class SenderVisualPanel extends VisualPanelWithProperties implements DocumentListener {
     public static final String SENDER_PACKAGE = "org.perfcake.message.sender";
 
     /**
@@ -70,6 +72,8 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
         }
         
         propertiesTable.setDefaultRenderer(String.class, new PropertiesTableCellRenderer());
+        
+        targetTextField.getDocument().addDocumentListener(this);
     }
 
     @Override
@@ -208,5 +212,26 @@ public final class SenderVisualPanel extends VisualPanelWithProperties {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+    }
+
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        if (e.getDocument() == targetTextField.getDocument()) {
+            firePropertyChange("prop-target", 0, 1);
+        }
+    }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        if (e.getDocument() == targetTextField.getDocument()) {
+            firePropertyChange("prop-target", 0, 1);
+        }
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        if (e.getDocument() == targetTextField.getDocument()) {
+            firePropertyChange("prop-target", 0, 1);
+        }
     }
 }

@@ -24,9 +24,9 @@ import org.openide.util.ChangeSupport;
 import org.openide.util.HelpCtx;
 
 public class MessageWizardPanel implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
-    ChangeSupport listeners = new ChangeSupport(this);
-    WizardDescriptor wizardDescriptor = null;
-    boolean isValid;
+    private ChangeSupport listeners = new ChangeSupport(this);
+    private WizardDescriptor wizardDescriptor = null;
+    private boolean isValid;
 
     /**
      * The visual component that displays this panel. If you need to access the
@@ -112,7 +112,7 @@ public class MessageWizardPanel implements WizardDescriptor.Panel<WizardDescript
         listeners.fireChange();
     }
 
-    public boolean notNullNotEmpty(String value) {
+    private boolean notNullNotEmpty(String value) {
         return value != null && !value.isEmpty();
     }
 }

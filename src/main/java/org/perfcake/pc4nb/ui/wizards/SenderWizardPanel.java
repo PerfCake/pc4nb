@@ -15,13 +15,18 @@
  */
 package org.perfcake.pc4nb.ui.wizards;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import org.perfcake.pc4nb.ui.wizards.visuals.SenderVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
+import org.openide.util.ChangeSupport;
 import org.openide.util.HelpCtx;
 
-public class SenderWizardPanel implements WizardDescriptor.Panel<WizardDescriptor> {
-
+public class SenderWizardPanel implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
+    ChangeSupport listeners = new ChangeSupport(this);
+    WizardDescriptor wizardDescriptor;
+    
     /**
      * The visual component that displays this panel. If you need to access the
      * component from this class, just use getComponent().
@@ -60,21 +65,49 @@ public class SenderWizardPanel implements WizardDescriptor.Panel<WizardDescripto
 
     @Override
     public void addChangeListener(ChangeListener l) {
+        listeners.addChangeListener(l);
     }
 
     @Override
     public void removeChangeListener(ChangeListener l) {
+        listeners.addChangeListener(l);
     }
 
     @Override
     public void readSettings(WizardDescriptor wiz) {
-        // use wiz.getProperty to retrieve previous panel state
+        wizardDescriptor = wiz;
+        getComponent().addPropertyChangeListener(this);
+        
+        String target = getComponent().getTargetTextField().getText();
+        
+        if (notNullNotEmpty(target)) {
+            wizardDescriptor.putProperty(WizardDescriptor.PROP_WARNING_MESSAGE, null);
+        } else {
+            wizardDescriptor.putProperty(WizardDescriptor.PROP_WARNING_MESSAGE, "Warning: Target is empty.");
+        }
     }
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        wiz.putProperty("sender-type", getComponent().getSenderSelection().getSelectedItem());
-        wiz.putProperty("sender-target", getComponent().getTargetTextField().getText());
-        wiz.putProperty("sender-properties", getComponent().getProperties());
+        wizardDescriptor.putProperty("sender-type", getComponent().getSenderSelection().getSelectedItem());
+        wizardDescriptor.putProperty("sender-target", getComponent().getTargetTextField().getText());
+        wizardDescriptor.putProperty("sender-properties", getComponent().getProperties());
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        String target = getComponent().getTargetTextField().getText();
+        
+        if (notNullNotEmpty(target)) {
+            wizardDescriptor.putProperty(WizardDescriptor.PROP_WARNING_MESSAGE, null);
+        } else {
+            wizardDescriptor.putProperty(WizardDescriptor.PROP_WARNING_MESSAGE, "Warning: Target is empty.");
+        }
+        
+        listeners.fireChange();
+    }
+    
+    private boolean notNullNotEmpty(String value) {
+        return value != null && !value.isEmpty();
     }
 }
