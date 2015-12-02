@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:4.0">
-    <generator class="DefaultMessageGenerator" threads="${thread.count:10}">
-        <run type="time" value="10000"/>
-    </generator>
+<scenario xmlns="urn:perfcake:scenario:5.0">
+    <run type="time" value="10000"/>
+    <generator class="DefaultMessageGenerator" threads="${thread.count:10}" />
     <sender class="HttpSender">
-        <property name="target" value="http://httpbin.org"/>
+        <target>http://httpbin.org/get</target>
     </sender>
-    <reporting>
-    </reporting>
 </scenario>

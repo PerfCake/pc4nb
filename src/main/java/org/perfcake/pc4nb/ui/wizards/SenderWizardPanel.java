@@ -20,11 +20,9 @@ import java.beans.PropertyChangeListener;
 import org.perfcake.pc4nb.ui.wizards.visuals.SenderVisualPanel;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
-import org.openide.util.ChangeSupport;
 import org.openide.util.HelpCtx;
 
 public class SenderWizardPanel implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
-    ChangeSupport listeners = new ChangeSupport(this);
     WizardDescriptor wizardDescriptor;
     
     /**
@@ -65,12 +63,10 @@ public class SenderWizardPanel implements WizardDescriptor.Panel<WizardDescripto
 
     @Override
     public void addChangeListener(ChangeListener l) {
-        listeners.addChangeListener(l);
     }
 
     @Override
     public void removeChangeListener(ChangeListener l) {
-        listeners.addChangeListener(l);
     }
 
     @Override
@@ -103,8 +99,6 @@ public class SenderWizardPanel implements WizardDescriptor.Panel<WizardDescripto
         } else {
             wizardDescriptor.putProperty(WizardDescriptor.PROP_WARNING_MESSAGE, "Warning: Target is empty.");
         }
-        
-        listeners.fireChange();
     }
     
     private boolean notNullNotEmpty(String value) {

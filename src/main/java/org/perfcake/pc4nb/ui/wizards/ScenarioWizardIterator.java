@@ -51,7 +51,13 @@ import org.perfcake.pc4nb.scenario.ScenarioManagerException;
 import static org.perfcake.pc4nb.ui.wizards.visuals.GeneratorVisualPanel.GENERATOR_PACKAGE;
 import static org.perfcake.pc4nb.ui.wizards.visuals.SenderVisualPanel.SENDER_PACKAGE;
 
-@TemplateRegistration(folder = "PerfCake", displayName = "#ScenarioWizardIterator_displayName", iconBase = "org/perfcake/pc4nb/favicon.png", description = "scenario.html")
+@TemplateRegistration(
+        folder = "PerfCake",
+        displayName = "#ScenarioWizardIterator_displayName",
+        iconBase = "org/perfcake/pc4nb/favicon.png",
+        description = "scenario.html",
+        id = "Scenario"
+)
 @Messages("ScenarioWizardIterator_displayName=Scenario")
 public final class ScenarioWizardIterator implements WizardDescriptor.InstantiatingIterator<WizardDescriptor> {
 

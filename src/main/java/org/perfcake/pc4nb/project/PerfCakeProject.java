@@ -10,6 +10,7 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectInformation;
 import org.netbeans.spi.project.ProjectState;
 import org.netbeans.spi.project.ui.LogicalViewProvider;
+import org.netbeans.spi.project.ui.PrivilegedTemplates;
 import org.netbeans.spi.project.ui.support.CommonProjectActions;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataFolder;
@@ -46,6 +47,7 @@ public class PerfCakeProject implements Project {
             lkp = Lookups.fixed(new Object[]{
                 new Info(),
                 new PerfCakeProjectLogicalView(this),
+                new PerfCakePrivilegedTemplates()
             });
         }
         return lkp;
@@ -166,5 +168,15 @@ public class PerfCakeProject implements Project {
         }
 
     }
+    
+    private class PerfCakePrivilegedTemplates implements PrivilegedTemplates {
 
+        @Override
+        public String[] getPrivilegedTemplates() {
+            return new String[] {
+                "Templates/PerfCake/Scenario"
+            };
+        }
+        
+    }
 }

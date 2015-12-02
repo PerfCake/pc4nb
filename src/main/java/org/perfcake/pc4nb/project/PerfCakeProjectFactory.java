@@ -1,8 +1,6 @@
 package org.perfcake.pc4nb.project;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import org.netbeans.api.project.Project;
 import org.netbeans.spi.project.ProjectFactory;
 import org.netbeans.spi.project.ProjectState;
