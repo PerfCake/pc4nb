@@ -17,10 +17,9 @@ package org.perfcake.pc4nb.ui.wizards.visuals;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
-import org.perfcake.model.Property;
+import org.perfcake.pc4nb.model.PropertyModel;
 import org.perfcake.pc4nb.ui.tableModel.PropertiesTableModel;
 
 /**
@@ -36,25 +35,25 @@ public class PropertiesTableCellRenderer extends DefaultTableCellRenderer {
         Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
         PropertiesTableModel model = (PropertiesTableModel) table.getModel();
-        List<Property> defaultValues = model.getDefaultValues();
-        String defaultValue = defaultValues.get(row).getValue();
-        String currentValue = (String) value;
+        PropertyModel property = model.getProperties().get(row);
 
-        if (column == 0) {
-            if (defaultValue.equals("null") || defaultValue.isEmpty()) {
+        boolean isMandatory = property.isMandatory();
+
+        if (column == 0) {    
+            if (isMandatory) {
                 cell.setForeground(Color.RED);
             } else {
                 cell.setForeground(Color.BLACK);
             }
         } else if (column == 1) {
-            if (defaultValue.equals("null") || defaultValue.isEmpty()) {
-                if (defaultValue.equals(currentValue)) {
+            if (isMandatory) {
+                if (property.isDefault()) {
                     cell.setForeground(Color.RED);
                 } else {
                     cell.setForeground(Color.GREEN);
                 }
             } else {
-                if (defaultValue.equals(currentValue)) {
+                if (property.isDefault()) {
                     cell.setForeground(Color.GRAY);
                 } else {
                     cell.setForeground(Color.GREEN);

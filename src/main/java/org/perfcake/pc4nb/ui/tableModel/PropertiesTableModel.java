@@ -19,15 +19,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
-import org.perfcake.model.Property;
+import org.perfcake.pc4nb.model.PropertyModel;
 
 /**
  *
  * @author Andrej Halaj
  */
 public class PropertiesTableModel extends AbstractTableModel {
-    private List<Property> properties = new ArrayList<>();
-    private List<Property> defaultValues = new ArrayList<>();
+    private List<PropertyModel> properties = new ArrayList<>();
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
@@ -52,23 +51,18 @@ public class PropertiesTableModel extends AbstractTableModel {
         }
     }
 
-    public void addRow(Property property) {
+    public void addRow(PropertyModel property) {
         int lastRow = properties.size();
         insertRow(lastRow, property);
     }
 
-    public void insertRow(int index, Property property) {
+    public void insertRow(int index, PropertyModel property) {
         properties.add(index, property);
-        
-        Property defaultValue = new Property();
-        defaultValue.setName(property.getName());
-        defaultValue.setValue(property.getValue());
-        defaultValues.add(index, defaultValue);
         
         fireTableRowsInserted(index, index);
     }
     
-    public void updateRow(int index, Property property) {
+    public void updateRow(int index, PropertyModel property) {
         properties.set(index, property);
         fireTableRowsUpdated(index, index);
     }
@@ -83,17 +77,13 @@ public class PropertiesTableModel extends AbstractTableModel {
         return 2;
     }
 
-    public List<Property> getProperties() {
+    public List<PropertyModel> getProperties() {
         return Collections.unmodifiableList(properties);
-    }
-
-    public List<Property> getDefaultValues() {
-        return Collections.unmodifiableList(defaultValues);
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Property property = properties.get(rowIndex);
+        PropertyModel property = properties.get(rowIndex);
 
         switch (columnIndex) {
             case 0:
@@ -107,7 +97,7 @@ public class PropertiesTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
-        Property property = properties.get(rowIndex);
+        PropertyModel property = properties.get(rowIndex);
         switch (columnIndex) {
             case 1:
                 property.setValue((String) value);

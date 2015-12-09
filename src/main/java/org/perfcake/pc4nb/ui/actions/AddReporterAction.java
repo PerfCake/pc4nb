@@ -15,14 +15,15 @@
  */
 package org.perfcake.pc4nb.ui.actions;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Reporting.Reporter;
 import org.perfcake.model.Scenario.Reporting.Reporter.Destination;
 import org.perfcake.pc4nb.model.PC4NBModel;
+import org.perfcake.pc4nb.model.PropertyModel;
 import org.perfcake.pc4nb.model.ReportingModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.ui.wizards.ReporterWizardPanel;
@@ -52,26 +53,11 @@ public class AddReporterAction extends AbstractPC4NBAction {
         reporter.setClazz((String) wiz.getProperty("reporter-clazz"));
         reporter.setEnabled((boolean) wiz.getProperty("reporter-enabled"));
 
-        List<Property> properties = (List<Property>) wiz.getProperty("reporter-properties");
+        List<PropertyModel> properties = (List<PropertyModel>) wiz.getProperty("reporter-properties");
 
-        Properties defaultValues = new Properties();
-
-        try {
-            defaultValues = (new ComponentPropertiesScanner()).getPropertiesOfComponent(Class.forName(REPORTER_PACKAGE + "." + wiz.getProperty("reporter-clazz")));
-        } catch (ClassNotFoundException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-
-        for (Property property : properties) {
-            String propertyName = property.getName();
-            String propertyValue = property.getValue();
-
-            if (!propertyValue.equals(defaultValues.get(propertyName))) {
-                Property newProperty = new Property();
-                newProperty.setName(propertyName);
-                newProperty.setValue(propertyValue);
-
-                reporter.getProperty().add(newProperty);
+        for (PropertyModel propertyModel : properties) {
+            if (!propertyModel.isDefault()) {
+                reporter.getProperty().add(propertyModel.getProperty());
             }
         }
 

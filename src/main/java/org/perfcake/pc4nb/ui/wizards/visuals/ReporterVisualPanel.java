@@ -23,7 +23,6 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -38,6 +37,7 @@ import org.perfcake.model.Scenario.Reporting.Reporter.Destination;
 import org.perfcake.pc4nb.model.DestinationModel;
 import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.PC4NBModel;
+import org.perfcake.pc4nb.model.PropertyModel;
 import org.perfcake.pc4nb.model.ReporterModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.reflect.ComponentScanner;
@@ -132,11 +132,14 @@ public final class ReporterVisualPanel extends VisualPanelWithProperties {
         Scenario.Reporting.Reporter reporter = ((ReporterModel) model).getReporter();
 
         String reporterClazz = reporter.getClazz();
-        Properties properties = new Properties();
-        properties.putAll(getPropertiesFor(reporterClazz));
-
+        List<PropertyModel> properties = new ArrayList<>(getPropertiesFor(reporterClazz));
+        
         for (Property property : reporter.getProperty()) {
-            properties.put(property.getName(), property.getValue());
+            for (PropertyModel defaultProperty : properties) {
+                if (defaultProperty.getName().equals(property.getName())) {
+                    defaultProperty.setValue(property.getValue());
+                }
+            }
         }
 
         try {

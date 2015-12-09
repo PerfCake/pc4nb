@@ -16,14 +16,11 @@
 package org.perfcake.pc4nb.ui.actions;
 
 import java.util.List;
-import java.util.Properties;
 import org.openide.WizardDescriptor;
-import org.openide.util.Exceptions;
 import org.perfcake.model.Property;
+import org.perfcake.pc4nb.model.PropertyModel;
 import org.perfcake.pc4nb.model.SenderModel;
-import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.ui.wizards.SenderWizardPanel;
-import static org.perfcake.pc4nb.ui.wizards.visuals.SenderVisualPanel.SENDER_PACKAGE;
 
 /**
  *
@@ -49,15 +46,7 @@ public class EditSenderAction extends AbstractPC4NBAction {
         senderModel.setClazz((String) wiz.getProperty("sender-type"));
         senderModel.setTarget((String) wiz.getProperty("sender-target"));
         
-        List<Property> properties = (List<Property>) wiz.getProperty("sender-properties");
-
-        Properties defaultValues = new Properties();
-
-        try {
-            defaultValues = (new ComponentPropertiesScanner()).getPropertiesOfComponent(Class.forName(SENDER_PACKAGE + "." + wiz.getProperty("sender-type")));
-        } catch (ClassNotFoundException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        List<PropertyModel> properties = (List<PropertyModel>) wiz.getProperty("sender-properties");
 
         List<Property> senderProperties = senderModel.getProperty();
             
@@ -65,16 +54,9 @@ public class EditSenderAction extends AbstractPC4NBAction {
             senderModel.removeProperty(senderProperties.get(i));
         }
         
-        for (Property property : properties) {
-            String propertyName = property.getName();
-            String propertyValue = property.getValue();
-
-            if (!propertyValue.equals(defaultValues.get(propertyName))) {
-                Property newProperty = new Property();
-                newProperty.setName(propertyName);
-                newProperty.setValue(propertyValue);
-
-                senderModel.addProperty(newProperty);
+        for (PropertyModel propertyModel : properties) {
+            if (!propertyModel.isDefault()) {
+                senderModel.addProperty(propertyModel.getProperty());
             }
         }
     }

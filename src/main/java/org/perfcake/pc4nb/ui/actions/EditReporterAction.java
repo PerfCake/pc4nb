@@ -16,14 +16,11 @@
 package org.perfcake.pc4nb.ui.actions;
 
 import java.util.List;
-import java.util.Properties;
 import org.openide.WizardDescriptor;
-import org.openide.util.Exceptions;
 import org.perfcake.model.Property;
+import org.perfcake.pc4nb.model.PropertyModel;
 import org.perfcake.pc4nb.model.ReporterModel;
-import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.ui.wizards.ReporterWizardPanel;
-import static org.perfcake.pc4nb.ui.wizards.visuals.ReporterVisualPanel.REPORTER_PACKAGE;
 
 /**
  *
@@ -49,32 +46,17 @@ public class EditReporterAction extends AbstractPC4NBAction {
         reporterModel.setClazz((String) wiz.getProperty("reporter-clazz"));
         reporterModel.setEnabled((boolean) wiz.getProperty("reporter-enabled"));
 
-        List<Property> properties = (List<Property>) wiz.getProperty("reporter-properties");
-
-        Properties defaultValues = new Properties();
-
-        try {
-            defaultValues = (new ComponentPropertiesScanner()).getPropertiesOfComponent(Class.forName(REPORTER_PACKAGE + "." + wiz.getProperty("reporter-clazz")));
-        } catch (ClassNotFoundException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-
+        List<PropertyModel> properties = (List<PropertyModel>) wiz.getProperty("reporter-properties");
+        
         List<Property> reporterProperties = reporterModel.getProperty();
             
         for (int i = reporterProperties.size() - 1; i >= 0; i--) {
             reporterModel.removeProperty(reporterProperties.get(i));
         }
         
-        for (Property property : properties) {
-            String propertyName = property.getName();
-            String propertyValue = property.getValue();
-
-            if (!propertyValue.equals(defaultValues.get(propertyName))) {
-                Property newProperty = new Property();
-                newProperty.setName(propertyName);
-                newProperty.setValue(propertyValue);
-
-                reporterModel.addProperty(newProperty);
+        for (PropertyModel property : properties) {
+            if (!property.isDefault()) {
+                reporterModel.addProperty(property.getProperty());
             }
         }
     }

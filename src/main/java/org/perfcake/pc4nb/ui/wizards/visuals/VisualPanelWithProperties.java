@@ -17,12 +17,10 @@ package org.perfcake.pc4nb.ui.wizards.visuals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import javax.swing.JTable;
-import org.perfcake.model.Property;
+import org.perfcake.pc4nb.model.PropertyModel;
 import org.perfcake.pc4nb.ui.AbstractPC4NBView;
 import org.perfcake.pc4nb.ui.tableModel.PropertiesTableModel;
 
@@ -46,7 +44,7 @@ public abstract class VisualPanelWithProperties extends AbstractPC4NBView {
         getPropertiesTable().setModel(getPropertiesTableModel());
     }
 
-    public final void putToComponentPropertiesMap(String component, Properties properties) throws ClassNotFoundException {
+    public final void putToComponentPropertiesMap(String component, List<PropertyModel> properties) throws ClassNotFoundException {
         PropertiesTableModel tableModel;
 
         if (componentPropertiesMap.containsKey(component)) {
@@ -54,26 +52,14 @@ public abstract class VisualPanelWithProperties extends AbstractPC4NBView {
 
             int index = -1;
             
-            for (Iterator<Object> it = properties.keySet().iterator(); it.hasNext();) {
-                String name = (String) it.next();
-
-                Property property = new Property();
-                property.setName(name);
-                property.setValue((String) properties.get(name));
-
+            for (PropertyModel property : properties) {
                 tableModel.updateRow(++index, property);
 
             }
         } else {
             tableModel = new PropertiesTableModel();
 
-            for (Iterator<Object> it = properties.keySet().iterator(); it.hasNext();) {
-                String name = (String) it.next();
-
-                Property property = new Property();
-                property.setName(name);
-                property.setValue((String) properties.get(name));
-
+            for (PropertyModel property : properties) {
                 tableModel.addRow(property);
             }
         }
@@ -81,33 +67,18 @@ public abstract class VisualPanelWithProperties extends AbstractPC4NBView {
         componentPropertiesMap.put(component, tableModel);
     }
 
-    public final Properties getPropertiesFor(String clazz) {
-        Properties properties = new Properties();
+    public final List<PropertyModel> getPropertiesFor(String clazz) {
         PropertiesTableModel tableModel = componentPropertiesMap.get(clazz);
 
         if (tableModel != null) {
-            for (int i = 0; i < tableModel.getRowCount(); i++) {
-                String name = (String) tableModel.getValueAt(i, 0);
-                String value = (String) tableModel.getValueAt(i, 1);
-
-                properties.put(name, value);
-            }
+            return tableModel.getProperties();
+        } else {
+            return new ArrayList<>();
         }
-
-        return properties;
     }
 
-    public final List<Property> getProperties() {
-        List<Property> properties = new ArrayList<>();
-
-        for (int i = 0; i < getPropertiesTableModel().getRowCount(); i++) {
-            Property property = new Property();
-            property.setName((String) getPropertiesTableModel().getValueAt(i, 0));
-            property.setValue(getPropertiesTableModel().getValueAt(i, 1).toString());
-            properties.add(property);
-        }
-
-        return properties;
+    public final List<PropertyModel> getProperties() {
+        return getPropertiesTableModel().getProperties();
     }
 
     public final PropertiesTableModel getPropertiesTableModel() {

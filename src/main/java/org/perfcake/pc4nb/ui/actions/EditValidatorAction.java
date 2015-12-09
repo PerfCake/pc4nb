@@ -16,14 +16,11 @@
 package org.perfcake.pc4nb.ui.actions;
 
 import java.util.List;
-import java.util.Properties;
 import org.openide.WizardDescriptor;
-import org.openide.util.Exceptions;
 import org.perfcake.model.Property;
+import org.perfcake.pc4nb.model.PropertyModel;
 import org.perfcake.pc4nb.model.ValidatorModel;
-import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.ui.wizards.ValidatorWizardPanel;
-import static org.perfcake.pc4nb.ui.wizards.visuals.ValidatorVisualPanel.VALIDATOR_PACKAGE;
 
 /**
  *
@@ -49,32 +46,17 @@ public class EditValidatorAction extends AbstractPC4NBAction {
         validatorModel.setClazz((String) wiz.getProperty("validator-type"));
         validatorModel.setId((String) wiz.getProperty("validator-id"));
 
-        List<Property> properties = (List<Property>) wiz.getProperty("validator-properties");
+        List<PropertyModel> properties = (List<PropertyModel>) wiz.getProperty("validator-properties");
 
-        Properties defaultValues = new Properties();
-
-        try {
-            defaultValues = (new ComponentPropertiesScanner()).getPropertiesOfComponent(Class.forName(VALIDATOR_PACKAGE + "." + wiz.getProperty("validator-type")));
-        } catch (ClassNotFoundException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-        
         List<Property> validatorProperties = validatorModel.getProperty();
         
         for (int i = validatorProperties.size() - 1; i >= 0; i--) {
             validatorModel.removeProperty(validatorProperties.get(i));
         }
 
-        for (Property property : properties) {
-            String propertyName = property.getName();
-            String propertyValue = property.getValue();
-
-            if (!propertyValue.equals(defaultValues.get(propertyName))) {
-                Property newProperty = new Property();
-                newProperty.setName(propertyName);
-                newProperty.setValue(propertyValue);
-
-                validatorModel.addProperty(newProperty);
+        for (PropertyModel propertyModel : properties) {
+            if (!propertyModel.isDefault()) {
+                validatorModel.addProperty(propertyModel.getProperty());
             }
         }
     }

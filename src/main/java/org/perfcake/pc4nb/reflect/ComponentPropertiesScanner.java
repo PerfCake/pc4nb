@@ -19,8 +19,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import org.openide.util.Exceptions;
@@ -31,6 +34,7 @@ import org.perfcake.message.sender.MessageSender;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.generator.MessageGenerator;
+import org.perfcake.pc4nb.model.PropertyModel;
 
 /**
  *
@@ -38,15 +42,19 @@ import org.perfcake.message.generator.MessageGenerator;
  */
 public class ComponentPropertiesScanner {
 
+    Set<Field> allComponentFields;
     Set<Method> allComponentMethods;
     Set<String> allComponentFieldNames;
+    Set<String> mandatoryPropertiesNames;
     Object componentObject;
     Class baseClass = null;
 
-    public Properties getPropertiesOfComponent(Class component) {
+    public List<PropertyModel> getPropertiesOfComponent(Class component) {
         getBaseClass(component);
         allComponentMethods = getAllMethodsOfComponent(component);
-        allComponentFieldNames = getAllFieldNamesOfComponent(component);
+        allComponentFields = getAllFieldsOfComponent(component);
+        allComponentFieldNames = getAllFieldNamesOfComponent();
+        mandatoryPropertiesNames = getMandatoryPropertiesNames();
         componentObject = null;
 
         try {
@@ -66,8 +74,22 @@ public class ComponentPropertiesScanner {
         if (MessageSender.class.isAssignableFrom(component)) {
             properties.remove("target");
         }
+        
+        List<PropertyModel> extendedProperties = new ArrayList<>();
+        
+        for (Iterator<Object> it = properties.keySet().iterator(); it.hasNext();) {
+            String name = (String) it.next();
+            String value = (String) properties.get(name);
+            PropertyModel newProp = new PropertyModel(name, value, mandatoryPropertiesNames.contains(name));
+            
+            if (value.equals("null") || value.isEmpty()) {
+                newProp.setMandatory(true);
+            }
+            
+            extendedProperties.add(newProp);
+        }
 
-        return properties;
+        return extendedProperties;
     }
     
     private void getBaseClass(Class component) {
@@ -88,6 +110,18 @@ public class ComponentPropertiesScanner {
             // throw exception, log
         }
     }
+    
+    private Set<String> getMandatoryPropertiesNames() {
+        Set<String> mandatoryProperties = new HashSet<>();
+        
+//        for (Field field : allComponentFields) {
+//            if (field.isAnnotationPresent(MandatoryProperty.class)) {
+//                mandatoryProperties.add(field.getName());
+//            }
+//        }
+        
+        return mandatoryProperties;
+    }
 
     private Set<Method> getAllMethodsOfComponent(Class component) {
         Set<Method> allMethodsOfComponent = new HashSet<>(Arrays.asList(component.getDeclaredMethods()));
@@ -102,10 +136,10 @@ public class ComponentPropertiesScanner {
         return allMethodsOfComponent;
     }
 
-    private Set<String> getAllFieldNamesOfComponent(Class component) {
+    private Set<String> getAllFieldNamesOfComponent() {
         Set<String> componentFieldNames = new HashSet<>();
 
-        for (Field componentField : getAllFieldsOfComponent(component)) {
+        for (Field componentField : allComponentFields) {
             componentFieldNames.add(componentField.getName());
         }
 

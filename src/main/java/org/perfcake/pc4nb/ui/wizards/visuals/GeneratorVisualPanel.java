@@ -18,8 +18,9 @@ package org.perfcake.pc4nb.ui.wizards.visuals;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Properties;
+import java.util.List;
 import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -31,6 +32,7 @@ import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.pc4nb.model.GeneratorModel;
 import org.perfcake.pc4nb.model.PC4NBModel;
+import org.perfcake.pc4nb.model.PropertyModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.reflect.ComponentScanner;
 
@@ -104,11 +106,14 @@ public final class GeneratorVisualPanel extends VisualPanelWithProperties {
             threadsSpinner.setValue(1);
         }
 
-        Properties properties = new Properties();
-        properties.putAll(getPropertiesFor(generatorClazz));
-
-        for (Property property : generatorModel.getProperty()) {
-            properties.put(property.getName(), property.getValue());
+        List<PropertyModel> properties = new ArrayList<>(getPropertiesFor(generatorClazz));
+        
+        for (Property property : generatorModel.getGenerator().getProperty()) {
+            for (PropertyModel defaultProperty : properties) {
+                if (defaultProperty.getName().equals(property.getName())) {
+                    defaultProperty.setValue(property.getValue());
+                }
+            }
         }
 
         try {

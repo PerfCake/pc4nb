@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
@@ -37,19 +36,15 @@ import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
-import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Generator;
 import org.perfcake.model.Scenario.Run;
 import org.perfcake.model.Scenario.Sender;
 import org.perfcake.pc4nb.model.*;
 import org.perfcake.pc4nb.model.ValidationModel;
-import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.scenario.ScenarioException;
 import org.perfcake.pc4nb.scenario.ScenarioManager;
 import org.perfcake.pc4nb.scenario.ScenarioManagerException;
-import static org.perfcake.pc4nb.ui.wizards.visuals.GeneratorVisualPanel.GENERATOR_PACKAGE;
-import static org.perfcake.pc4nb.ui.wizards.visuals.SenderVisualPanel.SENDER_PACKAGE;
 
 @TemplateRegistration(
         folder = "PerfCake",
@@ -228,18 +223,14 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
 
     private void prepareGenerator() throws ClassNotFoundException {
         GeneratorModel generatorModel = new GeneratorModel(new Generator());
-        List<Property> properties = (List<Property>) wizard.getProperty("generator-properties");
+        List<PropertyModel> properties = (List<PropertyModel>) wizard.getProperty("generator-properties");
 
         generatorModel.setClazz((String) wizard.getProperty("generator-type"));
-
-        ComponentPropertiesScanner propertiesScanner = new ComponentPropertiesScanner();
-        Properties defaultProperties = propertiesScanner.getPropertiesOfComponent(Class.forName(GENERATOR_PACKAGE + "." + wizard.getProperty("generator-type")));
-        
         generatorModel.setThreads(wizard.getProperty("generator-threads").toString());
 
-        for (Property property : properties) {
-            if (!defaultProperties.get(property.getName()).equals(property.getValue())) {
-                generatorModel.addProperty(generatorModel.getProperty().size(), property);
+        for (PropertyModel propertyModel : properties) {
+            if (!propertyModel.isDefault()) {
+                generatorModel.addProperty(propertyModel.getProperty());
             }
         }
 
@@ -248,16 +239,13 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
 
     private void prepareSender() throws ClassNotFoundException {
         SenderModel senderModel = new SenderModel(new Sender());
-        List<Property> properties = (List<Property>) wizard.getProperty("sender-properties");
+        List<PropertyModel> properties = (List<PropertyModel>) wizard.getProperty("sender-properties");
 
         senderModel.setClazz((String) wizard.getProperty("sender-type"));
 
-        ComponentPropertiesScanner propertiesScanner = new ComponentPropertiesScanner();
-        Properties defaultProperties = propertiesScanner.getPropertiesOfComponent(Class.forName(SENDER_PACKAGE + "." + wizard.getProperty("sender-type")));
-
-        for (Property property : properties) {
-            if (!defaultProperties.get(property.getName()).equals(property.getValue())) {
-                senderModel.addProperty(senderModel.getProperty().size(), property);
+        for (PropertyModel propertyModel : properties) {
+            if (!propertyModel.isDefault()) {
+                senderModel.addProperty(propertyModel.getProperty());
             }
         }
 

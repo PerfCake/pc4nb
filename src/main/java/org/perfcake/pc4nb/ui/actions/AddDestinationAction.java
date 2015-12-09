@@ -16,17 +16,13 @@
 package org.perfcake.pc4nb.ui.actions;
 
 import java.util.List;
-import java.util.Properties;
 import org.openide.WizardDescriptor;
-import org.openide.util.Exceptions;
-import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Reporting.Reporter.Destination;
 import org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period;
 import org.perfcake.pc4nb.model.PC4NBModel;
+import org.perfcake.pc4nb.model.PropertyModel;
 import org.perfcake.pc4nb.model.ReporterModel;
-import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.ui.wizards.DestinationWizardPanel;
-import static org.perfcake.pc4nb.ui.wizards.visuals.DestinationVisualPanel.DESTINATION_PACKAGE;
 
 /**
  *
@@ -52,25 +48,11 @@ public class AddDestinationAction extends AbstractPC4NBAction {
         destination.setClazz((String) wiz.getProperty("destination-type"));
         destination.setEnabled((boolean) wiz.getProperty("destination-enabled"));
 
-        List<Property> properties = (List<Property>) wiz.getProperty("destination-properties");
+        List<PropertyModel> properties = (List<PropertyModel>) wiz.getProperty("destination-properties");
 
-        Properties defaultValues = new Properties();
-        try {
-            defaultValues = (new ComponentPropertiesScanner()).getPropertiesOfComponent(Class.forName(DESTINATION_PACKAGE + "." + wiz.getProperty("destination-type")));
-        } catch (ClassNotFoundException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-
-        for (Property property : properties) {
-            String propertyName = property.getName();
-            String propertyValue = property.getValue();
-
-            if (!propertyValue.equals(defaultValues.get(propertyName))) {
-                Property newProperty = new Property();
-                newProperty.setName(propertyName);
-                newProperty.setValue(propertyValue);
-
-                destination.getProperty().add(newProperty);
+        for (PropertyModel propertyModel : properties) {
+            if (!propertyModel.isDefault()) {
+                destination.getProperty().add(propertyModel.getProperty());
             }
         }
 

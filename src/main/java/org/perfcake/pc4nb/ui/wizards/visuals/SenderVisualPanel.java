@@ -18,8 +18,9 @@ package org.perfcake.pc4nb.ui.wizards.visuals;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Properties;
+import java.util.List;
 import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -31,7 +32,9 @@ import org.openide.util.Exceptions;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
+import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.PC4NBModel;
+import org.perfcake.pc4nb.model.PropertyModel;
 import org.perfcake.pc4nb.model.SenderModel;
 import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.reflect.ComponentScanner;
@@ -99,12 +102,14 @@ public final class SenderVisualPanel extends VisualPanelWithProperties implement
         targetTextField.setText(target);
         
         String senderClazz = senderModel.getSender().getClazz();
-
-        Properties properties = new Properties();
-        properties.putAll(getPropertiesFor(senderClazz));
-
-        for (Property property : senderModel.getProperty()) {
-            properties.put(property.getName(), property.getValue());
+        List<PropertyModel> properties = new ArrayList<>(getPropertiesFor(senderClazz));
+        
+        for (Property property : senderModel.getSender().getProperty()) {
+            for (PropertyModel defaultProperty : properties) {
+                if (defaultProperty.getName().equals(property.getName())) {
+                    defaultProperty.setValue(property.getValue());
+                }
+            }
         }
 
         try {

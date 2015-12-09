@@ -23,13 +23,30 @@ public final class PropertyModel extends PC4NBModel {
     public static final String PROPERTY_VALUE = "property-value";
 
     private Property property;
+    private String defaultValue;
+    private boolean mandatory;
 
     public PropertyModel(Property property) {
         if (property == null) {
             throw new IllegalArgumentException("Property must not be null");
         }
         this.property = property;
+        this.defaultValue = property.getValue();
+        this.mandatory = false;
+        
         ModelMap.getDefault().addEntry(property, this);
+    }
+    
+    public PropertyModel(String name, String value, boolean mandatory) {
+        Property prop = new Property();
+        prop.setName(name);
+        prop.setValue(value);
+        
+        this.property = prop;
+        this.defaultValue = value;
+        this.mandatory = mandatory;
+        
+        ModelMap.getDefault().addEntry(prop, this);
     }
 
     public Property getProperty() {
@@ -41,10 +58,34 @@ public final class PropertyModel extends PC4NBModel {
         getProperty().setName(name);
         getListeners().firePropertyChange(PROPERTY_NAME, oldName, name);
     }
+    
+    public String getName() {
+        return getProperty().getName();
+    }
 
     public void setValue(String value) {
         String oldValue = getProperty().getValue();
         getProperty().setValue(value);
         getListeners().firePropertyChange(PROPERTY_VALUE, oldValue, value);
+    }
+    
+    public String getValue() {
+        return getProperty().getValue();
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+    
+    public boolean isDefault() {
+        return getProperty().getValue().equals(defaultValue);
     }
 }

@@ -16,14 +16,11 @@
 package org.perfcake.pc4nb.ui.actions;
 
 import java.util.List;
-import java.util.Properties;
 import org.openide.WizardDescriptor;
-import org.openide.util.Exceptions;
 import org.perfcake.model.Property;
 import org.perfcake.pc4nb.model.GeneratorModel;
-import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
+import org.perfcake.pc4nb.model.PropertyModel;
 import org.perfcake.pc4nb.ui.wizards.GeneratorWizardPanel;
-import static org.perfcake.pc4nb.ui.wizards.visuals.GeneratorVisualPanel.GENERATOR_PACKAGE;
 
 /**
  *
@@ -49,15 +46,7 @@ public class EditGeneratorAction extends AbstractPC4NBAction {
         generatorModel.setClazz((String) wiz.getProperty("generator-type"));
         generatorModel.setThreads(wiz.getProperty("generator-threads").toString());
         
-        List<Property> properties = (List<Property>) wiz.getProperty("generator-properties");
-
-        Properties defaultValues = new Properties();
-
-        try {
-            defaultValues = (new ComponentPropertiesScanner()).getPropertiesOfComponent(Class.forName(GENERATOR_PACKAGE + "." + wiz.getProperty("generator-type")));
-        } catch (ClassNotFoundException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        List<PropertyModel> properties = (List<PropertyModel>) wiz.getProperty("generator-properties");
 
         List<Property> generatorProperties = generatorModel.getProperty();
             
@@ -65,16 +54,9 @@ public class EditGeneratorAction extends AbstractPC4NBAction {
             generatorModel.removeProperty(generatorProperties.get(i));
         }
         
-        for (Property property : properties) {
-            String propertyName = property.getName();
-            String propertyValue = property.getValue();
-
-            if (!propertyValue.equals(defaultValues.get(propertyName))) {
-                Property newProperty = new Property();
-                newProperty.setName(propertyName);
-                newProperty.setValue(propertyValue);
-
-                generatorModel.addProperty(newProperty);
+        for (PropertyModel propertyModel : properties) {
+            if (!propertyModel.isDefault()) {
+                generatorModel.addProperty(propertyModel.getProperty());
             }
         }
     }
