@@ -184,4 +184,11 @@
         <perfcake.version>5.1</perfcake.version>
     </properties>
     <description>Graphical PerfCake scenario editor for NetBeans</description>
+    <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+          <distribution>manual</distribution>
+        </license>
+    </licenses>
 </project>
