@@ -72,7 +72,6 @@ public class ComponentPropertiesScanner {
         
         if (MessageGenerator.class.isAssignableFrom(component)) {
             properties.remove("threads");
-            properties.remove("monitoringPeriod");
         }
         
         if (MessageSender.class.isAssignableFrom(component)) {
@@ -85,10 +84,6 @@ public class ComponentPropertiesScanner {
             String name = (String) it.next();
             String value = (String) properties.get(name);
             PropertyModel newProp = new PropertyModel(name, value, mandatoryPropertiesNames.contains(name));
-            
-            if (value.equals("null") || value.isEmpty()) {
-                newProp.setMandatory(true);
-            }
             
             extendedProperties.add(newProp);
         }

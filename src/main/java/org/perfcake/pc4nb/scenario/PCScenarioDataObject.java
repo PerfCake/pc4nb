@@ -20,6 +20,7 @@ import org.openide.loaders.MultiFileLoader;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
+import org.perfcake.PerfCakeConst;
 
 @Messages({
     "LBL_PCScenario_LOADER=Files of PCScenario"
@@ -27,7 +28,7 @@ import org.openide.windows.TopComponent;
 @MIMEResolver.NamespaceRegistration(
         displayName = "#LBL_PCScenario_LOADER",
         mimeType = "text/pcscenario+xml",
-        elementNS = {"urn:perfcake:scenario:5.0"}
+        elementNS = {"urn:perfcake:scenario:" + PerfCakeConst.XSD_SCHEMA_VERSION}
 )
 @DataObject.Registration(
         mimeType = "text/pcscenario+xml",
