@@ -24,6 +24,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.model.Scenario;
@@ -38,7 +40,7 @@ import org.xml.sax.SAXException;
  */
 public class ScenarioManager {
     public static final String SCHEMA_PATH = "perfcake-scenario-5.0.xsd";
-    private static final Logger log = Logger.getLogger(ScenarioManager.class.getName());
+    private static final Logger log = LogManager.getLogger(ScenarioManager.class);
 
     public void runScenario(String scenarioPath) throws ScenarioException, PerfCakeException {
 
@@ -54,14 +56,14 @@ public class ScenarioManager {
             scenario.init();
             scenario.run();
         } catch (PerfCakeException e) {
-            log.error("Error during scenario execution.", e);
+            log.log(Level.ERROR, e.getLocalizedMessage());
             throw new ScenarioException("Error during scenario execution.", e);
         }
 
         try {
             scenario.close();
         } catch (PerfCakeException e) {
-            log.error("Error during finishing scenario.", e);
+            log.log(Level.ERROR, e.getLocalizedMessage());
             throw new ScenarioException("Error during finishing scenario.", e);
         }
     }
@@ -70,14 +72,14 @@ public class ScenarioManager {
         if (scenario != null) {
             scenario.stop();
         } else {
-            log.warn("Trying to stop null scenario");
+            log.log(Level.WARN, "Trying to stop null scenario");
         }
     }
 
     public void createXML(Scenario scenarioModel, OutputStream out) throws ScenarioException, ScenarioManagerException {
         if (scenarioModel == null) {
             String message = "scenario model is null. please use setModel() to set model.";
-            log.warn(message);
+            log.log(Level.WARN, message);
             throw new ScenarioManagerException(message);
         }
 
@@ -95,11 +97,11 @@ public class ScenarioManager {
             marshaller.marshal(scenarioModel, out);
         } catch (JAXBException ex) {
             String message = "JAXB error";
-            log.error(message, ex);
+            log.log(Level.ERROR, message, ex);
             throw new ScenarioException(message, ex);
         } catch (SAXException ex) {
             String message = "Cannot obtain schema definition.";
-            log.error(message, ex);
+            log.log(Level.ERROR, message, ex);
             throw new ScenarioException(message, ex);
         }
     }
@@ -108,7 +110,7 @@ public class ScenarioManager {
         Scenario scenario = new Scenario();
 
         if (scenarioURL == null) {
-            log.error("URL to scenario is null");
+            log.log(Level.ERROR, "URL to scenario is null");
             throw new IllegalArgumentException("URL to scenario is null.");
         }
 
@@ -125,11 +127,11 @@ public class ScenarioManager {
             scenario = (Scenario) unmarshaller.unmarshal(scenarioURL);
         } catch (JAXBException ex) {
             String message = "JAXB error";
-            log.error(message, ex);
+            log.log(Level.ERROR, message, ex);
             throw new ScenarioException(message, ex);
         } catch (SAXException ex) {
             String message = "Cannot obtain schema definition.";
-            log.error(message, ex);
+            log.log(Level.ERROR, message, ex);
             throw new ScenarioException(message, ex);
         }
 

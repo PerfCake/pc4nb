@@ -26,6 +26,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.openide.util.Exceptions;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.reporters.Reporter;
@@ -35,19 +38,21 @@ import org.perfcake.validation.MessageValidator;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.pc4nb.model.PropertyModel;
+import org.perfcake.util.properties.MandatoryProperty;
 
 /**
  *
  * @author Andrej Halaj
  */
 public class ComponentPropertiesScanner {
-
-    Set<Field> allComponentFields;
-    Set<Method> allComponentMethods;
-    Set<String> allComponentFieldNames;
-    Set<String> mandatoryPropertiesNames;
-    Object componentObject;
-    Class baseClass = null;
+    private static final Logger logger = LogManager.getLogger(ComponentPropertiesScanner.class);
+    
+    private Set<Field> allComponentFields;
+    private Set<Method> allComponentMethods;
+    private Set<String> allComponentFieldNames;
+    private Set<String> mandatoryPropertiesNames;
+    private Object componentObject;
+    private Class baseClass = null;
 
     public List<PropertyModel> getPropertiesOfComponent(Class component) {
         getBaseClass(component);
@@ -60,8 +65,7 @@ public class ComponentPropertiesScanner {
         try {
             componentObject = component.newInstance();
         } catch (InstantiationException | IllegalAccessException ex) {
-            Exceptions.printStackTrace(ex);
-            // log
+            logger.log(Level.ERROR, ex.getLocalizedMessage());
         }
 
         Properties properties = getDefaultValuesOfFields();
@@ -97,7 +101,7 @@ public class ComponentPropertiesScanner {
             baseClass = Reporter.class;
         } else if (MessageValidator.class.isAssignableFrom(component)) {
             baseClass = MessageValidator.class;
-        } else if (AbstractMessageGenerator.class.isAssignableFrom(component)) {
+        } else if (MessageGenerator.class.isAssignableFrom(component)) {
             baseClass = AbstractMessageGenerator.class;
         } else if (MessageSender.class.isAssignableFrom(component)) {
             baseClass = MessageSender.class;
@@ -107,18 +111,18 @@ public class ComponentPropertiesScanner {
             baseClass = Message.class;
         } else {
             baseClass = null;
-            // throw exception, log
+            logger.log(Level.WARN, "ComponentPropertiesScanner has been used for " + component.getSimpleName() + ",but it only supports PerfCake.");
         }
     }
     
     private Set<String> getMandatoryPropertiesNames() {
         Set<String> mandatoryProperties = new HashSet<>();
         
-//        for (Field field : allComponentFields) {
-//            if (field.isAnnotationPresent(MandatoryProperty.class)) {
-//                mandatoryProperties.add(field.getName());
-//            }
-//        }
+        for (Field field : allComponentFields) {
+            if (field.isAnnotationPresent(MandatoryProperty.class)) {
+                mandatoryProperties.add(field.getName());
+            }
+        }
         
         return mandatoryProperties;
     }
@@ -166,7 +170,7 @@ public class ComponentPropertiesScanner {
                     try {
                         properties.setProperty(fieldName, String.valueOf(componentMethod.invoke(componentObject)));
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                        Exceptions.printStackTrace(ex);
+                        logger.log(Level.ERROR, ex.getLocalizedMessage());
                     }
                 }
             }
