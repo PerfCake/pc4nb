@@ -1,6 +1,4 @@
 /*
- * Copyright 2015 Andrej Halaj.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,19 +13,14 @@
  */
 package org.perfcake.pc4nb.ui.actions;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.openide.WizardDescriptor;
-import org.openide.util.Exceptions;
-import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Reporting.Reporter;
 import org.perfcake.model.Scenario.Reporting.Reporter.Destination;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.PropertyModel;
 import org.perfcake.pc4nb.model.ReportingModel;
-import org.perfcake.pc4nb.reflect.ComponentPropertiesScanner;
 import org.perfcake.pc4nb.ui.wizards.ReporterWizardPanel;
-import static org.perfcake.pc4nb.ui.wizards.visuals.ReporterVisualPanel.REPORTER_PACKAGE;
 
 /**
  *

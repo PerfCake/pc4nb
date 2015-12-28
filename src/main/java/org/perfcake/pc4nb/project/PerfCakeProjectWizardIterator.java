@@ -1,7 +1,4 @@
 /*
- * Copyright Error: on line 4, column 29 in Templates/Licenses/license-apache20.txt
- The string doesn't match the expected date/time format. The string to parse was: "15.4.2015". The expected format was: "MMM d, yyyy". Andrej Halaj.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
