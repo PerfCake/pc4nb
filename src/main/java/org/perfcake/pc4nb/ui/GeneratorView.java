@@ -42,7 +42,7 @@ public class GeneratorView extends PC4NBView {
     TransferHandler transferHandler = new GeneratorTransferHandler();
 
     public GeneratorView() {
-        setDefaultBorder(new LineBorder(Color.RED, 1, true));
+        setDefaultBorder(new LineBorder(Color.GREEN, 1, true));
         setBorder(getDefaultBorder());
         setHeader("Generator");
 

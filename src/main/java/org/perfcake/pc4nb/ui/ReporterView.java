@@ -45,7 +45,7 @@ public class ReporterView extends SecondLevelView {
         super(model);
         setHeader(resolveAndGetHeader());
 
-        setDefaultBorder(new LineBorder(Color.BLUE, 1, true));
+        setDefaultBorder(new LineBorder(Color.RED, 1, true));
         setBorder(getDefaultBorder());
 
         menu.add(editComponent);

@@ -42,7 +42,7 @@ public final class ReportingView extends PC4NBView {
     public ReportingView() {
         setHeader("Reporting");
         
-        setDefaultBorder(new LineBorder(Color.BLUE, 1, true));
+        setDefaultBorder(new LineBorder(Color.RED, 1, true));
         setBorder(getDefaultBorder());
 
         addComponent.addActionListener(new AddReporterListener());

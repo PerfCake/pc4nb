@@ -1,6 +1,4 @@
 /*
- * Copyright 2015 Andrej Halaj.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -46,18 +44,10 @@ public class PropertiesTableCellRenderer extends DefaultTableCellRenderer {
                 cell.setForeground(Color.BLACK);
             }
         } else if (column == 1) {
-            if (isMandatory) {
-                if (property.isDefault()) {
-                    cell.setForeground(Color.RED);
-                } else {
-                    cell.setForeground(Color.GREEN);
-                }
+            if (property.isDefault()) {
+                cell.setForeground(Color.GRAY);
             } else {
-                if (property.isDefault()) {
-                    cell.setForeground(Color.GRAY);
-                } else {
-                    cell.setForeground(Color.GREEN);
-                }
+                cell.setForeground(Color.GREEN);
             }
         } else {
             cell.setForeground(Color.BLUE);

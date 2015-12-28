@@ -1,6 +1,4 @@
 /*
- * Copyright 2015 Andrej Halaj.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,6 +28,8 @@ import javax.swing.border.LineBorder;
 import org.perfcake.model.Scenario.Validation.Validator;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.ValidatorModel;
+import static org.perfcake.pc4nb.model.ValidatorModel.PROPERTY_CLASS;
+import static org.perfcake.pc4nb.model.ValidatorModel.PROPERTY_ID;
 import org.perfcake.pc4nb.ui.actions.DeleteValidatorAction;
 import org.perfcake.pc4nb.ui.actions.EditValidatorAction;
 
@@ -69,16 +69,20 @@ public class ValidatorView extends SecondLevelView {
 
     private String resolveAndGetHeader() {
         ValidatorModel validatorModel = (ValidatorModel) getModel();
-
-        return validatorModel.getValidator().getClazz();
+        String validatorClazz = validatorModel.getValidator().getClazz();
+        String validatorId = validatorModel.getValidator().getId();
+        
+        return "(" + validatorId + ") " + validatorClazz;
     }
     
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(ValidatorModel.PROPERTY_CLASS)) {
-            setHeader(resolveAndGetHeader());
-            revalidate();
-            repaint();
+        switch (evt.getPropertyName()) {
+            case PROPERTY_CLASS:
+            case PROPERTY_ID:
+                setHeader(resolveAndGetHeader());
+                revalidate();
+                repaint();
         }
     }
 
