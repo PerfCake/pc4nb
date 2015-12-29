@@ -111,7 +111,11 @@ public class GeneratorView extends PC4NBView {
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
             try {
+                GeneratorModel oldModel = (GeneratorModel) getModel();
                 GeneratorModel model = (GeneratorModel) support.getTransferable().getTransferData(GeneratorModel.DATA_FLAVOR);
+                
+                model.setThreads(oldModel.getGenerator().getThreads()); // keep old threads setting
+                
                 setModel(model);
                 revalidate();
                 repaint();

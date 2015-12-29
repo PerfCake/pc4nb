@@ -240,6 +240,7 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
         List<PropertyModel> properties = (List<PropertyModel>) wizard.getProperty("sender-properties");
 
         senderModel.setClazz((String) wizard.getProperty("sender-type"));
+        senderModel.setTarget((String) wizard.getProperty("sender-target"));
 
         for (PropertyModel propertyModel : properties) {
             if (!propertyModel.isDefault()) {

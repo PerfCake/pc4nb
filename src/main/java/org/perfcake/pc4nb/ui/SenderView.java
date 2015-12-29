@@ -135,7 +135,11 @@ public class SenderView extends PC4NBView {
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
             try {
+                SenderModel oldModel = (SenderModel) getModel();
                 SenderModel model = (SenderModel) support.getTransferable().getTransferData(SenderModel.DATA_FLAVOR);
+                
+                model.setTarget(oldModel.getTarget()); // keep old target setting
+                
                 setModel(model);
                 revalidate();
                 repaint();
