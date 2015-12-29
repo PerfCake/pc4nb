@@ -18,6 +18,7 @@ import java.util.List;
 import org.openide.WizardDescriptor;
 import org.perfcake.model.Property;
 import org.perfcake.pc4nb.model.PC4NBModel;
+import org.perfcake.pc4nb.model.PropertiesModel;
 
 /**
  *
@@ -45,6 +46,10 @@ public class DeletePropertiesAction extends AbstractPC4NBAction {
 
     @Override
     public void doAction(WizardDescriptor wiz) {
-        return;
+        PropertiesModel propertiesModel = (PropertiesModel) from;
+
+        for (Property property : toRemove) { 
+            propertiesModel.removeProperty(property);
+        }
     }
 }

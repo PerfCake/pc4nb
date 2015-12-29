@@ -34,8 +34,10 @@ import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
+import org.perfcake.model.Property;
 import org.perfcake.model.Scenario;
 import org.perfcake.model.Scenario.Generator;
+import org.perfcake.model.Scenario.Properties;
 import org.perfcake.model.Scenario.Run;
 import org.perfcake.model.Scenario.Sender;
 import org.perfcake.pc4nb.model.*;
@@ -205,6 +207,7 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
             prepareReporting();
             prepareMessages();
             prepareValidation();
+            prepareProperties();
         } catch (ClassNotFoundException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -278,6 +281,27 @@ public final class ScenarioWizardIterator implements WizardDescriptor.Instantiat
             scenarioModel.setValidation(null);
         } else {
             scenarioModel.setValidation(validationModel.getValidation());
+        }
+    }
+    
+    private void prepareProperties() {
+        List<Property> propertiesList = (List<Property>) wizard.getProperty("scenario-properties");
+        Properties properties = null;
+        
+        if (!propertiesList.isEmpty()) {
+            properties = new Properties();
+            
+            for (Property property : propertiesList) {
+                properties.getProperty().add(property);
+            }
+        }
+        
+        PropertiesModel propertiesModel = new PropertiesModel(properties);
+        
+        if (propertiesModel.getProperties() == null) {
+            scenarioModel.setProperties(null);
+        } else {
+            scenarioModel.setProperties(propertiesModel.getProperties());
         }
     }
 }

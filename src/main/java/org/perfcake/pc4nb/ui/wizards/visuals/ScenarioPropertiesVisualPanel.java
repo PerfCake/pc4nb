@@ -48,12 +48,14 @@ public final class ScenarioPropertiesVisualPanel extends AbstractPC4NBView {
         
         PropertiesModel propertiesModel = (PropertiesModel) model;
         
-        for (Property property : propertiesModel.getProperty()) {
-            propertiesTableModel.addRow();
-            int row = propertiesTableModel.getRowCount() - 1;
-            
-            propertiesTableModel.setValueAt(property.getName(), row, 0);
-            propertiesTableModel.setValueAt(property.getValue(), row, 1);
+        if (propertiesModel != null && propertiesModel.getProperty() != null) {
+            for (Property property : propertiesModel.getProperty()) {
+                propertiesTableModel.addRow();
+                int row = propertiesTableModel.getRowCount() - 1;
+
+                propertiesTableModel.setValueAt(property.getName(), row, 0);
+                propertiesTableModel.setValueAt(property.getValue(), row, 1);
+            }
         }
     }
     
