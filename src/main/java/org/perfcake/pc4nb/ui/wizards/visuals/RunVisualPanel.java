@@ -75,6 +75,8 @@ public final class RunVisualPanel extends AbstractPC4NBView {
 
         runTypeComboBox = new javax.swing.JComboBox();
         runValueSpinner = new javax.swing.JSpinner();
+        runValueLabel = new javax.swing.JLabel();
+        runTypeLabel = new javax.swing.JLabel();
 
         setPreferredSize(new java.awt.Dimension(600, 440));
 
@@ -89,30 +91,43 @@ public final class RunVisualPanel extends AbstractPC4NBView {
         periodTypeNamesList.toArray(periodTypeNames);
         runTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(periodTypeNames));
 
+        org.openide.awt.Mnemonics.setLocalizedText(runValueLabel, org.openide.util.NbBundle.getMessage(RunVisualPanel.class, "RunVisualPanel.runValueLabel.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(runTypeLabel, org.openide.util.NbBundle.getMessage(RunVisualPanel.class, "RunVisualPanel.runTypeLabel.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(40, 40, 40)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(runTypeComboBox, 0, 319, Short.MAX_VALUE)
-                    .addComponent(runValueSpinner))
-                .addContainerGap(41, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(runTypeLabel)
+                    .addComponent(runValueLabel)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(runTypeComboBox, 0, 319, Short.MAX_VALUE)
+                        .addComponent(runValueSpinner)))
+                .addContainerGap(241, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
+                .addGap(25, 25, 25)
+                .addComponent(runTypeLabel)
+                .addGap(18, 18, 18)
                 .addComponent(runTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33)
+                .addGap(23, 23, 23)
+                .addComponent(runValueLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(runValueSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(185, Short.MAX_VALUE))
+                .addContainerGap(275, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox runTypeComboBox;
+    private javax.swing.JLabel runTypeLabel;
+    private javax.swing.JLabel runValueLabel;
     private javax.swing.JSpinner runValueSpinner;
     // End of variables declaration//GEN-END:variables
 

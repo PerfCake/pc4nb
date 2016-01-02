@@ -30,8 +30,8 @@ public class SecondLevelView extends PC4NBView {
         setDefaultBorder(new LineBorder(Color.PINK, 1, true));
         setBorder(getDefaultBorder());
         setHeader("Property");
-        setPreferredSize(new Dimension(SECOND_LEVEL_RECTANGLE_WIDTH, 50));
-        setMinimumSize(new Dimension(SECOND_LEVEL_RECTANGLE_WIDTH, 50));
+        setPreferredSize(new Dimension(SECOND_LEVEL_RECTANGLE_WIDTH, 70));
+        setMinimumSize(new Dimension(SECOND_LEVEL_RECTANGLE_WIDTH, 70));
     }
     
     @Override

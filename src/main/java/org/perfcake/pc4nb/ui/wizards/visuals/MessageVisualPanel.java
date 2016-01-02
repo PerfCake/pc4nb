@@ -50,7 +50,6 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
         setModel(new MessageModel(new Message()));
 
         addHeaderButton.addActionListener(new AddHeaderListener());
-        editHeaderButton.addActionListener(new EditHeaderListener());
         deleteHeaderButton.addActionListener(new DeleteHeaderListener());
 
         contentTextField.getDocument().addDocumentListener(this);
@@ -167,7 +166,6 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
         propertiesTable = new javax.swing.JTable();
         addHeaderButton = new javax.swing.JButton();
         deleteHeaderButton = new javax.swing.JButton();
-        editHeaderButton = new javax.swing.JButton();
         headersLabel = new javax.swing.JLabel();
         propertiesLabel = new javax.swing.JLabel();
         attachedValidatorsLabel = new javax.swing.JLabel();
@@ -199,8 +197,6 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
         org.openide.awt.Mnemonics.setLocalizedText(addHeaderButton, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.addHeaderButton.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(deleteHeaderButton, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.deleteHeaderButton.text")); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(editHeaderButton, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.editHeaderButton.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(headersLabel, org.openide.util.NbBundle.getMessage(MessageVisualPanel.class, "MessageVisualPanel.headersLabel.text")); // NOI18N
 
@@ -260,7 +256,6 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(deleteHeaderButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(editHeaderButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(attachValidatorButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(detachValidatorButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(addPropertyRow, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -290,9 +285,7 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
                     .addGroup(layout.createSequentialGroup()
                         .addGap(17, 17, 17)
                         .addComponent(addHeaderButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(editHeaderButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(deleteHeaderButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(15, 15, 15)
@@ -342,7 +335,6 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
     private javax.swing.JButton deleteHeaderButton;
     private javax.swing.JButton deleteProperties;
     private javax.swing.JButton detachValidatorButton;
-    private javax.swing.JButton editHeaderButton;
     private javax.swing.JLabel headersLabel;
     private javax.swing.JTable headersTable;
     private HeadersTableModel headersTableModel;
@@ -445,21 +437,6 @@ public final class MessageVisualPanel extends AbstractPC4NBView implements Docum
         public void actionPerformed(ActionEvent e) {
             AddHeaderAction action = new AddHeaderAction(getModel());
             action.execute();
-        }
-    }
-
-    private class EditHeaderListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            int selectedRow = MessageVisualPanel.this.getHeadersTable().getSelectedRow();
-
-            if (selectedRow != -1) {
-                MessageModel model = (MessageModel) MessageVisualPanel.this.getModel();
-                Header header = model.getMessage().getHeader().get(selectedRow);
-                EditHeaderAction action = new EditHeaderAction((HeaderModel) ModelMap.getDefault().getPC4NBModelFor(header));
-                action.execute();
-            }
         }
     }
 

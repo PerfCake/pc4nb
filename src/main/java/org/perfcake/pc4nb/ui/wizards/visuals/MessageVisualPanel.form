@@ -47,7 +47,6 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="deleteHeaderButton" alignment="1" max="32767" attributes="0"/>
-                          <Component id="editHeaderButton" alignment="1" max="32767" attributes="0"/>
                           <Component id="attachValidatorButton" alignment="0" max="32767" attributes="0"/>
                           <Component id="detachValidatorButton" alignment="1" max="32767" attributes="0"/>
                           <Component id="addPropertyRow" max="32767" attributes="0"/>
@@ -85,9 +84,7 @@
                   <Group type="102" attributes="0">
                       <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                       <Component id="addHeaderButton" min="-2" pref="34" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="editHeaderButton" min="-2" pref="34" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="deleteHeaderButton" min="-2" pref="34" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jScrollPane1" min="-2" pref="152" max="-2" attributes="0"/>
@@ -213,13 +210,6 @@
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="org/perfcake/pc4nb/ui/wizards/visuals/Bundle.properties" key="MessageVisualPanel.deleteHeaderButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JButton" name="editHeaderButton">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/perfcake/pc4nb/ui/wizards/visuals/Bundle.properties" key="MessageVisualPanel.editHeaderButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>

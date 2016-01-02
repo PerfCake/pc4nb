@@ -2,17 +2,16 @@
 <Configuration status="error">
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
-      <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
-      <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
+      <PatternLayout pattern="%m%n"/>
     </Console>
-    <File name="log" fileName="target/pc4nb.log" append="false">
-      <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
+    <File name="File" fileName="pc4nb.log" append="false">
+      <PatternLayout pattern="%m%n"/>
     </File>
   </Appenders>
   <Loggers>
     <Root level="info">
       <AppenderRef ref="Console"/>
-      <AppenderRef ref="log"/>
+      <AppenderRef ref="File"/>
     </Root>
   </Loggers>
 </Configuration>

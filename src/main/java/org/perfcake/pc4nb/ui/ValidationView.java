@@ -27,6 +27,8 @@ import org.perfcake.model.Scenario.Validation.Validator;
 import org.perfcake.pc4nb.model.ModelMap;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.ValidationModel;
+import static org.perfcake.pc4nb.model.ValidationModel.PROPERTY_ENABLED;
+import static org.perfcake.pc4nb.model.ValidationModel.PROPERTY_VALIDATORS;
 import org.perfcake.pc4nb.model.ValidatorModel;
 import org.perfcake.pc4nb.ui.actions.AddValidatorAction;
 
@@ -36,6 +38,8 @@ import org.perfcake.pc4nb.ui.actions.AddValidatorAction;
  */
 public final class ValidationView extends PC4NBView {
     private JMenuItem addComponent = new JMenuItem("Add new validator");
+    private JMenuItem turnOnOff = new JMenuItem("Turn validation on/off");
+    private JMenuItem fastForward = new JMenuItem("Turn fast forward on/off");
     private JPopupMenu menu = new JPopupMenu();
     private TransferHandler transferHandler = new ValidatorTransferHandler();
 
@@ -47,6 +51,13 @@ public final class ValidationView extends PC4NBView {
         addComponent.addActionListener(new AddValidatorListener());
 
         menu.add(addComponent);
+        
+        turnOnOff.addActionListener(new TurnOnOffListener());
+        menu.add(turnOnOff);
+        
+        fastForward.addActionListener(new FastForwardListener());
+        menu.add(fastForward);
+        
         this.setComponentPopupMenu(menu);
         setTransferHandler(transferHandler);
     }
@@ -106,6 +117,28 @@ public final class ValidationView extends PC4NBView {
         public void actionPerformed(ActionEvent e) {
             AddValidatorAction action = new AddValidatorAction(getModel());
             action.execute();
+        }
+    }
+    
+    private class TurnOnOffListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ValidationModel validationModel = (ValidationModel) getModel();
+            
+            if (validationModel != null && validationModel.getValidation() != null) {
+                validationModel.setEnabled(!validationModel.getValidation().isEnabled());
+            }
+        }
+    }
+    
+    private class FastForwardListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ValidationModel validationModel = (ValidationModel) getModel();
+            
+            if (validationModel != null && validationModel.getValidation() != null) {
+                validationModel.setFastForward(!validationModel.getValidation().isFastForward());
+            }
         }
     }
 }

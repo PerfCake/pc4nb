@@ -23,8 +23,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
@@ -32,12 +34,17 @@ import org.perfcake.model.Scenario.Reporting.Reporter;
 import org.perfcake.pc4nb.model.DestinationModel;
 import org.perfcake.pc4nb.model.PC4NBModel;
 import org.perfcake.pc4nb.model.ReporterModel;
+import static org.perfcake.pc4nb.model.ReporterModel.PROPERTY_CLASS;
+import static org.perfcake.pc4nb.model.ReporterModel.PROPERTY_ENABLED;
 import org.perfcake.pc4nb.ui.actions.DeleteReportersAction;
 import org.perfcake.pc4nb.ui.actions.EditReporterAction;
 
-public class ReporterView extends SecondLevelView {
+public final class ReporterView extends SecondLevelView {
+    private JLabel enabledLabel = new JLabel("Enabled: ");
+    private JRadioButton enabledRadio = new JRadioButton();
     private JMenuItem editComponent = new JMenuItem("Edit reporter");
     private JMenuItem deleteComponent = new JMenuItem("Delete reporter");
+    private JMenuItem turnOnOff = new JMenuItem("Turn reporter on/off");
     private JPopupMenu menu = new JPopupMenu();
     private TransferHandler transferHandler = new DestinationTransferHandler();
 
@@ -53,21 +60,44 @@ public class ReporterView extends SecondLevelView {
 
         menu.add(deleteComponent);
         deleteComponent.addActionListener(new DeleteReporterListener());
+        
+        menu.add(turnOnOff);
+        turnOnOff.addActionListener(new TurnOnOffListener());
 
         setComponentPopupMenu(menu);
         setTransferHandler(transferHandler);
 
         addKeyListener(new ReporterKeyAdapter());
         addMouseListener(new ReporterMouseListener());
+        
+        add(enabledLabel);
+        add(enabledRadio);
+        
+        enabledRadio.addActionListener(new EnabledRadioActionListener());
+        
+        ReporterModel reporterModel = (ReporterModel) model;
+        if (reporterModel.isEnabled()) {
+            setReporterEnabled(true);
+        } else {
+            setReporterEnabled(false);
+        }
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(ReporterModel.PROPERTY_CLASS)) {
-            setHeader(resolveAndGetHeader());
-            revalidate();
-            repaint();
+        switch (evt.getPropertyName()) {
+            case PROPERTY_CLASS:
+                setHeader(resolveAndGetHeader());
+                break;
+            case PROPERTY_ENABLED:
+                setReporterEnabled((boolean) evt.getNewValue());
+                break;
+            default:
+                break;
         }
+        
+        revalidate();
+        repaint();
     }
 
     @Override
@@ -75,6 +105,15 @@ public class ReporterView extends SecondLevelView {
         super.setModel(model);
 
         setHeader(resolveAndGetHeader());
+        setReporterEnabled(((ReporterModel) getModel()).isEnabled());
+    }
+    
+    public void setReporterEnabled(boolean enabled) {
+        if (enabledRadio == null) {
+            enabledRadio = new JRadioButton();
+        }
+        
+        enabledRadio.setSelected(enabled);
     }
 
     private String resolveAndGetHeader() {
@@ -113,6 +152,25 @@ public class ReporterView extends SecondLevelView {
         public void actionPerformed(ActionEvent e) {
             runDeleteWizard();
         }
+    }
+    
+    private class TurnOnOffListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ReporterModel reporterModel = (ReporterModel) getModel();
+            reporterModel.setEnabled(!reporterModel.isEnabled());
+        }
+    }
+    
+    private class EnabledRadioActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JRadioButton enabledRadio = (JRadioButton) e.getSource();
+            ReporterView view = (ReporterView) enabledRadio.getParent().getParent();
+            ReporterModel model = (ReporterModel) view.getModel();
+            
+            model.setEnabled(!model.isEnabled());
+        } 
     }
 
     private void runEditWizard() {

@@ -21,8 +21,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import org.perfcake.model.Scenario.Validation.Validator;
@@ -38,6 +40,8 @@ import org.perfcake.pc4nb.ui.actions.EditValidatorAction;
  * @author Andrej Halaj
  */
 public class ValidatorView extends SecondLevelView {
+    private JLabel idLabel = new JLabel("ID: ");
+    private JLabel idString = new JLabel("");
     private JMenuItem editComponent = new JMenuItem("Edit validator");
     private JMenuItem deleteComponent = new JMenuItem("Delete validator");
     private JPopupMenu menu = new JPopupMenu();
@@ -45,6 +49,7 @@ public class ValidatorView extends SecondLevelView {
     public ValidatorView(PC4NBModel model) {
         super(model);
         setHeader(resolveAndGetHeader());
+        setValidatorId(((ValidatorModel) model).getValidator().getId());
 
         setDefaultBorder(new LineBorder(Color.MAGENTA, 1, true));
         setBorder(getDefaultBorder());
@@ -54,6 +59,9 @@ public class ValidatorView extends SecondLevelView {
 
         deleteComponent.addActionListener(new DeleteValidatorListener());
         menu.add(deleteComponent);
+        
+        add(idLabel);
+        add(idString);
 
         this.setComponentPopupMenu(menu);
         addMouseListener(new ValidatorMouseAdapter());
@@ -65,25 +73,39 @@ public class ValidatorView extends SecondLevelView {
         super.setModel(model);
 
         setHeader(resolveAndGetHeader());
+        setValidatorId(((ValidatorModel) model).getValidator().getId());
     }
 
     private String resolveAndGetHeader() {
         ValidatorModel validatorModel = (ValidatorModel) getModel();
         String validatorClazz = validatorModel.getValidator().getClazz();
-        String validatorId = validatorModel.getValidator().getId();
         
-        return "(" + validatorId + ") " + validatorClazz;
+        return validatorClazz;
+    }
+    
+    private void setValidatorId(String id) {
+        if (idString == null) {
+            idString = new JLabel();
+        }
+        
+        idString.setText(id);
     }
     
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case PROPERTY_CLASS:
-            case PROPERTY_ID:
                 setHeader(resolveAndGetHeader());
-                revalidate();
-                repaint();
+                break;
+            case PROPERTY_ID:
+                setValidatorId(((ValidatorModel) getModel()).getValidator().getId());
+                break;
+            default:
+                break;
         }
+        
+        revalidate();
+        repaint();
     }
 
     private class ValidatorKeyAdapter extends KeyAdapter {
