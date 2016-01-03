@@ -320,13 +320,6 @@ public final class ReporterVisualPanel extends VisualPanelWithProperties {
                     // error
                 }
                 break;
-            case DestinationModel.PROPERTY_CLASS:
-            case DestinationModel.PROPERTY_ENABLED:
-                DestinationModel destinationModel = (DestinationModel) evt.getSource();
-                Destination destination = destinationModel.getDestination();
-                targetIndex = destinationsTableModel.getDestinations().indexOf(destination);
-                destinationsTableModel.updateRow(targetIndex, destination);
-                break;
             default:
                 break;
         }

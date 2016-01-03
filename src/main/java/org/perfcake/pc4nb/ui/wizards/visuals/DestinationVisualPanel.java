@@ -307,13 +307,6 @@ public final class DestinationVisualPanel extends VisualPanelWithProperties {
                     // error
                 }
                 break;
-            case DestinationModel.PROPERTY_CLASS:
-            case DestinationModel.PROPERTY_ENABLED:
-//                PeriodModel periodModel = (PeriodModel) evt.getSource();
-//                Period period = periodModel.getPeriod();
-//                targetIndex = periodsTableModel.getPeriods().indexOf(period);
-//                periodsTableModel.updateRow(targetIndex, period);
-                break;
             default:
                 break;
         }
