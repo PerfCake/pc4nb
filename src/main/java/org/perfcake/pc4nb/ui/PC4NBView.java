@@ -1,9 +1,11 @@
 /*
+ * Copyright (c) 2015 Andrej Halaj
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -11,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.perfcake.pc4nb.ui;
 
 import java.awt.BorderLayout;
@@ -30,10 +33,6 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import static org.perfcake.pc4nb.ui.SizeConstraints.TOP_LEVEL_RECTANGLE_WIDTH;
 
-/**
- *
- * @author Andrej Halaj
- */
 public class PC4NBView extends AbstractPC4NBView implements PropertyChangeListener, FocusListener {
     public static final int TOP_INDENT = 50;
 
